@@ -2,6 +2,7 @@
 import hashlib
 import json
 import os
+import re
 import shutil
 import threading
 from dataclasses import asdict
@@ -11,6 +12,7 @@ import requests
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import BaseModel
 
 from . import chesscom
@@ -23,6 +25,9 @@ DEPTH, NODES = 16, 1_500_000
 ENGINE = os.environ.get("CHESSREVIEW_ENGINE") or shutil.which("stockfish") or "stockfish"
 
 app = FastAPI(title="chessreview")
+# Local tool: only answer requests addressed to loopback names, which blocks DNS-rebinding
+# attacks where a web page tricks the browser into talking to this server under another hostname.
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "[::1]"])
 jobs: dict[str, dict] = {}
 engine_lock = threading.Lock()  # Stockfish already uses several threads; run one review at a time
 
@@ -32,6 +37,8 @@ def review_id(pgn: str) -> str:
 
 
 def cache_path(rid: str) -> Path:
+    if not re.fullmatch(r"[0-9a-f]{16}", rid):  # ids are hash prefixes; never build paths from other input
+        raise HTTPException(404, "Review not found.")
     return CACHE / f"{rid}.json"
 
 
@@ -104,5 +111,6 @@ if WEB_DIST.exists():
 
     @app.get("/{path:path}")
     def spa(path: str) -> FileResponse:
-        file = WEB_DIST / path
-        return FileResponse(file if path and file.is_file() else WEB_DIST / "index.html")
+        file = (WEB_DIST / path).resolve()
+        inside = file.is_relative_to(WEB_DIST.resolve())  # no serving files outside the build dir
+        return FileResponse(file if path and inside and file.is_file() else WEB_DIST / "index.html")
