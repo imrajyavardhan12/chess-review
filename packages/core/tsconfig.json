@@ -1,0 +1,7 @@
+{
+  "extends": "../../tsconfig.base.json",
+  // Source is checked with no Node types on purpose: core must run unchanged in browsers.
+  // DOM lib only supplies AbortSignal, crypto and TextEncoder.
+  "compilerOptions": { "lib": ["ES2022", "DOM"], "types": [] },
+  "include": ["src"]
+}

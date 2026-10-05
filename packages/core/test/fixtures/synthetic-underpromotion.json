@@ -1,0 +1,170 @@
+{
+ "name": "synthetic-underpromotion",
+ "pgn": "[Event \"Synthetic\"]\n[White \"White\"]\n[Black \"Black\"]\n[SetUp \"1\"]\n[FEN \"1r5k/P7/8/8/8/8/8/K7 w - - 0 1\"]\n[Result \"*\"]\n\n1. axb8=N Kg7 2. Nc6 *\n",
+ "settings": {
+  "depth": 16,
+  "nodes": 200000,
+  "threads": 1,
+  "hash_mb": 16
+ },
+ "infos": [
+  {
+   "cp": 390,
+   "mate": null,
+   "best": "a7b8r",
+   "second_cp": null
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": null,
+   "second_cp": null
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": null,
+   "second_cp": null
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": null,
+   "second_cp": null
+  }
+ ],
+ "expected": {
+  "white": "White",
+  "black": "Black",
+  "result": "*",
+  "headers": {
+   "Event": "Synthetic",
+   "Site": "?",
+   "Date": "????.??.??",
+   "Round": "?",
+   "White": "White",
+   "Black": "Black",
+   "Result": "*",
+   "SetUp": "1",
+   "FEN": "1r5k/P7/8/8/8/8/8/K7 w - - 0 1"
+  },
+  "opening": "",
+  "eco": "",
+  "fens": [
+   "1r5k/P7/8/8/8/8/8/K7 w - - 0 1",
+   "1N5k/8/8/8/8/8/8/K7 b - - 0 1",
+   "1N6/6k1/8/8/8/8/8/K7 w - - 1 2",
+   "8/6k1/2N5/8/8/8/8/K7 b - - 2 2"
+  ],
+  "evals": [
+   {
+    "cp": 390,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   }
+  ],
+  "win_series": [
+   80.78,
+   50.0,
+   50.0,
+   50.0
+  ],
+  "moves": [
+   {
+    "ply": 1,
+    "color": "w",
+    "number": 1,
+    "san": "axb8=N",
+    "uci": "a7b8n",
+    "best_san": "axb8=R+",
+    "best_uci": "a7b8r",
+    "win_before": 80.78,
+    "win_after": 50.0,
+    "loss": 30.78,
+    "cp_loss": 390,
+    "accuracy": 23.84,
+    "label": "Blunder",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 2,
+    "color": "b",
+    "number": 1,
+    "san": "Kg7",
+    "uci": "h8g7",
+    "best_san": "",
+    "best_uci": "",
+    "win_before": 50.0,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 3,
+    "color": "w",
+    "number": 2,
+    "san": "Nc6",
+    "uci": "b8c6",
+    "best_san": "",
+    "best_uci": "",
+    "win_before": 50.0,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   }
+  ],
+  "accuracy": {
+   "white": 32.7,
+   "black": 100.0
+  },
+  "counts": {
+   "white": {
+    "Blunder": 1,
+    "Excellent": 1
+   },
+   "black": {
+    "Excellent": 1
+   }
+  },
+  "phases": {
+   "white": {
+    "opening": null,
+    "middlegame": null,
+    "endgame": 61.9
+   },
+   "black": {
+    "opening": null,
+    "middlegame": null,
+    "endgame": 100.0
+   }
+  },
+  "acpl": {
+   "white": 195,
+   "black": 0
+  },
+  "rating_estimate": {
+   "white": 440,
+   "black": 3000
+  }
+ }
+}

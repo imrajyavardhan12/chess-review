@@ -1,0 +1,582 @@
+{
+ "name": "synthetic-en-passant-castling",
+ "pgn": "[Event \"Synthetic\"]\n[White \"White\"]\n[Black \"Black\"]\n[Result \"*\"]\n\n1. e4 Nf6 2. e5 d5 3. exd6 exd6 4. Nf3 Nc6 5. Bc4 Be7 6. O-O O-O 7. d4 Bg4 8. h3 Bh5 9. Re1 *\n",
+ "settings": {
+  "depth": 16,
+  "nodes": 200000,
+  "threads": 1,
+  "hash_mb": 16
+ },
+ "infos": [
+  {
+   "cp": 39,
+   "mate": null,
+   "best": "e2e4",
+   "second_cp": 23
+  },
+  {
+   "cp": 37,
+   "mate": null,
+   "best": "c7c5",
+   "second_cp": null
+  },
+  {
+   "cp": 74,
+   "mate": null,
+   "best": "e4e5",
+   "second_cp": 6
+  },
+  {
+   "cp": 66,
+   "mate": null,
+   "best": "f6d5",
+   "second_cp": null
+  },
+  {
+   "cp": 505,
+   "mate": null,
+   "best": "e5f6",
+   "second_cp": null
+  },
+  {
+   "cp": -56,
+   "mate": null,
+   "best": "d8d6",
+   "second_cp": null
+  },
+  {
+   "cp": -13,
+   "mate": null,
+   "best": "d2d4",
+   "second_cp": null
+  },
+  {
+   "cp": -18,
+   "mate": null,
+   "best": "d6d5",
+   "second_cp": null
+  },
+  {
+   "cp": -2,
+   "mate": null,
+   "best": "d2d4",
+   "second_cp": null
+  },
+  {
+   "cp": -41,
+   "mate": null,
+   "best": "d6d5",
+   "second_cp": null
+  },
+  {
+   "cp": -14,
+   "mate": null,
+   "best": "d2d4",
+   "second_cp": null
+  },
+  {
+   "cp": -33,
+   "mate": null,
+   "best": "d6d5",
+   "second_cp": null
+  },
+  {
+   "cp": -12,
+   "mate": null,
+   "best": "d2d4",
+   "second_cp": -16
+  },
+  {
+   "cp": -10,
+   "mate": null,
+   "best": "d6d5",
+   "second_cp": null
+  },
+  {
+   "cp": -14,
+   "mate": null,
+   "best": "d4d5",
+   "second_cp": null
+  },
+  {
+   "cp": -158,
+   "mate": null,
+   "best": "g4f3",
+   "second_cp": null
+  },
+  {
+   "cp": 2,
+   "mate": null,
+   "best": "d4d5",
+   "second_cp": null
+  },
+  {
+   "cp": -127,
+   "mate": null,
+   "best": "h5f3",
+   "second_cp": null
+  }
+ ],
+ "expected": {
+  "white": "White",
+  "black": "Black",
+  "result": "*",
+  "headers": {
+   "Event": "Synthetic",
+   "Site": "?",
+   "Date": "????.??.??",
+   "Round": "?",
+   "White": "White",
+   "Black": "Black",
+   "Result": "*"
+  },
+  "opening": "Alekhine Defense",
+  "eco": "B02",
+  "fens": [
+   "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+   "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+   "rnbqkb1r/pppppppp/5n2/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 1 2",
+   "rnbqkb1r/pppppppp/5n2/4P3/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2",
+   "rnbqkb1r/ppp1pppp/5n2/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3",
+   "rnbqkb1r/ppp1pppp/3P1n2/8/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 3",
+   "rnbqkb1r/ppp2ppp/3p1n2/8/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 4",
+   "rnbqkb1r/ppp2ppp/3p1n2/8/8/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 4",
+   "r1bqkb1r/ppp2ppp/2np1n2/8/8/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 5",
+   "r1bqkb1r/ppp2ppp/2np1n2/8/2B5/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 5",
+   "r1bqk2r/ppp1bppp/2np1n2/8/2B5/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 6",
+   "r1bqk2r/ppp1bppp/2np1n2/8/2B5/5N2/PPPP1PPP/RNBQ1RK1 b kq - 5 6",
+   "r1bq1rk1/ppp1bppp/2np1n2/8/2B5/5N2/PPPP1PPP/RNBQ1RK1 w - - 6 7",
+   "r1bq1rk1/ppp1bppp/2np1n2/8/2BP4/5N2/PPP2PPP/RNBQ1RK1 b - - 0 7",
+   "r2q1rk1/ppp1bppp/2np1n2/8/2BP2b1/5N2/PPP2PPP/RNBQ1RK1 w - - 1 8",
+   "r2q1rk1/ppp1bppp/2np1n2/8/2BP2b1/5N1P/PPP2PP1/RNBQ1RK1 b - - 0 8",
+   "r2q1rk1/ppp1bppp/2np1n2/7b/2BP4/5N1P/PPP2PP1/RNBQ1RK1 w - - 1 9",
+   "r2q1rk1/ppp1bppp/2np1n2/7b/2BP4/5N1P/PPP2PP1/RNBQR1K1 b - - 2 9"
+  ],
+  "evals": [
+   {
+    "cp": 39,
+    "mate": null
+   },
+   {
+    "cp": 37,
+    "mate": null
+   },
+   {
+    "cp": 74,
+    "mate": null
+   },
+   {
+    "cp": 66,
+    "mate": null
+   },
+   {
+    "cp": 505,
+    "mate": null
+   },
+   {
+    "cp": -56,
+    "mate": null
+   },
+   {
+    "cp": -13,
+    "mate": null
+   },
+   {
+    "cp": -18,
+    "mate": null
+   },
+   {
+    "cp": -2,
+    "mate": null
+   },
+   {
+    "cp": -41,
+    "mate": null
+   },
+   {
+    "cp": -14,
+    "mate": null
+   },
+   {
+    "cp": -33,
+    "mate": null
+   },
+   {
+    "cp": -12,
+    "mate": null
+   },
+   {
+    "cp": -10,
+    "mate": null
+   },
+   {
+    "cp": -14,
+    "mate": null
+   },
+   {
+    "cp": -158,
+    "mate": null
+   },
+   {
+    "cp": 2,
+    "mate": null
+   },
+   {
+    "cp": -127,
+    "mate": null
+   }
+  ],
+  "win_series": [
+   53.58,
+   53.4,
+   56.77,
+   56.05,
+   86.52,
+   44.86,
+   48.8,
+   48.34,
+   49.82,
+   46.23,
+   48.71,
+   46.97,
+   48.9,
+   49.08,
+   48.71,
+   35.85,
+   50.18,
+   38.52
+  ],
+  "moves": [
+   {
+    "ply": 1,
+    "color": "w",
+    "number": 1,
+    "san": "e4",
+    "uci": "e2e4",
+    "best_san": "e4",
+    "best_uci": "e2e4",
+    "win_before": 53.58,
+    "win_after": 53.4,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Book",
+    "phase": "opening",
+    "gap": 1.5
+   },
+   {
+    "ply": 2,
+    "color": "b",
+    "number": 1,
+    "san": "Nf6",
+    "uci": "g8f6",
+    "best_san": "c5",
+    "best_uci": "c7c5",
+    "win_before": 46.6,
+    "win_after": 43.23,
+    "loss": 3.37,
+    "cp_loss": 37,
+    "accuracy": 100.0,
+    "label": "Book",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 3,
+    "color": "w",
+    "number": 2,
+    "san": "e5",
+    "uci": "e4e5",
+    "best_san": "e5",
+    "best_uci": "e4e5",
+    "win_before": 56.77,
+    "win_after": 56.05,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Book",
+    "phase": "opening",
+    "gap": 6.2
+   },
+   {
+    "ply": 4,
+    "color": "b",
+    "number": 2,
+    "san": "d5",
+    "uci": "d7d5",
+    "best_san": "Nd5",
+    "best_uci": "f6d5",
+    "win_before": 43.95,
+    "win_after": 13.48,
+    "loss": 30.48,
+    "cp_loss": 439,
+    "accuracy": 24.2,
+    "label": "Blunder",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 5,
+    "color": "w",
+    "number": 3,
+    "san": "exd6",
+    "uci": "e5d6",
+    "best_san": "exf6",
+    "best_uci": "e5f6",
+    "win_before": 86.52,
+    "win_after": 44.86,
+    "loss": 41.66,
+    "cp_loss": 561,
+    "accuracy": 13.65,
+    "label": "Miss",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 6,
+    "color": "b",
+    "number": 3,
+    "san": "exd6",
+    "uci": "e7d6",
+    "best_san": "Qxd6",
+    "best_uci": "d8d6",
+    "win_before": 55.14,
+    "win_after": 51.2,
+    "loss": 3.94,
+    "cp_loss": 43,
+    "accuracy": 83.74,
+    "label": "Good",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 7,
+    "color": "w",
+    "number": 4,
+    "san": "Nf3",
+    "uci": "g1f3",
+    "best_san": "d4",
+    "best_uci": "d2d4",
+    "win_before": 48.8,
+    "win_after": 48.34,
+    "loss": 0.46,
+    "cp_loss": 5,
+    "accuracy": 97.95,
+    "label": "Excellent",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 8,
+    "color": "b",
+    "number": 4,
+    "san": "Nc6",
+    "uci": "b8c6",
+    "best_san": "d5",
+    "best_uci": "d6d5",
+    "win_before": 51.66,
+    "win_after": 50.18,
+    "loss": 1.47,
+    "cp_loss": 16,
+    "accuracy": 93.59,
+    "label": "Excellent",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 9,
+    "color": "w",
+    "number": 5,
+    "san": "Bc4",
+    "uci": "f1c4",
+    "best_san": "d4",
+    "best_uci": "d2d4",
+    "win_before": 49.82,
+    "win_after": 46.23,
+    "loss": 3.58,
+    "cp_loss": 39,
+    "accuracy": 85.1,
+    "label": "Good",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 10,
+    "color": "b",
+    "number": 5,
+    "san": "Be7",
+    "uci": "f8e7",
+    "best_san": "d5",
+    "best_uci": "d6d5",
+    "win_before": 53.77,
+    "win_after": 51.29,
+    "loss": 2.48,
+    "cp_loss": 27,
+    "accuracy": 89.45,
+    "label": "Good",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 11,
+    "color": "w",
+    "number": 6,
+    "san": "O-O",
+    "uci": "e1g1",
+    "best_san": "d4",
+    "best_uci": "d2d4",
+    "win_before": 48.71,
+    "win_after": 46.97,
+    "loss": 1.75,
+    "cp_loss": 19,
+    "accuracy": 92.45,
+    "label": "Excellent",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 12,
+    "color": "b",
+    "number": 6,
+    "san": "O-O",
+    "uci": "e8g8",
+    "best_san": "d5",
+    "best_uci": "d6d5",
+    "win_before": 53.03,
+    "win_after": 51.1,
+    "loss": 1.93,
+    "cp_loss": 21,
+    "accuracy": 91.69,
+    "label": "Excellent",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 13,
+    "color": "w",
+    "number": 7,
+    "san": "d4",
+    "uci": "d2d4",
+    "best_san": "d4",
+    "best_uci": "d2d4",
+    "win_before": 48.9,
+    "win_after": 49.08,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "opening",
+    "gap": 0.4
+   },
+   {
+    "ply": 14,
+    "color": "b",
+    "number": 7,
+    "san": "Bg4",
+    "uci": "c8g4",
+    "best_san": "d5",
+    "best_uci": "d6d5",
+    "win_before": 50.92,
+    "win_after": 51.29,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Excellent",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 15,
+    "color": "w",
+    "number": 8,
+    "san": "h3",
+    "uci": "h2h3",
+    "best_san": "d5",
+    "best_uci": "d4d5",
+    "win_before": 48.71,
+    "win_after": 35.85,
+    "loss": 12.86,
+    "cp_loss": 144,
+    "accuracy": 55.77,
+    "label": "Mistake",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 16,
+    "color": "b",
+    "number": 8,
+    "san": "Bh5",
+    "uci": "g4h5",
+    "best_san": "Bxf3",
+    "best_uci": "g4f3",
+    "win_before": 64.15,
+    "win_after": 49.82,
+    "loss": 14.33,
+    "cp_loss": 160,
+    "accuracy": 52.11,
+    "label": "Miss",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 17,
+    "color": "w",
+    "number": 9,
+    "san": "Re1",
+    "uci": "f1e1",
+    "best_san": "d5",
+    "best_uci": "d4d5",
+    "win_before": 50.18,
+    "win_after": 38.52,
+    "loss": 11.67,
+    "cp_loss": 129,
+    "accuracy": 58.91,
+    "label": "Miss",
+    "phase": "opening",
+    "gap": null
+   }
+  ],
+  "accuracy": {
+   "white": 48.8,
+   "black": 57.0
+  },
+  "counts": {
+   "white": {
+    "Book": 2,
+    "Miss": 2,
+    "Excellent": 2,
+    "Good": 1,
+    "Best": 1,
+    "Mistake": 1
+   },
+   "black": {
+    "Book": 1,
+    "Blunder": 1,
+    "Good": 2,
+    "Excellent": 3,
+    "Miss": 1
+   }
+  },
+  "phases": {
+   "white": {
+    "opening": 78.2,
+    "middlegame": null,
+    "endgame": null
+   },
+   "black": {
+    "opening": 79.3,
+    "middlegame": null,
+    "endgame": null
+   }
+  },
+  "acpl": {
+   "white": 100,
+   "black": 93
+  },
+  "rating_estimate": {
+   "white": 1140,
+   "black": 1220
+  }
+ }
+}

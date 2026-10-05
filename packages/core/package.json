@@ -1,0 +1,18 @@
+{
+  "name": "@chessreview/core",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "license": "GPL-3.0-or-later",
+  "description": "Pure chess review logic: classification, accuracy, phases, opening book. No DOM, no engine process.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./book": "./src/book-data.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json"
+  },
+  "dependencies": {
+    "chess.js": "^1.4.0"
+  }
+}

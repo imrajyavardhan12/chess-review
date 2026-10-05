@@ -1,0 +1,109 @@
+{
+ "name": "synthetic-stalemate",
+ "pgn": "[Event \"Synthetic\"]\n[White \"White\"]\n[Black \"Black\"]\n[SetUp \"1\"]\n[FEN \"7k/8/6K1/8/8/8/8/5Q2 w - - 0 1\"]\n[Result \"1/2-1/2\"]\n\n1. Qf7 1/2-1/2\n",
+ "settings": {
+  "depth": 16,
+  "nodes": 200000,
+  "threads": 1,
+  "hash_mb": 16
+ },
+ "infos": [
+  {
+   "cp": 9999,
+   "mate": 1,
+   "best": "f1f8",
+   "second_cp": null
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": null,
+   "second_cp": null
+  }
+ ],
+ "expected": {
+  "white": "White",
+  "black": "Black",
+  "result": "1/2-1/2",
+  "headers": {
+   "Event": "Synthetic",
+   "Site": "?",
+   "Date": "????.??.??",
+   "Round": "?",
+   "White": "White",
+   "Black": "Black",
+   "Result": "1/2-1/2",
+   "SetUp": "1",
+   "FEN": "7k/8/6K1/8/8/8/8/5Q2 w - - 0 1"
+  },
+  "opening": "",
+  "eco": "",
+  "fens": [
+   "7k/8/6K1/8/8/8/8/5Q2 w - - 0 1",
+   "7k/5Q2/6K1/8/8/8/8/8 b - - 1 1"
+  ],
+  "evals": [
+   {
+    "cp": 9999,
+    "mate": 1
+   },
+   {
+    "cp": 0,
+    "mate": null
+   }
+  ],
+  "win_series": [
+   100.0,
+   50.0
+  ],
+  "moves": [
+   {
+    "ply": 1,
+    "color": "w",
+    "number": 1,
+    "san": "Qf7",
+    "uci": "f1f7",
+    "best_san": "Qf8#",
+    "best_uci": "f1f8",
+    "win_before": 100.0,
+    "win_after": 50.0,
+    "loss": 50.0,
+    "cp_loss": 1000,
+    "accuracy": 8.53,
+    "label": "Blunder",
+    "phase": "endgame",
+    "gap": null
+   }
+  ],
+  "accuracy": {
+   "white": 8.5,
+   "black": 0.0
+  },
+  "counts": {
+   "white": {
+    "Blunder": 1
+   },
+   "black": {}
+  },
+  "phases": {
+   "white": {
+    "opening": null,
+    "middlegame": null,
+    "endgame": 8.5
+   },
+   "black": {
+    "opening": null,
+    "middlegame": null,
+    "endgame": null
+   }
+  },
+  "acpl": {
+   "white": 1000,
+   "black": 0
+  },
+  "rating_estimate": {
+   "white": 100,
+   "black": 3000
+  }
+ }
+}

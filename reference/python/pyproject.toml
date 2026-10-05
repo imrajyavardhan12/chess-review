@@ -1,0 +1,19 @@
+[project]
+name = "chessreview"
+version = "0.1.0"
+description = "Reference implementation of the chessreview analysis (oracle for the TypeScript port)"
+requires-python = ">=3.10"
+dependencies = ["python-chess>=1.11", "requests>=2.31"]
+
+[project.scripts]
+chessreview = "chessreview.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]

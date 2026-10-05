@@ -1,0 +1,4135 @@
+{
+ "name": "chesscom-draw",
+ "pgn": "[Event \"Live Chess\"]\n[Site \"Chess.com\"]\n[Date \"2026.10.03\"]\n[Round \"-\"]\n[White \"Narek_Ghimoyan\"]\n[Black \"Hikaru\"]\n[Result \"1/2-1/2\"]\n[CurrentPosition \"6R1/1P6/2K2k2/8/8/8/6p1/1r6 b - - 9 70\"]\n[Timezone \"UTC\"]\n[ECO \"B40\"]\n[ECOUrl \"https://www.chess.com/openings/Sicilian-Defense-French-Variation-3.d4-cxd4\"]\n[UTCDate \"2026.10.03\"]\n[UTCTime \"21:08:36\"]\n[WhiteElo \"2916\"]\n[BlackElo \"3483\"]\n[TimeControl \"180\"]\n[Termination \"Game drawn by repetition\"]\n[StartTime \"21:08:36\"]\n[EndDate \"2026.10.03\"]\n[EndTime \"21:14:30\"]\n[Link \"https://www.chess.com/game/live/184774524962\"]\n\n1. e4 {[%clk 0:03:00]} 1... c5 {[%clk 0:03:00]} 2. Nf3 {[%clk 0:02:59.3]} 2... e6 {[%clk 0:02:59.6]} 3. d4 {[%clk 0:02:58.4]} 3... cxd4 {[%clk 0:02:59.5]} 4. Qxd4 {[%clk 0:02:58.3]} 4... Qc7 {[%clk 0:02:53]} 5. Bd3 {[%clk 0:02:56.7]} 5... Nf6 {[%clk 0:02:50.6]} 6. h3 {[%clk 0:02:52.5]} 6... Bc5 {[%clk 0:02:49.2]} 7. Qe5 {[%clk 0:02:48.3]} 7... Qxe5 {[%clk 0:02:48.1]} 8. Nxe5 {[%clk 0:02:47.7]} 8... d6 {[%clk 0:02:48]} 9. Nf3 {[%clk 0:02:45.5]} 9... e5 {[%clk 0:02:47.1]} 10. Bg5 {[%clk 0:02:41.4]} 10... Nbd7 {[%clk 0:02:40.3]} 11. Nbd2 {[%clk 0:02:40.2]} 11... h6 {[%clk 0:02:39.3]} 12. Bh4 {[%clk 0:02:30.2]} 12... Nh5 {[%clk 0:02:38.1]} 13. Bg3 {[%clk 0:02:29.8]} 13... Nxg3 {[%clk 0:02:37.3]} 14. fxg3 {[%clk 0:02:29.5]} 14... Nf6 {[%clk 0:02:36.2]} 15. g4 {[%clk 0:02:28.1]} 15... Be6 {[%clk 0:02:33.7]} 16. Ke2 {[%clk 0:02:26.8]} 16... Rc8 {[%clk 0:02:31.7]} 17. c3 {[%clk 0:02:26]} 17... Ke7 {[%clk 0:02:28.4]} 18. Rhf1 {[%clk 0:02:25.6]} 18... Rhd8 {[%clk 0:02:26.4]} 19. Bc2 {[%clk 0:02:21.1]} 19... a6 {[%clk 0:02:23.5]} 20. a4 {[%clk 0:02:20.1]} 20... Kf8 {[%clk 0:02:20.8]} 21. Ne1 {[%clk 0:02:18.9]} 21... d5 {[%clk 0:02:19.7]} 22. exd5 {[%clk 0:02:17.9]} 22... Nxd5 {[%clk 0:02:19.1]} 23. Nd3 {[%clk 0:02:13.2]} 23... Ba7 {[%clk 0:02:15.6]} 24. Rf3 {[%clk 0:01:56.6]} 24... Kg8 {[%clk 0:02:12.7]} 25. Ne4 {[%clk 0:01:52.6]} 25... f6 {[%clk 0:02:09.4]} 26. Rd1 {[%clk 0:01:50]} 26... Ne7 {[%clk 0:02:03.8]} 27. Nc1 {[%clk 0:01:45.8]} 27... Rxd1 {[%clk 0:01:59]} 28. Bxd1 {[%clk 0:01:43.4]} 28... Nd5 {[%clk 0:01:58.5]} 29. g3 {[%clk 0:01:40.2]} 29... Nb6 {[%clk 0:01:52.9]} 30. a5 {[%clk 0:01:33.8]} 30... Nc4 {[%clk 0:01:49.7]} 31. Bb3 {[%clk 0:01:33.4]} 31... Bf7 {[%clk 0:01:47.2]} 32. Rd3 {[%clk 0:01:30.8]} 32... Rf8 {[%clk 0:01:24.8]} 33. Nd6 {[%clk 0:01:21.9]} 33... Nxd6 {[%clk 0:01:24.2]} 34. Rxd6 {[%clk 0:01:21.8]} 34... Bxb3 {[%clk 0:01:21.3]} 35. Nxb3 {[%clk 0:01:21.7]} 35... Rf7 {[%clk 0:01:21]} 36. Nd2 {[%clk 0:01:19.4]} 36... Rc7 {[%clk 0:01:13.5]} 37. Ne4 {[%clk 0:01:14.8]} 37... Kf7 {[%clk 0:01:11.8]} 38. Rd8 {[%clk 0:01:10.9]} 38... Ke6 {[%clk 0:01:10.2]} 39. Ra8 {[%clk 0:00:57.6]} 39... Bc5 {[%clk 0:01:09.1]} 40. Re8+ {[%clk 0:00:52.1]} 40... Be7 {[%clk 0:01:07.8]} 41. Rh8 {[%clk 0:00:47.9]} 41... Kf7 {[%clk 0:01:05.3]} 42. h4 {[%clk 0:00:46.5]} 42... Bf8 {[%clk 0:00:59.5]} 43. g5 {[%clk 0:00:43.5]} 43... hxg5 {[%clk 0:00:54.8]} 44. hxg5 {[%clk 0:00:43.4]} 44... f5 {[%clk 0:00:54.3]} 45. g6+ {[%clk 0:00:39.9]} 45... Kxg6 {[%clk 0:00:51.9]} 46. Rxf8 {[%clk 0:00:39.2]} 46... fxe4 {[%clk 0:00:51.7]} 47. Ke3 {[%clk 0:00:35.9]} 47... Rc5 {[%clk 0:00:48.8]} 48. Rb8 {[%clk 0:00:34.2]} 48... Rxa5 {[%clk 0:00:44.7]} 49. Rxb7 {[%clk 0:00:33.5]} 49... Ra4 {[%clk 0:00:44.3]} 50. b4 {[%clk 0:00:29.1]} 50... Ra3 {[%clk 0:00:42.7]} 51. Kxe4 {[%clk 0:00:27.6]} 51... Rxc3 {[%clk 0:00:42.4]} 52. Rb6+ {[%clk 0:00:24.4]} 52... Kg5 {[%clk 0:00:40.8]} 53. Kxe5 {[%clk 0:00:24.3]} 53... Rc4 {[%clk 0:00:39.6]} 54. Kd5 {[%clk 0:00:22.2]} 54... Rg4 {[%clk 0:00:38.4]} 55. Kc5 {[%clk 0:00:21.2]} 55... Rxg3 {[%clk 0:00:37.8]} 56. Rxa6 {[%clk 0:00:21]} 56... Kf5 {[%clk 0:00:37.7]} 57. b5 {[%clk 0:00:20.4]} 57... Rc3+ {[%clk 0:00:36.5]} 58. Kb4 {[%clk 0:00:19.6]} 58... Rc1 {[%clk 0:00:35.6]} 59. b6 {[%clk 0:00:19.3]} 59... Ke5 {[%clk 0:00:29.8]} 60. Ra7 {[%clk 0:00:17.6]} 60... g5 {[%clk 0:00:27.4]} 61. Rc7 {[%clk 0:00:16.5]} 61... Rb1+ {[%clk 0:00:26.5]} 62. Kc5 {[%clk 0:00:16.1]} 62... g4 {[%clk 0:00:24.6]} 63. b7 {[%clk 0:00:15.7]} 63... g3 {[%clk 0:00:22.1]} 64. Kc6 {[%clk 0:00:15.3]} 64... Kf6 {[%clk 0:00:19.5]} 65. Rc8 {[%clk 0:00:12.6]} 65... g2 {[%clk 0:00:19.1]} 66. Rg8 {[%clk 0:00:12.4]} 66... Rc1+ {[%clk 0:00:18.8]} 67. Kb6 {[%clk 0:00:11.6]} 67... Rb1+ {[%clk 0:00:18.3]} 68. Kc6 {[%clk 0:00:11.2]} 68... Rc1+ {[%clk 0:00:17.9]} 69. Kb6 {[%clk 0:00:10.9]} 69... Rb1+ {[%clk 0:00:17.3]} 70. Kc6 {[%clk 0:00:10.7]} 1/2-1/2\n",
+ "settings": {
+  "depth": 16,
+  "nodes": 200000,
+  "threads": 1,
+  "hash_mb": 16
+ },
+ "infos": [
+  {
+   "cp": 39,
+   "mate": null,
+   "best": "e2e4",
+   "second_cp": 23
+  },
+  {
+   "cp": 37,
+   "mate": null,
+   "best": "c7c5",
+   "second_cp": 28
+  },
+  {
+   "cp": 31,
+   "mate": null,
+   "best": "g1f3",
+   "second_cp": 15
+  },
+  {
+   "cp": 28,
+   "mate": null,
+   "best": "b8c6",
+   "second_cp": null
+  },
+  {
+   "cp": 49,
+   "mate": null,
+   "best": "d2d4",
+   "second_cp": 36
+  },
+  {
+   "cp": 47,
+   "mate": null,
+   "best": "c5d4",
+   "second_cp": 82
+  },
+  {
+   "cp": 46,
+   "mate": null,
+   "best": "f3d4",
+   "second_cp": null
+  },
+  {
+   "cp": 9,
+   "mate": null,
+   "best": "b8c6",
+   "second_cp": null
+  },
+  {
+   "cp": 19,
+   "mate": null,
+   "best": "c2c4",
+   "second_cp": null
+  },
+  {
+   "cp": 27,
+   "mate": null,
+   "best": "b8c6",
+   "second_cp": null
+  },
+  {
+   "cp": 28,
+   "mate": null,
+   "best": "e1g1",
+   "second_cp": null
+  },
+  {
+   "cp": 4,
+   "mate": null,
+   "best": "b8c6",
+   "second_cp": null
+  },
+  {
+   "cp": 32,
+   "mate": null,
+   "best": "d4c3",
+   "second_cp": null
+  },
+  {
+   "cp": -4,
+   "mate": null,
+   "best": "c7e5",
+   "second_cp": 18
+  },
+  {
+   "cp": -8,
+   "mate": null,
+   "best": "f3e5",
+   "second_cp": -800
+  },
+  {
+   "cp": -1,
+   "mate": null,
+   "best": "d7d6",
+   "second_cp": 7
+  },
+  {
+   "cp": -6,
+   "mate": null,
+   "best": "e5f3",
+   "second_cp": 1
+  },
+  {
+   "cp": -8,
+   "mate": null,
+   "best": "e6e5",
+   "second_cp": -12
+  },
+  {
+   "cp": -8,
+   "mate": null,
+   "best": "b1c3",
+   "second_cp": null
+  },
+  {
+   "cp": -19,
+   "mate": null,
+   "best": "e8e7",
+   "second_cp": null
+  },
+  {
+   "cp": 8,
+   "mate": null,
+   "best": "e1g1",
+   "second_cp": null
+  },
+  {
+   "cp": -50,
+   "mate": null,
+   "best": "h7h6",
+   "second_cp": -35
+  },
+  {
+   "cp": -63,
+   "mate": null,
+   "best": "g5h4",
+   "second_cp": -67
+  },
+  {
+   "cp": -56,
+   "mate": null,
+   "best": "a7a6",
+   "second_cp": null
+  },
+  {
+   "cp": -51,
+   "mate": null,
+   "best": "d2b3",
+   "second_cp": null
+  },
+  {
+   "cp": -86,
+   "mate": null,
+   "best": "h5g3",
+   "second_cp": -60
+  },
+  {
+   "cp": -73,
+   "mate": null,
+   "best": "f2g3",
+   "second_cp": -732
+  },
+  {
+   "cp": -73,
+   "mate": null,
+   "best": "d7f6",
+   "second_cp": -94
+  },
+  {
+   "cp": -83,
+   "mate": null,
+   "best": "g3g4",
+   "second_cp": -84
+  },
+  {
+   "cp": -72,
+   "mate": null,
+   "best": "c8e6",
+   "second_cp": -90
+  },
+  {
+   "cp": -70,
+   "mate": null,
+   "best": "a2a4",
+   "second_cp": null
+  },
+  {
+   "cp": -102,
+   "mate": null,
+   "best": "e8g8",
+   "second_cp": null
+  },
+  {
+   "cp": -93,
+   "mate": null,
+   "best": "h1b1",
+   "second_cp": null
+  },
+  {
+   "cp": -108,
+   "mate": null,
+   "best": "a7a5",
+   "second_cp": null
+  },
+  {
+   "cp": -110,
+   "mate": null,
+   "best": "a2a4",
+   "second_cp": null
+  },
+  {
+   "cp": -164,
+   "mate": null,
+   "best": "g7g5",
+   "second_cp": null
+  },
+  {
+   "cp": -64,
+   "mate": null,
+   "best": "a2a4",
+   "second_cp": null
+  },
+  {
+   "cp": -105,
+   "mate": null,
+   "best": "b7b5",
+   "second_cp": null
+  },
+  {
+   "cp": -74,
+   "mate": null,
+   "best": "c2b3",
+   "second_cp": null
+  },
+  {
+   "cp": -114,
+   "mate": null,
+   "best": "c5a7",
+   "second_cp": null
+  },
+  {
+   "cp": -110,
+   "mate": null,
+   "best": "a4a5",
+   "second_cp": null
+  },
+  {
+   "cp": -169,
+   "mate": null,
+   "best": "d6d5",
+   "second_cp": -208
+  },
+  {
+   "cp": -188,
+   "mate": null,
+   "best": "c2b3",
+   "second_cp": null
+  },
+  {
+   "cp": -167,
+   "mate": null,
+   "best": "e6d5",
+   "second_cp": null
+  },
+  {
+   "cp": -111,
+   "mate": null,
+   "best": "e1d3",
+   "second_cp": -379
+  },
+  {
+   "cp": -118,
+   "mate": null,
+   "best": "c5a7",
+   "second_cp": -90
+  },
+  {
+   "cp": -148,
+   "mate": null,
+   "best": "f1f3",
+   "second_cp": -349
+  },
+  {
+   "cp": -111,
+   "mate": null,
+   "best": "d8e8",
+   "second_cp": null
+  },
+  {
+   "cp": -91,
+   "mate": null,
+   "best": "d2e4",
+   "second_cp": -87
+  },
+  {
+   "cp": -86,
+   "mate": null,
+   "best": "f7f6",
+   "second_cp": -55
+  },
+  {
+   "cp": -66,
+   "mate": null,
+   "best": "a1d1",
+   "second_cp": -93
+  },
+  {
+   "cp": -76,
+   "mate": null,
+   "best": "a6a5",
+   "second_cp": null
+  },
+  {
+   "cp": -54,
+   "mate": null,
+   "best": "e2e1",
+   "second_cp": null
+  },
+  {
+   "cp": -91,
+   "mate": null,
+   "best": "d8d1",
+   "second_cp": -37
+  },
+  {
+   "cp": -98,
+   "mate": null,
+   "best": "c2d1",
+   "second_cp": -185
+  },
+  {
+   "cp": -91,
+   "mate": null,
+   "best": "g8f8",
+   "second_cp": null
+  },
+  {
+   "cp": -102,
+   "mate": null,
+   "best": "g2g3",
+   "second_cp": -113
+  },
+  {
+   "cp": -99,
+   "mate": null,
+   "best": "g8f8",
+   "second_cp": null
+  },
+  {
+   "cp": -61,
+   "mate": null,
+   "best": "a4a5",
+   "second_cp": -59
+  },
+  {
+   "cp": -55,
+   "mate": null,
+   "best": "b6c4",
+   "second_cp": 11
+  },
+  {
+   "cp": -43,
+   "mate": null,
+   "best": "d1b3",
+   "second_cp": -278
+  },
+  {
+   "cp": -58,
+   "mate": null,
+   "best": "g8f8",
+   "second_cp": null
+  },
+  {
+   "cp": 18,
+   "mate": null,
+   "best": "f3d3",
+   "second_cp": -133
+  },
+  {
+   "cp": 6,
+   "mate": null,
+   "best": "c8f8",
+   "second_cp": 16
+  },
+  {
+   "cp": 1,
+   "mate": null,
+   "best": "e4d6",
+   "second_cp": 0
+  },
+  {
+   "cp": 2,
+   "mate": null,
+   "best": "e5e4",
+   "second_cp": null
+  },
+  {
+   "cp": 56,
+   "mate": null,
+   "best": "d3d6",
+   "second_cp": -515
+  },
+  {
+   "cp": 83,
+   "mate": null,
+   "best": "f7b3",
+   "second_cp": 76
+  },
+  {
+   "cp": 75,
+   "mate": null,
+   "best": "c1b3",
+   "second_cp": -647
+  },
+  {
+   "cp": 48,
+   "mate": null,
+   "best": "f8f7",
+   "second_cp": 101
+  },
+  {
+   "cp": 49,
+   "mate": null,
+   "best": "d6d8",
+   "second_cp": null
+  },
+  {
+   "cp": 47,
+   "mate": null,
+   "best": "f7c7",
+   "second_cp": 62
+  },
+  {
+   "cp": 38,
+   "mate": null,
+   "best": "d2e4",
+   "second_cp": 49
+  },
+  {
+   "cp": 31,
+   "mate": null,
+   "best": "g8f7",
+   "second_cp": 52
+  },
+  {
+   "cp": 24,
+   "mate": null,
+   "best": "d6d8",
+   "second_cp": 35
+  },
+  {
+   "cp": 63,
+   "mate": null,
+   "best": "f7e7",
+   "second_cp": null
+  },
+  {
+   "cp": 88,
+   "mate": null,
+   "best": "b2b4",
+   "second_cp": null
+  },
+  {
+   "cp": 34,
+   "mate": null,
+   "best": "a7c5",
+   "second_cp": 89
+  },
+  {
+   "cp": 31,
+   "mate": null,
+   "best": "h3h4",
+   "second_cp": null
+  },
+  {
+   "cp": 9,
+   "mate": null,
+   "best": "c5e7",
+   "second_cp": 1
+  },
+  {
+   "cp": 3,
+   "mate": null,
+   "best": "e8b8",
+   "second_cp": null
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "e6f7",
+   "second_cp": 8
+  },
+  {
+   "cp": 1,
+   "mate": null,
+   "best": "h8a8",
+   "second_cp": null
+  },
+  {
+   "cp": 6,
+   "mate": null,
+   "best": "e7f8",
+   "second_cp": 1
+  },
+  {
+   "cp": 3,
+   "mate": null,
+   "best": "g4g5",
+   "second_cp": -28
+  },
+  {
+   "cp": 2,
+   "mate": null,
+   "best": "f6f5",
+   "second_cp": null
+  },
+  {
+   "cp": 15,
+   "mate": null,
+   "best": "h4g5",
+   "second_cp": -73
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "f6f5",
+   "second_cp": 35
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "g5g6",
+   "second_cp": -35
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "f7g6",
+   "second_cp": 100
+  },
+  {
+   "cp": 12,
+   "mate": null,
+   "best": "h8f8",
+   "second_cp": -196
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "f5e4",
+   "second_cp": 522
+  },
+  {
+   "cp": 3,
+   "mate": null,
+   "best": "e2e3",
+   "second_cp": -7
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "g6g5",
+   "second_cp": null
+  },
+  {
+   "cp": 2,
+   "mate": null,
+   "best": "f8b8",
+   "second_cp": -12
+  },
+  {
+   "cp": 21,
+   "mate": null,
+   "best": "c5a5",
+   "second_cp": -4
+  },
+  {
+   "cp": 18,
+   "mate": null,
+   "best": "b8b7",
+   "second_cp": -24
+  },
+  {
+   "cp": 11,
+   "mate": null,
+   "best": "a5a4",
+   "second_cp": 5
+  },
+  {
+   "cp": 13,
+   "mate": null,
+   "best": "b2b3",
+   "second_cp": null
+  },
+  {
+   "cp": -1,
+   "mate": null,
+   "best": "a4a3",
+   "second_cp": 1
+  },
+  {
+   "cp": 8,
+   "mate": null,
+   "best": "b7c7",
+   "second_cp": null
+  },
+  {
+   "cp": -1,
+   "mate": null,
+   "best": "a3c3",
+   "second_cp": 2
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "e4e5",
+   "second_cp": null
+  },
+  {
+   "cp": 1,
+   "mate": null,
+   "best": "g6h5",
+   "second_cp": null
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "e4e5",
+   "second_cp": -9
+  },
+  {
+   "cp": 9,
+   "mate": null,
+   "best": "c3g3",
+   "second_cp": null
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "e5d5",
+   "second_cp": 1
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "c4g4",
+   "second_cp": 10
+  },
+  {
+   "cp": 17,
+   "mate": null,
+   "best": "d5c5",
+   "second_cp": 13
+  },
+  {
+   "cp": 2,
+   "mate": null,
+   "best": "g4g3",
+   "second_cp": 3
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "b6a6",
+   "second_cp": 0
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "g3c3",
+   "second_cp": null
+  },
+  {
+   "cp": 11,
+   "mate": null,
+   "best": "b4b5",
+   "second_cp": 15
+  },
+  {
+   "cp": 10,
+   "mate": null,
+   "best": "g3c3",
+   "second_cp": 7
+  },
+  {
+   "cp": 4,
+   "mate": null,
+   "best": "c5d6",
+   "second_cp": null
+  },
+  {
+   "cp": 8,
+   "mate": null,
+   "best": "c3c1",
+   "second_cp": 0
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "b5b6",
+   "second_cp": 7
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "c1c8",
+   "second_cp": null
+  },
+  {
+   "cp": 4,
+   "mate": null,
+   "best": "a6a4",
+   "second_cp": null
+  },
+  {
+   "cp": 7,
+   "mate": null,
+   "best": "g7g5",
+   "second_cp": 16
+  },
+  {
+   "cp": 1,
+   "mate": null,
+   "best": "a7a5",
+   "second_cp": null
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "c1b1",
+   "second_cp": 0
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "b4c5",
+   "second_cp": 4
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "g5g4",
+   "second_cp": 0
+  },
+  {
+   "cp": 3,
+   "mate": null,
+   "best": "b6b7",
+   "second_cp": -1
+  },
+  {
+   "cp": 1,
+   "mate": null,
+   "best": "g4g3",
+   "second_cp": 0
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "c7g7",
+   "second_cp": null
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "g3g2",
+   "second_cp": null
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "c7c8",
+   "second_cp": 0
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "g3g2",
+   "second_cp": 0
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "c8g8",
+   "second_cp": -227
+  },
+  {
+   "cp": 2,
+   "mate": null,
+   "best": "b1c1",
+   "second_cp": 249
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "c6d6",
+   "second_cp": null
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "g2g1q",
+   "second_cp": null
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "b6c7",
+   "second_cp": null
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "b1c1",
+   "second_cp": 245
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "c6d5",
+   "second_cp": null
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "g2g1q",
+   "second_cp": null
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "b6c7",
+   "second_cp": null
+  },
+  {
+   "cp": 0,
+   "mate": null,
+   "best": "b1c1",
+   "second_cp": null
+  }
+ ],
+ "expected": {
+  "white": "Narek_Ghimoyan",
+  "black": "Hikaru",
+  "result": "1/2-1/2",
+  "headers": {
+   "Event": "Live Chess",
+   "Site": "Chess.com",
+   "Date": "2026.10.03",
+   "Round": "-",
+   "White": "Narek_Ghimoyan",
+   "Black": "Hikaru",
+   "Result": "1/2-1/2",
+   "CurrentPosition": "6R1/1P6/2K2k2/8/8/8/6p1/1r6 b - - 9 70",
+   "Timezone": "UTC",
+   "ECO": "B40",
+   "ECOUrl": "https://www.chess.com/openings/Sicilian-Defense-French-Variation-3.d4-cxd4",
+   "UTCDate": "2026.10.03",
+   "UTCTime": "21:08:36",
+   "WhiteElo": "2916",
+   "BlackElo": "3483",
+   "TimeControl": "180",
+   "Termination": "Game drawn by repetition",
+   "StartTime": "21:08:36",
+   "EndDate": "2026.10.03",
+   "EndTime": "21:14:30",
+   "Link": "https://www.chess.com/game/live/184774524962"
+  },
+  "opening": "Sicilian Defense: French Variation, Open",
+  "eco": "B40",
+  "fens": [
+   "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+   "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+   "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+   "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
+   "rnbqkbnr/pp1p1ppp/4p3/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3",
+   "rnbqkbnr/pp1p1ppp/4p3/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
+   "rnbqkbnr/pp1p1ppp/4p3/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4",
+   "rnbqkbnr/pp1p1ppp/4p3/8/3QP3/5N2/PPP2PPP/RNB1KB1R b KQkq - 0 4",
+   "rnb1kbnr/ppqp1ppp/4p3/8/3QP3/5N2/PPP2PPP/RNB1KB1R w KQkq - 1 5",
+   "rnb1kbnr/ppqp1ppp/4p3/8/3QP3/3B1N2/PPP2PPP/RNB1K2R b KQkq - 2 5",
+   "rnb1kb1r/ppqp1ppp/4pn2/8/3QP3/3B1N2/PPP2PPP/RNB1K2R w KQkq - 3 6",
+   "rnb1kb1r/ppqp1ppp/4pn2/8/3QP3/3B1N1P/PPP2PP1/RNB1K2R b KQkq - 0 6",
+   "rnb1k2r/ppqp1ppp/4pn2/2b5/3QP3/3B1N1P/PPP2PP1/RNB1K2R w KQkq - 1 7",
+   "rnb1k2r/ppqp1ppp/4pn2/2b1Q3/4P3/3B1N1P/PPP2PP1/RNB1K2R b KQkq - 2 7",
+   "rnb1k2r/pp1p1ppp/4pn2/2b1q3/4P3/3B1N1P/PPP2PP1/RNB1K2R w KQkq - 0 8",
+   "rnb1k2r/pp1p1ppp/4pn2/2b1N3/4P3/3B3P/PPP2PP1/RNB1K2R b KQkq - 0 8",
+   "rnb1k2r/pp3ppp/3ppn2/2b1N3/4P3/3B3P/PPP2PP1/RNB1K2R w KQkq - 0 9",
+   "rnb1k2r/pp3ppp/3ppn2/2b5/4P3/3B1N1P/PPP2PP1/RNB1K2R b KQkq - 1 9",
+   "rnb1k2r/pp3ppp/3p1n2/2b1p3/4P3/3B1N1P/PPP2PP1/RNB1K2R w KQkq - 0 10",
+   "rnb1k2r/pp3ppp/3p1n2/2b1p1B1/4P3/3B1N1P/PPP2PP1/RN2K2R b KQkq - 1 10",
+   "r1b1k2r/pp1n1ppp/3p1n2/2b1p1B1/4P3/3B1N1P/PPP2PP1/RN2K2R w KQkq - 2 11",
+   "r1b1k2r/pp1n1ppp/3p1n2/2b1p1B1/4P3/3B1N1P/PPPN1PP1/R3K2R b KQkq - 3 11",
+   "r1b1k2r/pp1n1pp1/3p1n1p/2b1p1B1/4P3/3B1N1P/PPPN1PP1/R3K2R w KQkq - 0 12",
+   "r1b1k2r/pp1n1pp1/3p1n1p/2b1p3/4P2B/3B1N1P/PPPN1PP1/R3K2R b KQkq - 1 12",
+   "r1b1k2r/pp1n1pp1/3p3p/2b1p2n/4P2B/3B1N1P/PPPN1PP1/R3K2R w KQkq - 2 13",
+   "r1b1k2r/pp1n1pp1/3p3p/2b1p2n/4P3/3B1NBP/PPPN1PP1/R3K2R b KQkq - 3 13",
+   "r1b1k2r/pp1n1pp1/3p3p/2b1p3/4P3/3B1NnP/PPPN1PP1/R3K2R w KQkq - 0 14",
+   "r1b1k2r/pp1n1pp1/3p3p/2b1p3/4P3/3B1NPP/PPPN2P1/R3K2R b KQkq - 0 14",
+   "r1b1k2r/pp3pp1/3p1n1p/2b1p3/4P3/3B1NPP/PPPN2P1/R3K2R w KQkq - 1 15",
+   "r1b1k2r/pp3pp1/3p1n1p/2b1p3/4P1P1/3B1N1P/PPPN2P1/R3K2R b KQkq - 0 15",
+   "r3k2r/pp3pp1/3pbn1p/2b1p3/4P1P1/3B1N1P/PPPN2P1/R3K2R w KQkq - 1 16",
+   "r3k2r/pp3pp1/3pbn1p/2b1p3/4P1P1/3B1N1P/PPPNK1P1/R6R b kq - 2 16",
+   "2r1k2r/pp3pp1/3pbn1p/2b1p3/4P1P1/3B1N1P/PPPNK1P1/R6R w k - 3 17",
+   "2r1k2r/pp3pp1/3pbn1p/2b1p3/4P1P1/2PB1N1P/PP1NK1P1/R6R b k - 0 17",
+   "2r4r/pp2kpp1/3pbn1p/2b1p3/4P1P1/2PB1N1P/PP1NK1P1/R6R w - - 1 18",
+   "2r4r/pp2kpp1/3pbn1p/2b1p3/4P1P1/2PB1N1P/PP1NK1P1/R4R2 b - - 2 18",
+   "2rr4/pp2kpp1/3pbn1p/2b1p3/4P1P1/2PB1N1P/PP1NK1P1/R4R2 w - - 3 19",
+   "2rr4/pp2kpp1/3pbn1p/2b1p3/4P1P1/2P2N1P/PPBNK1P1/R4R2 b - - 4 19",
+   "2rr4/1p2kpp1/p2pbn1p/2b1p3/4P1P1/2P2N1P/PPBNK1P1/R4R2 w - - 0 20",
+   "2rr4/1p2kpp1/p2pbn1p/2b1p3/P3P1P1/2P2N1P/1PBNK1P1/R4R2 b - - 0 20",
+   "2rr1k2/1p3pp1/p2pbn1p/2b1p3/P3P1P1/2P2N1P/1PBNK1P1/R4R2 w - - 1 21",
+   "2rr1k2/1p3pp1/p2pbn1p/2b1p3/P3P1P1/2P4P/1PBNK1P1/R3NR2 b - - 2 21",
+   "2rr1k2/1p3pp1/p3bn1p/2bpp3/P3P1P1/2P4P/1PBNK1P1/R3NR2 w - - 0 22",
+   "2rr1k2/1p3pp1/p3bn1p/2bPp3/P5P1/2P4P/1PBNK1P1/R3NR2 b - - 0 22",
+   "2rr1k2/1p3pp1/p3b2p/2bnp3/P5P1/2P4P/1PBNK1P1/R3NR2 w - - 0 23",
+   "2rr1k2/1p3pp1/p3b2p/2bnp3/P5P1/2PN3P/1PBNK1P1/R4R2 b - - 1 23",
+   "2rr1k2/bp3pp1/p3b2p/3np3/P5P1/2PN3P/1PBNK1P1/R4R2 w - - 2 24",
+   "2rr1k2/bp3pp1/p3b2p/3np3/P5P1/2PN1R1P/1PBNK1P1/R7 b - - 3 24",
+   "2rr2k1/bp3pp1/p3b2p/3np3/P5P1/2PN1R1P/1PBNK1P1/R7 w - - 4 25",
+   "2rr2k1/bp3pp1/p3b2p/3np3/P3N1P1/2PN1R1P/1PB1K1P1/R7 b - - 5 25",
+   "2rr2k1/bp4p1/p3bp1p/3np3/P3N1P1/2PN1R1P/1PB1K1P1/R7 w - - 0 26",
+   "2rr2k1/bp4p1/p3bp1p/3np3/P3N1P1/2PN1R1P/1PB1K1P1/3R4 b - - 1 26",
+   "2rr2k1/bp2n1p1/p3bp1p/4p3/P3N1P1/2PN1R1P/1PB1K1P1/3R4 w - - 2 27",
+   "2rr2k1/bp2n1p1/p3bp1p/4p3/P3N1P1/2P2R1P/1PB1K1P1/2NR4 b - - 3 27",
+   "2r3k1/bp2n1p1/p3bp1p/4p3/P3N1P1/2P2R1P/1PB1K1P1/2Nr4 w - - 0 28",
+   "2r3k1/bp2n1p1/p3bp1p/4p3/P3N1P1/2P2R1P/1P2K1P1/2NB4 b - - 0 28",
+   "2r3k1/bp4p1/p3bp1p/3np3/P3N1P1/2P2R1P/1P2K1P1/2NB4 w - - 1 29",
+   "2r3k1/bp4p1/p3bp1p/3np3/P3N1P1/2P2RPP/1P2K3/2NB4 b - - 0 29",
+   "2r3k1/bp4p1/pn2bp1p/4p3/P3N1P1/2P2RPP/1P2K3/2NB4 w - - 1 30",
+   "2r3k1/bp4p1/pn2bp1p/P3p3/4N1P1/2P2RPP/1P2K3/2NB4 b - - 0 30",
+   "2r3k1/bp4p1/p3bp1p/P3p3/2n1N1P1/2P2RPP/1P2K3/2NB4 w - - 1 31",
+   "2r3k1/bp4p1/p3bp1p/P3p3/2n1N1P1/1BP2RPP/1P2K3/2N5 b - - 2 31",
+   "2r3k1/bp3bp1/p4p1p/P3p3/2n1N1P1/1BP2RPP/1P2K3/2N5 w - - 3 32",
+   "2r3k1/bp3bp1/p4p1p/P3p3/2n1N1P1/1BPR2PP/1P2K3/2N5 b - - 4 32",
+   "5rk1/bp3bp1/p4p1p/P3p3/2n1N1P1/1BPR2PP/1P2K3/2N5 w - - 5 33",
+   "5rk1/bp3bp1/p2N1p1p/P3p3/2n3P1/1BPR2PP/1P2K3/2N5 b - - 6 33",
+   "5rk1/bp3bp1/p2n1p1p/P3p3/6P1/1BPR2PP/1P2K3/2N5 w - - 0 34",
+   "5rk1/bp3bp1/p2R1p1p/P3p3/6P1/1BP3PP/1P2K3/2N5 b - - 0 34",
+   "5rk1/bp4p1/p2R1p1p/P3p3/6P1/1bP3PP/1P2K3/2N5 w - - 0 35",
+   "5rk1/bp4p1/p2R1p1p/P3p3/6P1/1NP3PP/1P2K3/8 b - - 0 35",
+   "6k1/bp3rp1/p2R1p1p/P3p3/6P1/1NP3PP/1P2K3/8 w - - 1 36",
+   "6k1/bp3rp1/p2R1p1p/P3p3/6P1/2P3PP/1P1NK3/8 b - - 2 36",
+   "6k1/bpr3p1/p2R1p1p/P3p3/6P1/2P3PP/1P1NK3/8 w - - 3 37",
+   "6k1/bpr3p1/p2R1p1p/P3p3/4N1P1/2P3PP/1P2K3/8 b - - 4 37",
+   "8/bpr2kp1/p2R1p1p/P3p3/4N1P1/2P3PP/1P2K3/8 w - - 5 38",
+   "3R4/bpr2kp1/p4p1p/P3p3/4N1P1/2P3PP/1P2K3/8 b - - 6 38",
+   "3R4/bpr3p1/p3kp1p/P3p3/4N1P1/2P3PP/1P2K3/8 w - - 7 39",
+   "R7/bpr3p1/p3kp1p/P3p3/4N1P1/2P3PP/1P2K3/8 b - - 8 39",
+   "R7/1pr3p1/p3kp1p/P1b1p3/4N1P1/2P3PP/1P2K3/8 w - - 9 40",
+   "4R3/1pr3p1/p3kp1p/P1b1p3/4N1P1/2P3PP/1P2K3/8 b - - 10 40",
+   "4R3/1pr1b1p1/p3kp1p/P3p3/4N1P1/2P3PP/1P2K3/8 w - - 11 41",
+   "7R/1pr1b1p1/p3kp1p/P3p3/4N1P1/2P3PP/1P2K3/8 b - - 12 41",
+   "7R/1pr1bkp1/p4p1p/P3p3/4N1P1/2P3PP/1P2K3/8 w - - 13 42",
+   "7R/1pr1bkp1/p4p1p/P3p3/4N1PP/2P3P1/1P2K3/8 b - - 0 42",
+   "5b1R/1pr2kp1/p4p1p/P3p3/4N1PP/2P3P1/1P2K3/8 w - - 1 43",
+   "5b1R/1pr2kp1/p4p1p/P3p1P1/4N2P/2P3P1/1P2K3/8 b - - 0 43",
+   "5b1R/1pr2kp1/p4p2/P3p1p1/4N2P/2P3P1/1P2K3/8 w - - 0 44",
+   "5b1R/1pr2kp1/p4p2/P3p1P1/4N3/2P3P1/1P2K3/8 b - - 0 44",
+   "5b1R/1pr2kp1/p7/P3ppP1/4N3/2P3P1/1P2K3/8 w - - 0 45",
+   "5b1R/1pr2kp1/p5P1/P3pp2/4N3/2P3P1/1P2K3/8 b - - 0 45",
+   "5b1R/1pr3p1/p5k1/P3pp2/4N3/2P3P1/1P2K3/8 w - - 0 46",
+   "5R2/1pr3p1/p5k1/P3pp2/4N3/2P3P1/1P2K3/8 b - - 0 46",
+   "5R2/1pr3p1/p5k1/P3p3/4p3/2P3P1/1P2K3/8 w - - 0 47",
+   "5R2/1pr3p1/p5k1/P3p3/4p3/2P1K1P1/1P6/8 b - - 1 47",
+   "5R2/1p4p1/p5k1/P1r1p3/4p3/2P1K1P1/1P6/8 w - - 2 48",
+   "1R6/1p4p1/p5k1/P1r1p3/4p3/2P1K1P1/1P6/8 b - - 3 48",
+   "1R6/1p4p1/p5k1/r3p3/4p3/2P1K1P1/1P6/8 w - - 0 49",
+   "8/1R4p1/p5k1/r3p3/4p3/2P1K1P1/1P6/8 b - - 0 49",
+   "8/1R4p1/p5k1/4p3/r3p3/2P1K1P1/1P6/8 w - - 1 50",
+   "8/1R4p1/p5k1/4p3/rP2p3/2P1K1P1/8/8 b - - 0 50",
+   "8/1R4p1/p5k1/4p3/1P2p3/r1P1K1P1/8/8 w - - 1 51",
+   "8/1R4p1/p5k1/4p3/1P2K3/r1P3P1/8/8 b - - 0 51",
+   "8/1R4p1/p5k1/4p3/1P2K3/2r3P1/8/8 w - - 0 52",
+   "8/6p1/pR4k1/4p3/1P2K3/2r3P1/8/8 b - - 1 52",
+   "8/6p1/pR6/4p1k1/1P2K3/2r3P1/8/8 w - - 2 53",
+   "8/6p1/pR6/4K1k1/1P6/2r3P1/8/8 b - - 0 53",
+   "8/6p1/pR6/4K1k1/1Pr5/6P1/8/8 w - - 1 54",
+   "8/6p1/pR6/3K2k1/1Pr5/6P1/8/8 b - - 2 54",
+   "8/6p1/pR6/3K2k1/1P4r1/6P1/8/8 w - - 3 55",
+   "8/6p1/pR6/2K3k1/1P4r1/6P1/8/8 b - - 4 55",
+   "8/6p1/pR6/2K3k1/1P6/6r1/8/8 w - - 0 56",
+   "8/6p1/R7/2K3k1/1P6/6r1/8/8 b - - 0 56",
+   "8/6p1/R7/2K2k2/1P6/6r1/8/8 w - - 1 57",
+   "8/6p1/R7/1PK2k2/8/6r1/8/8 b - - 0 57",
+   "8/6p1/R7/1PK2k2/8/2r5/8/8 w - - 1 58",
+   "8/6p1/R7/1P3k2/1K6/2r5/8/8 b - - 2 58",
+   "8/6p1/R7/1P3k2/1K6/8/8/2r5 w - - 3 59",
+   "8/6p1/RP6/5k2/1K6/8/8/2r5 b - - 0 59",
+   "8/6p1/RP6/4k3/1K6/8/8/2r5 w - - 1 60",
+   "8/R5p1/1P6/4k3/1K6/8/8/2r5 b - - 2 60",
+   "8/R7/1P6/4k1p1/1K6/8/8/2r5 w - - 0 61",
+   "8/2R5/1P6/4k1p1/1K6/8/8/2r5 b - - 1 61",
+   "8/2R5/1P6/4k1p1/1K6/8/8/1r6 w - - 2 62",
+   "8/2R5/1P6/2K1k1p1/8/8/8/1r6 b - - 3 62",
+   "8/2R5/1P6/2K1k3/6p1/8/8/1r6 w - - 0 63",
+   "8/1PR5/8/2K1k3/6p1/8/8/1r6 b - - 0 63",
+   "8/1PR5/8/2K1k3/8/6p1/8/1r6 w - - 0 64",
+   "8/1PR5/2K5/4k3/8/6p1/8/1r6 b - - 1 64",
+   "8/1PR5/2K2k2/8/8/6p1/8/1r6 w - - 2 65",
+   "2R5/1P6/2K2k2/8/8/6p1/8/1r6 b - - 3 65",
+   "2R5/1P6/2K2k2/8/8/8/6p1/1r6 w - - 0 66",
+   "6R1/1P6/2K2k2/8/8/8/6p1/1r6 b - - 1 66",
+   "6R1/1P6/2K2k2/8/8/8/6p1/2r5 w - - 2 67",
+   "6R1/1P6/1K3k2/8/8/8/6p1/2r5 b - - 3 67",
+   "6R1/1P6/1K3k2/8/8/8/6p1/1r6 w - - 4 68",
+   "6R1/1P6/2K2k2/8/8/8/6p1/1r6 b - - 5 68",
+   "6R1/1P6/2K2k2/8/8/8/6p1/2r5 w - - 6 69",
+   "6R1/1P6/1K3k2/8/8/8/6p1/2r5 b - - 7 69",
+   "6R1/1P6/1K3k2/8/8/8/6p1/1r6 w - - 8 70",
+   "6R1/1P6/2K2k2/8/8/8/6p1/1r6 b - - 9 70"
+  ],
+  "evals": [
+   {
+    "cp": 39,
+    "mate": null
+   },
+   {
+    "cp": 37,
+    "mate": null
+   },
+   {
+    "cp": 31,
+    "mate": null
+   },
+   {
+    "cp": 28,
+    "mate": null
+   },
+   {
+    "cp": 49,
+    "mate": null
+   },
+   {
+    "cp": 47,
+    "mate": null
+   },
+   {
+    "cp": 46,
+    "mate": null
+   },
+   {
+    "cp": 9,
+    "mate": null
+   },
+   {
+    "cp": 19,
+    "mate": null
+   },
+   {
+    "cp": 27,
+    "mate": null
+   },
+   {
+    "cp": 28,
+    "mate": null
+   },
+   {
+    "cp": 4,
+    "mate": null
+   },
+   {
+    "cp": 32,
+    "mate": null
+   },
+   {
+    "cp": -4,
+    "mate": null
+   },
+   {
+    "cp": -8,
+    "mate": null
+   },
+   {
+    "cp": -1,
+    "mate": null
+   },
+   {
+    "cp": -6,
+    "mate": null
+   },
+   {
+    "cp": -8,
+    "mate": null
+   },
+   {
+    "cp": -8,
+    "mate": null
+   },
+   {
+    "cp": -19,
+    "mate": null
+   },
+   {
+    "cp": 8,
+    "mate": null
+   },
+   {
+    "cp": -50,
+    "mate": null
+   },
+   {
+    "cp": -63,
+    "mate": null
+   },
+   {
+    "cp": -56,
+    "mate": null
+   },
+   {
+    "cp": -51,
+    "mate": null
+   },
+   {
+    "cp": -86,
+    "mate": null
+   },
+   {
+    "cp": -73,
+    "mate": null
+   },
+   {
+    "cp": -73,
+    "mate": null
+   },
+   {
+    "cp": -83,
+    "mate": null
+   },
+   {
+    "cp": -72,
+    "mate": null
+   },
+   {
+    "cp": -70,
+    "mate": null
+   },
+   {
+    "cp": -102,
+    "mate": null
+   },
+   {
+    "cp": -93,
+    "mate": null
+   },
+   {
+    "cp": -108,
+    "mate": null
+   },
+   {
+    "cp": -110,
+    "mate": null
+   },
+   {
+    "cp": -164,
+    "mate": null
+   },
+   {
+    "cp": -64,
+    "mate": null
+   },
+   {
+    "cp": -105,
+    "mate": null
+   },
+   {
+    "cp": -74,
+    "mate": null
+   },
+   {
+    "cp": -114,
+    "mate": null
+   },
+   {
+    "cp": -110,
+    "mate": null
+   },
+   {
+    "cp": -169,
+    "mate": null
+   },
+   {
+    "cp": -188,
+    "mate": null
+   },
+   {
+    "cp": -167,
+    "mate": null
+   },
+   {
+    "cp": -111,
+    "mate": null
+   },
+   {
+    "cp": -118,
+    "mate": null
+   },
+   {
+    "cp": -148,
+    "mate": null
+   },
+   {
+    "cp": -111,
+    "mate": null
+   },
+   {
+    "cp": -91,
+    "mate": null
+   },
+   {
+    "cp": -86,
+    "mate": null
+   },
+   {
+    "cp": -66,
+    "mate": null
+   },
+   {
+    "cp": -76,
+    "mate": null
+   },
+   {
+    "cp": -54,
+    "mate": null
+   },
+   {
+    "cp": -91,
+    "mate": null
+   },
+   {
+    "cp": -98,
+    "mate": null
+   },
+   {
+    "cp": -91,
+    "mate": null
+   },
+   {
+    "cp": -102,
+    "mate": null
+   },
+   {
+    "cp": -99,
+    "mate": null
+   },
+   {
+    "cp": -61,
+    "mate": null
+   },
+   {
+    "cp": -55,
+    "mate": null
+   },
+   {
+    "cp": -43,
+    "mate": null
+   },
+   {
+    "cp": -58,
+    "mate": null
+   },
+   {
+    "cp": 18,
+    "mate": null
+   },
+   {
+    "cp": 6,
+    "mate": null
+   },
+   {
+    "cp": 1,
+    "mate": null
+   },
+   {
+    "cp": 2,
+    "mate": null
+   },
+   {
+    "cp": 56,
+    "mate": null
+   },
+   {
+    "cp": 83,
+    "mate": null
+   },
+   {
+    "cp": 75,
+    "mate": null
+   },
+   {
+    "cp": 48,
+    "mate": null
+   },
+   {
+    "cp": 49,
+    "mate": null
+   },
+   {
+    "cp": 47,
+    "mate": null
+   },
+   {
+    "cp": 38,
+    "mate": null
+   },
+   {
+    "cp": 31,
+    "mate": null
+   },
+   {
+    "cp": 24,
+    "mate": null
+   },
+   {
+    "cp": 63,
+    "mate": null
+   },
+   {
+    "cp": 88,
+    "mate": null
+   },
+   {
+    "cp": 34,
+    "mate": null
+   },
+   {
+    "cp": 31,
+    "mate": null
+   },
+   {
+    "cp": 9,
+    "mate": null
+   },
+   {
+    "cp": 3,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 1,
+    "mate": null
+   },
+   {
+    "cp": 6,
+    "mate": null
+   },
+   {
+    "cp": 3,
+    "mate": null
+   },
+   {
+    "cp": 2,
+    "mate": null
+   },
+   {
+    "cp": 15,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 12,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 3,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 2,
+    "mate": null
+   },
+   {
+    "cp": 21,
+    "mate": null
+   },
+   {
+    "cp": 18,
+    "mate": null
+   },
+   {
+    "cp": 11,
+    "mate": null
+   },
+   {
+    "cp": 13,
+    "mate": null
+   },
+   {
+    "cp": -1,
+    "mate": null
+   },
+   {
+    "cp": 8,
+    "mate": null
+   },
+   {
+    "cp": -1,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 1,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 9,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 17,
+    "mate": null
+   },
+   {
+    "cp": 2,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 11,
+    "mate": null
+   },
+   {
+    "cp": 10,
+    "mate": null
+   },
+   {
+    "cp": 4,
+    "mate": null
+   },
+   {
+    "cp": 8,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 4,
+    "mate": null
+   },
+   {
+    "cp": 7,
+    "mate": null
+   },
+   {
+    "cp": 1,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 3,
+    "mate": null
+   },
+   {
+    "cp": 1,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 2,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   },
+   {
+    "cp": 0,
+    "mate": null
+   }
+  ],
+  "win_series": [
+   53.58,
+   53.4,
+   52.85,
+   52.58,
+   54.5,
+   54.32,
+   54.22,
+   50.83,
+   51.75,
+   52.48,
+   52.58,
+   50.37,
+   52.94,
+   49.63,
+   49.26,
+   49.91,
+   49.45,
+   49.26,
+   49.26,
+   48.25,
+   50.74,
+   45.41,
+   44.23,
+   44.86,
+   45.32,
+   42.15,
+   43.32,
+   43.32,
+   42.42,
+   43.41,
+   43.59,
+   40.72,
+   41.52,
+   40.19,
+   40.01,
+   35.35,
+   44.14,
+   40.45,
+   43.23,
+   39.66,
+   40.01,
+   34.93,
+   33.35,
+   35.09,
+   39.92,
+   39.31,
+   36.7,
+   39.92,
+   41.7,
+   42.15,
+   43.95,
+   43.05,
+   45.05,
+   41.7,
+   41.08,
+   41.7,
+   40.72,
+   40.99,
+   44.41,
+   44.95,
+   46.05,
+   44.68,
+   51.66,
+   50.55,
+   50.09,
+   50.18,
+   55.14,
+   57.58,
+   56.86,
+   54.41,
+   54.5,
+   54.32,
+   53.49,
+   52.85,
+   52.21,
+   55.77,
+   58.03,
+   53.13,
+   52.85,
+   50.83,
+   50.28,
+   50.0,
+   50.09,
+   50.55,
+   50.28,
+   50.18,
+   51.38,
+   50.0,
+   50.0,
+   50.0,
+   51.1,
+   50.0,
+   50.28,
+   50.0,
+   50.18,
+   51.93,
+   51.66,
+   51.01,
+   51.2,
+   49.91,
+   50.74,
+   49.91,
+   50.0,
+   50.09,
+   50.0,
+   50.83,
+   50.0,
+   50.0,
+   51.56,
+   50.18,
+   50.0,
+   50.0,
+   51.01,
+   50.92,
+   50.37,
+   50.74,
+   50.0,
+   50.0,
+   50.37,
+   50.64,
+   50.09,
+   50.0,
+   50.0,
+   50.0,
+   50.28,
+   50.09,
+   50.0,
+   50.0,
+   50.0,
+   50.0,
+   50.0,
+   50.18,
+   50.0,
+   50.0,
+   50.0,
+   50.0,
+   50.0,
+   50.0,
+   50.0,
+   50.0
+  ],
+  "moves": [
+   {
+    "ply": 1,
+    "color": "w",
+    "number": 1,
+    "san": "e4",
+    "uci": "e2e4",
+    "best_san": "e4",
+    "best_uci": "e2e4",
+    "win_before": 53.58,
+    "win_after": 53.4,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Book",
+    "phase": "opening",
+    "gap": 1.5
+   },
+   {
+    "ply": 2,
+    "color": "b",
+    "number": 1,
+    "san": "c5",
+    "uci": "c7c5",
+    "best_san": "c5",
+    "best_uci": "c7c5",
+    "win_before": 46.6,
+    "win_after": 47.15,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Book",
+    "phase": "opening",
+    "gap": -0.8
+   },
+   {
+    "ply": 3,
+    "color": "w",
+    "number": 2,
+    "san": "Nf3",
+    "uci": "g1f3",
+    "best_san": "Nf3",
+    "best_uci": "g1f3",
+    "win_before": 52.85,
+    "win_after": 52.58,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Book",
+    "phase": "opening",
+    "gap": 1.5
+   },
+   {
+    "ply": 4,
+    "color": "b",
+    "number": 2,
+    "san": "e6",
+    "uci": "e7e6",
+    "best_san": "Nc6",
+    "best_uci": "b8c6",
+    "win_before": 47.42,
+    "win_after": 45.5,
+    "loss": 1.92,
+    "cp_loss": 21,
+    "accuracy": 100.0,
+    "label": "Book",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 5,
+    "color": "w",
+    "number": 3,
+    "san": "d4",
+    "uci": "d2d4",
+    "best_san": "d4",
+    "best_uci": "d2d4",
+    "win_before": 54.5,
+    "win_after": 54.32,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Book",
+    "phase": "opening",
+    "gap": 1.2
+   },
+   {
+    "ply": 6,
+    "color": "b",
+    "number": 3,
+    "san": "cxd4",
+    "uci": "c5d4",
+    "best_san": "cxd4",
+    "best_uci": "c5d4",
+    "win_before": 45.68,
+    "win_after": 45.78,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Book",
+    "phase": "opening",
+    "gap": 3.2
+   },
+   {
+    "ply": 7,
+    "color": "w",
+    "number": 4,
+    "san": "Qxd4",
+    "uci": "d1d4",
+    "best_san": "Nxd4",
+    "best_uci": "f3d4",
+    "win_before": 54.22,
+    "win_after": 50.83,
+    "loss": 3.4,
+    "cp_loss": 37,
+    "accuracy": 85.82,
+    "label": "Good",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 8,
+    "color": "b",
+    "number": 4,
+    "san": "Qc7",
+    "uci": "d8c7",
+    "best_san": "Nc6",
+    "best_uci": "b8c6",
+    "win_before": 49.17,
+    "win_after": 48.25,
+    "loss": 0.92,
+    "cp_loss": 10,
+    "accuracy": 95.95,
+    "label": "Excellent",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 9,
+    "color": "w",
+    "number": 5,
+    "san": "Bd3",
+    "uci": "f1d3",
+    "best_san": "c4",
+    "best_uci": "c2c4",
+    "win_before": 51.75,
+    "win_after": 52.48,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Excellent",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 10,
+    "color": "b",
+    "number": 5,
+    "san": "Nf6",
+    "uci": "g8f6",
+    "best_san": "Nc6",
+    "best_uci": "b8c6",
+    "win_before": 47.52,
+    "win_after": 47.42,
+    "loss": 0.09,
+    "cp_loss": 1,
+    "accuracy": 99.59,
+    "label": "Excellent",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 11,
+    "color": "w",
+    "number": 6,
+    "san": "h3",
+    "uci": "h2h3",
+    "best_san": "O-O",
+    "best_uci": "e1g1",
+    "win_before": 52.58,
+    "win_after": 50.37,
+    "loss": 2.21,
+    "cp_loss": 24,
+    "accuracy": 90.55,
+    "label": "Good",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 12,
+    "color": "b",
+    "number": 6,
+    "san": "Bc5",
+    "uci": "f8c5",
+    "best_san": "Nc6",
+    "best_uci": "b8c6",
+    "win_before": 49.63,
+    "win_after": 47.06,
+    "loss": 2.57,
+    "cp_loss": 28,
+    "accuracy": 89.06,
+    "label": "Good",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 13,
+    "color": "w",
+    "number": 7,
+    "san": "Qe5",
+    "uci": "d4e5",
+    "best_san": "Qc3",
+    "best_uci": "d4c3",
+    "win_before": 52.94,
+    "win_after": 49.63,
+    "loss": 3.31,
+    "cp_loss": 36,
+    "accuracy": 86.15,
+    "label": "Good",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 14,
+    "color": "b",
+    "number": 7,
+    "san": "Qxe5",
+    "uci": "c7e5",
+    "best_san": "Qxe5",
+    "best_uci": "c7e5",
+    "win_before": 50.37,
+    "win_after": 50.74,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "opening",
+    "gap": 2.0
+   },
+   {
+    "ply": 15,
+    "color": "w",
+    "number": 8,
+    "san": "Nxe5",
+    "uci": "f3e5",
+    "best_san": "Nxe5",
+    "best_uci": "f3e5",
+    "win_before": 49.26,
+    "win_after": 49.91,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Great",
+    "phase": "opening",
+    "gap": 44.3
+   },
+   {
+    "ply": 16,
+    "color": "b",
+    "number": 8,
+    "san": "d6",
+    "uci": "d7d6",
+    "best_san": "d6",
+    "best_uci": "d7d6",
+    "win_before": 50.09,
+    "win_after": 50.55,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "opening",
+    "gap": 0.7
+   },
+   {
+    "ply": 17,
+    "color": "w",
+    "number": 9,
+    "san": "Nf3",
+    "uci": "e5f3",
+    "best_san": "Nf3",
+    "best_uci": "e5f3",
+    "win_before": 49.45,
+    "win_after": 49.26,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "opening",
+    "gap": -0.6
+   },
+   {
+    "ply": 18,
+    "color": "b",
+    "number": 9,
+    "san": "e5",
+    "uci": "e6e5",
+    "best_san": "e5",
+    "best_uci": "e6e5",
+    "win_before": 50.74,
+    "win_after": 50.74,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "opening",
+    "gap": -0.4
+   },
+   {
+    "ply": 19,
+    "color": "w",
+    "number": 10,
+    "san": "Bg5",
+    "uci": "c1g5",
+    "best_san": "Nc3",
+    "best_uci": "b1c3",
+    "win_before": 49.26,
+    "win_after": 48.25,
+    "loss": 1.01,
+    "cp_loss": 11,
+    "accuracy": 95.55,
+    "label": "Excellent",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 20,
+    "color": "b",
+    "number": 10,
+    "san": "Nbd7",
+    "uci": "b8d7",
+    "best_san": "Ke7",
+    "best_uci": "e8e7",
+    "win_before": 51.75,
+    "win_after": 49.26,
+    "loss": 2.48,
+    "cp_loss": 27,
+    "accuracy": 89.42,
+    "label": "Good",
+    "phase": "opening",
+    "gap": null
+   },
+   {
+    "ply": 21,
+    "color": "w",
+    "number": 11,
+    "san": "Nbd2",
+    "uci": "b1d2",
+    "best_san": "O-O",
+    "best_uci": "e1g1",
+    "win_before": 50.74,
+    "win_after": 45.41,
+    "loss": 5.33,
+    "cp_loss": 58,
+    "accuracy": 78.65,
+    "label": "Inaccuracy",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 22,
+    "color": "b",
+    "number": 11,
+    "san": "h6",
+    "uci": "h7h6",
+    "best_san": "h6",
+    "best_uci": "h7h6",
+    "win_before": 54.59,
+    "win_after": 55.77,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "middlegame",
+    "gap": 1.4
+   },
+   {
+    "ply": 23,
+    "color": "w",
+    "number": 12,
+    "san": "Bh4",
+    "uci": "g5h4",
+    "best_san": "Bh4",
+    "best_uci": "g5h4",
+    "win_before": 44.23,
+    "win_after": 44.86,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "middlegame",
+    "gap": 0.4
+   },
+   {
+    "ply": 24,
+    "color": "b",
+    "number": 12,
+    "san": "Nh5",
+    "uci": "f6h5",
+    "best_san": "a6",
+    "best_uci": "a7a6",
+    "win_before": 55.14,
+    "win_after": 54.68,
+    "loss": 0.46,
+    "cp_loss": 5,
+    "accuracy": 97.97,
+    "label": "Excellent",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 25,
+    "color": "w",
+    "number": 13,
+    "san": "Bg3",
+    "uci": "h4g3",
+    "best_san": "Nb3",
+    "best_uci": "d2b3",
+    "win_before": 45.32,
+    "win_after": 42.15,
+    "loss": 3.17,
+    "cp_loss": 35,
+    "accuracy": 86.7,
+    "label": "Good",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 26,
+    "color": "b",
+    "number": 13,
+    "san": "Nxg3",
+    "uci": "h5g3",
+    "best_san": "Nxg3",
+    "best_uci": "h5g3",
+    "win_before": 57.85,
+    "win_after": 56.68,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "middlegame",
+    "gap": 2.4
+   },
+   {
+    "ply": 27,
+    "color": "w",
+    "number": 14,
+    "san": "fxg3",
+    "uci": "f2g3",
+    "best_san": "fxg3",
+    "best_uci": "f2g3",
+    "win_before": 43.32,
+    "win_after": 43.32,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Great",
+    "phase": "middlegame",
+    "gap": 37.0
+   },
+   {
+    "ply": 28,
+    "color": "b",
+    "number": 14,
+    "san": "Nf6",
+    "uci": "d7f6",
+    "best_san": "Nf6",
+    "best_uci": "d7f6",
+    "win_before": 56.68,
+    "win_after": 57.58,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "middlegame",
+    "gap": -1.9
+   },
+   {
+    "ply": 29,
+    "color": "w",
+    "number": 15,
+    "san": "g4",
+    "uci": "g3g4",
+    "best_san": "g4",
+    "best_uci": "g3g4",
+    "win_before": 42.42,
+    "win_after": 43.41,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "middlegame",
+    "gap": 0.1
+   },
+   {
+    "ply": 30,
+    "color": "b",
+    "number": 15,
+    "san": "Be6",
+    "uci": "c8e6",
+    "best_san": "Be6",
+    "best_uci": "c8e6",
+    "win_before": 56.59,
+    "win_after": 56.41,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "middlegame",
+    "gap": -1.6
+   },
+   {
+    "ply": 31,
+    "color": "w",
+    "number": 16,
+    "san": "Ke2",
+    "uci": "e1e2",
+    "best_san": "a4",
+    "best_uci": "a2a4",
+    "win_before": 43.59,
+    "win_after": 40.72,
+    "loss": 2.87,
+    "cp_loss": 32,
+    "accuracy": 87.87,
+    "label": "Good",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 32,
+    "color": "b",
+    "number": 16,
+    "san": "Rc8",
+    "uci": "a8c8",
+    "best_san": "O-O",
+    "best_uci": "e8g8",
+    "win_before": 59.28,
+    "win_after": 58.48,
+    "loss": 0.8,
+    "cp_loss": 9,
+    "accuracy": 96.46,
+    "label": "Excellent",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 33,
+    "color": "w",
+    "number": 17,
+    "san": "c3",
+    "uci": "c2c3",
+    "best_san": "Rhb1",
+    "best_uci": "h1b1",
+    "win_before": 41.52,
+    "win_after": 40.19,
+    "loss": 1.33,
+    "cp_loss": 15,
+    "accuracy": 94.18,
+    "label": "Excellent",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 34,
+    "color": "b",
+    "number": 17,
+    "san": "Ke7",
+    "uci": "e8e7",
+    "best_san": "a5",
+    "best_uci": "a7a5",
+    "win_before": 59.81,
+    "win_after": 59.99,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Excellent",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 35,
+    "color": "w",
+    "number": 18,
+    "san": "Rhf1",
+    "uci": "h1f1",
+    "best_san": "a4",
+    "best_uci": "a2a4",
+    "win_before": 40.01,
+    "win_after": 35.35,
+    "loss": 4.66,
+    "cp_loss": 54,
+    "accuracy": 81.04,
+    "label": "Good",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 36,
+    "color": "b",
+    "number": 18,
+    "san": "Rhd8",
+    "uci": "h8d8",
+    "best_san": "g5",
+    "best_uci": "g7g5",
+    "win_before": 64.65,
+    "win_after": 55.86,
+    "loss": 8.79,
+    "cp_loss": 100,
+    "accuracy": 67.19,
+    "label": "Inaccuracy",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 37,
+    "color": "w",
+    "number": 19,
+    "san": "Bc2",
+    "uci": "d3c2",
+    "best_san": "a4",
+    "best_uci": "a2a4",
+    "win_before": 44.14,
+    "win_after": 40.45,
+    "loss": 3.68,
+    "cp_loss": 41,
+    "accuracy": 84.72,
+    "label": "Good",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 38,
+    "color": "b",
+    "number": 19,
+    "san": "a6",
+    "uci": "a7a6",
+    "best_san": "b5",
+    "best_uci": "b7b5",
+    "win_before": 59.55,
+    "win_after": 56.77,
+    "loss": 2.78,
+    "cp_loss": 31,
+    "accuracy": 88.25,
+    "label": "Good",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 39,
+    "color": "w",
+    "number": 20,
+    "san": "a4",
+    "uci": "a2a4",
+    "best_san": "Bb3",
+    "best_uci": "c2b3",
+    "win_before": 43.23,
+    "win_after": 39.66,
+    "loss": 3.57,
+    "cp_loss": 40,
+    "accuracy": 85.14,
+    "label": "Good",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 40,
+    "color": "b",
+    "number": 20,
+    "san": "Kf8",
+    "uci": "e7f8",
+    "best_san": "Ba7",
+    "best_uci": "c5a7",
+    "win_before": 60.34,
+    "win_after": 59.99,
+    "loss": 0.35,
+    "cp_loss": 4,
+    "accuracy": 98.43,
+    "label": "Excellent",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 41,
+    "color": "w",
+    "number": 21,
+    "san": "Ne1",
+    "uci": "f3e1",
+    "best_san": "a5",
+    "best_uci": "a4a5",
+    "win_before": 40.01,
+    "win_after": 34.93,
+    "loss": 5.08,
+    "cp_loss": 59,
+    "accuracy": 79.51,
+    "label": "Inaccuracy",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 42,
+    "color": "b",
+    "number": 21,
+    "san": "d5",
+    "uci": "d6d5",
+    "best_san": "d5",
+    "best_uci": "d6d5",
+    "win_before": 65.07,
+    "win_after": 66.65,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "middlegame",
+    "gap": -3.2
+   },
+   {
+    "ply": 43,
+    "color": "w",
+    "number": 22,
+    "san": "exd5",
+    "uci": "e4d5",
+    "best_san": "Bb3",
+    "best_uci": "c2b3",
+    "win_before": 33.35,
+    "win_after": 35.09,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Excellent",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 44,
+    "color": "b",
+    "number": 22,
+    "san": "Nxd5",
+    "uci": "f6d5",
+    "best_san": "Bxd5",
+    "best_uci": "e6d5",
+    "win_before": 64.91,
+    "win_after": 60.08,
+    "loss": 4.83,
+    "cp_loss": 56,
+    "accuracy": 80.44,
+    "label": "Good",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 45,
+    "color": "w",
+    "number": 23,
+    "san": "Nd3",
+    "uci": "e1d3",
+    "best_san": "Nd3",
+    "best_uci": "e1d3",
+    "win_before": 39.92,
+    "win_after": 39.31,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Great",
+    "phase": "middlegame",
+    "gap": 20.1
+   },
+   {
+    "ply": 46,
+    "color": "b",
+    "number": 23,
+    "san": "Ba7",
+    "uci": "c5a7",
+    "best_san": "Ba7",
+    "best_uci": "c5a7",
+    "win_before": 60.69,
+    "win_after": 63.3,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "middlegame",
+    "gap": 2.5
+   },
+   {
+    "ply": 47,
+    "color": "w",
+    "number": 24,
+    "san": "Rf3",
+    "uci": "f1f3",
+    "best_san": "Rf3",
+    "best_uci": "f1f3",
+    "win_before": 36.7,
+    "win_after": 39.92,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "middlegame",
+    "gap": 15.0
+   },
+   {
+    "ply": 48,
+    "color": "b",
+    "number": 24,
+    "san": "Kg8",
+    "uci": "f8g8",
+    "best_san": "Re8",
+    "best_uci": "d8e8",
+    "win_before": 60.08,
+    "win_after": 58.3,
+    "loss": 1.78,
+    "cp_loss": 20,
+    "accuracy": 92.31,
+    "label": "Excellent",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 49,
+    "color": "w",
+    "number": 25,
+    "san": "Ne4",
+    "uci": "d2e4",
+    "best_san": "Ne4",
+    "best_uci": "d2e4",
+    "win_before": 41.7,
+    "win_after": 42.15,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "middlegame",
+    "gap": -0.4
+   },
+   {
+    "ply": 50,
+    "color": "b",
+    "number": 25,
+    "san": "f6",
+    "uci": "f7f6",
+    "best_san": "f6",
+    "best_uci": "f7f6",
+    "win_before": 57.85,
+    "win_after": 56.05,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "middlegame",
+    "gap": 2.8
+   },
+   {
+    "ply": 51,
+    "color": "w",
+    "number": 26,
+    "san": "Rd1",
+    "uci": "a1d1",
+    "best_san": "Rd1",
+    "best_uci": "a1d1",
+    "win_before": 43.95,
+    "win_after": 43.05,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "middlegame",
+    "gap": 2.4
+   },
+   {
+    "ply": 52,
+    "color": "b",
+    "number": 26,
+    "san": "Ne7",
+    "uci": "d5e7",
+    "best_san": "a5",
+    "best_uci": "a6a5",
+    "win_before": 56.95,
+    "win_after": 54.95,
+    "loss": 2.0,
+    "cp_loss": 22,
+    "accuracy": 91.41,
+    "label": "Excellent",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 53,
+    "color": "w",
+    "number": 27,
+    "san": "Nc1",
+    "uci": "d3c1",
+    "best_san": "Ke1",
+    "best_uci": "e2e1",
+    "win_before": 45.05,
+    "win_after": 41.7,
+    "loss": 3.34,
+    "cp_loss": 37,
+    "accuracy": 86.02,
+    "label": "Good",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 54,
+    "color": "b",
+    "number": 27,
+    "san": "Rxd1",
+    "uci": "d8d1",
+    "best_san": "Rxd1",
+    "best_uci": "d8d1",
+    "win_before": 58.3,
+    "win_after": 58.92,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "middlegame",
+    "gap": 4.9
+   },
+   {
+    "ply": 55,
+    "color": "w",
+    "number": 28,
+    "san": "Bxd1",
+    "uci": "c2d1",
+    "best_san": "Bxd1",
+    "best_uci": "c2d1",
+    "win_before": 41.08,
+    "win_after": 41.7,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "middlegame",
+    "gap": 7.5
+   },
+   {
+    "ply": 56,
+    "color": "b",
+    "number": 28,
+    "san": "Nd5",
+    "uci": "e7d5",
+    "best_san": "Kf8",
+    "best_uci": "g8f8",
+    "win_before": 58.3,
+    "win_after": 59.28,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Excellent",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 57,
+    "color": "w",
+    "number": 29,
+    "san": "g3",
+    "uci": "g2g3",
+    "best_san": "g3",
+    "best_uci": "g2g3",
+    "win_before": 40.72,
+    "win_after": 40.99,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "middlegame",
+    "gap": 1.0
+   },
+   {
+    "ply": 58,
+    "color": "b",
+    "number": 29,
+    "san": "Nb6",
+    "uci": "d5b6",
+    "best_san": "Kf8",
+    "best_uci": "g8f8",
+    "win_before": 59.01,
+    "win_after": 55.59,
+    "loss": 3.42,
+    "cp_loss": 38,
+    "accuracy": 85.72,
+    "label": "Good",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 59,
+    "color": "w",
+    "number": 30,
+    "san": "a5",
+    "uci": "a4a5",
+    "best_san": "a5",
+    "best_uci": "a4a5",
+    "win_before": 44.41,
+    "win_after": 44.95,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "middlegame",
+    "gap": -0.2
+   },
+   {
+    "ply": 60,
+    "color": "b",
+    "number": 30,
+    "san": "Nc4",
+    "uci": "b6c4",
+    "best_san": "Nc4",
+    "best_uci": "b6c4",
+    "win_before": 55.05,
+    "win_after": 53.95,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "middlegame",
+    "gap": 6.1
+   },
+   {
+    "ply": 61,
+    "color": "w",
+    "number": 31,
+    "san": "Bb3",
+    "uci": "d1b3",
+    "best_san": "Bb3",
+    "best_uci": "d1b3",
+    "win_before": 46.05,
+    "win_after": 44.68,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "middlegame",
+    "gap": 19.6
+   },
+   {
+    "ply": 62,
+    "color": "b",
+    "number": 31,
+    "san": "Bf7",
+    "uci": "e6f7",
+    "best_san": "Kf8",
+    "best_uci": "g8f8",
+    "win_before": 55.32,
+    "win_after": 48.34,
+    "loss": 6.98,
+    "cp_loss": 76,
+    "accuracy": 72.98,
+    "label": "Inaccuracy",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 63,
+    "color": "w",
+    "number": 32,
+    "san": "Rd3",
+    "uci": "f3d3",
+    "best_san": "Rd3",
+    "best_uci": "f3d3",
+    "win_before": 51.66,
+    "win_after": 50.55,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "middlegame",
+    "gap": 13.7
+   },
+   {
+    "ply": 64,
+    "color": "b",
+    "number": 32,
+    "san": "Rf8",
+    "uci": "c8f8",
+    "best_san": "Rf8",
+    "best_uci": "c8f8",
+    "win_before": 49.45,
+    "win_after": 49.91,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "middlegame",
+    "gap": 0.9
+   },
+   {
+    "ply": 65,
+    "color": "w",
+    "number": 33,
+    "san": "Nd6",
+    "uci": "e4d6",
+    "best_san": "Nd6",
+    "best_uci": "e4d6",
+    "win_before": 50.09,
+    "win_after": 50.18,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "middlegame",
+    "gap": 0.1
+   },
+   {
+    "ply": 66,
+    "color": "b",
+    "number": 33,
+    "san": "Nxd6",
+    "uci": "c4d6",
+    "best_san": "e4",
+    "best_uci": "e5e4",
+    "win_before": 49.82,
+    "win_after": 44.86,
+    "loss": 4.95,
+    "cp_loss": 54,
+    "accuracy": 79.99,
+    "label": "Good",
+    "phase": "middlegame",
+    "gap": null
+   },
+   {
+    "ply": 67,
+    "color": "w",
+    "number": 34,
+    "san": "Rxd6",
+    "uci": "d3d6",
+    "best_san": "Rxd6",
+    "best_uci": "d3d6",
+    "win_before": 55.14,
+    "win_after": 57.58,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Great",
+    "phase": "middlegame",
+    "gap": 42.1
+   },
+   {
+    "ply": 68,
+    "color": "b",
+    "number": 34,
+    "san": "Bxb3",
+    "uci": "f7b3",
+    "best_san": "Bxb3",
+    "best_uci": "f7b3",
+    "win_before": 42.42,
+    "win_after": 43.14,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": -0.6
+   },
+   {
+    "ply": 69,
+    "color": "w",
+    "number": 35,
+    "san": "Nxb3",
+    "uci": "c1b3",
+    "best_san": "Nxb3",
+    "best_uci": "c1b3",
+    "win_before": 56.86,
+    "win_after": 54.41,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Great",
+    "phase": "endgame",
+    "gap": 48.4
+   },
+   {
+    "ply": 70,
+    "color": "b",
+    "number": 35,
+    "san": "Rf7",
+    "uci": "f8f7",
+    "best_san": "Rf7",
+    "best_uci": "f8f7",
+    "win_before": 45.59,
+    "win_after": 45.5,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 4.8
+   },
+   {
+    "ply": 71,
+    "color": "w",
+    "number": 36,
+    "san": "Nd2",
+    "uci": "b3d2",
+    "best_san": "Rd8+",
+    "best_uci": "d6d8",
+    "win_before": 54.5,
+    "win_after": 54.32,
+    "loss": 0.18,
+    "cp_loss": 2,
+    "accuracy": 99.18,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 72,
+    "color": "b",
+    "number": 36,
+    "san": "Rc7",
+    "uci": "f7c7",
+    "best_san": "Rc7",
+    "best_uci": "f7c7",
+    "win_before": 45.68,
+    "win_after": 46.51,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 1.4
+   },
+   {
+    "ply": 73,
+    "color": "w",
+    "number": 37,
+    "san": "Ne4",
+    "uci": "d2e4",
+    "best_san": "Ne4",
+    "best_uci": "d2e4",
+    "win_before": 53.49,
+    "win_after": 52.85,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": -1.0
+   },
+   {
+    "ply": 74,
+    "color": "b",
+    "number": 37,
+    "san": "Kf7",
+    "uci": "g8f7",
+    "best_san": "Kf7",
+    "best_uci": "g8f7",
+    "win_before": 47.15,
+    "win_after": 47.79,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 1.9
+   },
+   {
+    "ply": 75,
+    "color": "w",
+    "number": 38,
+    "san": "Rd8",
+    "uci": "d6d8",
+    "best_san": "Rd8",
+    "best_uci": "d6d8",
+    "win_before": 52.21,
+    "win_after": 55.77,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": -1.0
+   },
+   {
+    "ply": 76,
+    "color": "b",
+    "number": 38,
+    "san": "Ke6",
+    "uci": "f7e6",
+    "best_san": "Ke7",
+    "best_uci": "f7e7",
+    "win_before": 44.23,
+    "win_after": 41.97,
+    "loss": 2.26,
+    "cp_loss": 25,
+    "accuracy": 90.34,
+    "label": "Good",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 77,
+    "color": "w",
+    "number": 39,
+    "san": "Ra8",
+    "uci": "d8a8",
+    "best_san": "b4",
+    "best_uci": "b2b4",
+    "win_before": 58.03,
+    "win_after": 53.13,
+    "loss": 4.9,
+    "cp_loss": 54,
+    "accuracy": 80.16,
+    "label": "Good",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 78,
+    "color": "b",
+    "number": 39,
+    "san": "Bc5",
+    "uci": "a7c5",
+    "best_san": "Bc5",
+    "best_uci": "a7c5",
+    "win_before": 46.87,
+    "win_after": 47.15,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 5.0
+   },
+   {
+    "ply": 79,
+    "color": "w",
+    "number": 40,
+    "san": "Re8+",
+    "uci": "a8e8",
+    "best_san": "h4",
+    "best_uci": "h3h4",
+    "win_before": 52.85,
+    "win_after": 50.83,
+    "loss": 2.02,
+    "cp_loss": 22,
+    "accuracy": 91.31,
+    "label": "Good",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 80,
+    "color": "b",
+    "number": 40,
+    "san": "Be7",
+    "uci": "c5e7",
+    "best_san": "Be7",
+    "best_uci": "c5e7",
+    "win_before": 49.17,
+    "win_after": 49.72,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": -0.7
+   },
+   {
+    "ply": 81,
+    "color": "w",
+    "number": 41,
+    "san": "Rh8",
+    "uci": "e8h8",
+    "best_san": "Rb8",
+    "best_uci": "e8b8",
+    "win_before": 50.28,
+    "win_after": 50.0,
+    "loss": 0.28,
+    "cp_loss": 3,
+    "accuracy": 98.77,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 82,
+    "color": "b",
+    "number": 41,
+    "san": "Kf7",
+    "uci": "e6f7",
+    "best_san": "Kf7",
+    "best_uci": "e6f7",
+    "win_before": 50.0,
+    "win_after": 49.91,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 0.7
+   },
+   {
+    "ply": 83,
+    "color": "w",
+    "number": 42,
+    "san": "h4",
+    "uci": "h3h4",
+    "best_san": "Ra8",
+    "best_uci": "h8a8",
+    "win_before": 50.09,
+    "win_after": 50.55,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 84,
+    "color": "b",
+    "number": 42,
+    "san": "Bf8",
+    "uci": "e7f8",
+    "best_san": "Bf8",
+    "best_uci": "e7f8",
+    "win_before": 49.45,
+    "win_after": 49.72,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": -0.5
+   },
+   {
+    "ply": 85,
+    "color": "w",
+    "number": 43,
+    "san": "g5",
+    "uci": "g4g5",
+    "best_san": "g5",
+    "best_uci": "g4g5",
+    "win_before": 50.28,
+    "win_after": 50.18,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 2.9
+   },
+   {
+    "ply": 86,
+    "color": "b",
+    "number": 43,
+    "san": "hxg5",
+    "uci": "h6g5",
+    "best_san": "f5",
+    "best_uci": "f6f5",
+    "win_before": 49.82,
+    "win_after": 48.62,
+    "loss": 1.2,
+    "cp_loss": 13,
+    "accuracy": 94.76,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 87,
+    "color": "w",
+    "number": 44,
+    "san": "hxg5",
+    "uci": "h4g5",
+    "best_san": "hxg5",
+    "best_uci": "h4g5",
+    "win_before": 51.38,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 8.1
+   },
+   {
+    "ply": 88,
+    "color": "b",
+    "number": 44,
+    "san": "f5",
+    "uci": "f6f5",
+    "best_san": "f5",
+    "best_uci": "f6f5",
+    "win_before": 50.0,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 3.2
+   },
+   {
+    "ply": 89,
+    "color": "w",
+    "number": 45,
+    "san": "g6+",
+    "uci": "g5g6",
+    "best_san": "g6+",
+    "best_uci": "g5g6",
+    "win_before": 50.0,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 3.2
+   },
+   {
+    "ply": 90,
+    "color": "b",
+    "number": 45,
+    "san": "Kxg6",
+    "uci": "f7g6",
+    "best_san": "Kxg6",
+    "best_uci": "f7g6",
+    "win_before": 50.0,
+    "win_after": 48.9,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 9.1
+   },
+   {
+    "ply": 91,
+    "color": "w",
+    "number": 46,
+    "san": "Rxf8",
+    "uci": "h8f8",
+    "best_san": "Rxf8",
+    "best_uci": "h8f8",
+    "win_before": 51.1,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 18.4
+   },
+   {
+    "ply": 92,
+    "color": "b",
+    "number": 46,
+    "san": "fxe4",
+    "uci": "f5e4",
+    "best_san": "fxe4",
+    "best_uci": "f5e4",
+    "win_before": 50.0,
+    "win_after": 49.72,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Great",
+    "phase": "endgame",
+    "gap": 37.2
+   },
+   {
+    "ply": 93,
+    "color": "w",
+    "number": 47,
+    "san": "Ke3",
+    "uci": "e2e3",
+    "best_san": "Ke3",
+    "best_uci": "e2e3",
+    "win_before": 50.28,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 0.9
+   },
+   {
+    "ply": 94,
+    "color": "b",
+    "number": 47,
+    "san": "Rc5",
+    "uci": "c7c5",
+    "best_san": "Kg5",
+    "best_uci": "g6g5",
+    "win_before": 50.0,
+    "win_after": 49.82,
+    "loss": 0.18,
+    "cp_loss": 2,
+    "accuracy": 99.18,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 95,
+    "color": "w",
+    "number": 48,
+    "san": "Rb8",
+    "uci": "f8b8",
+    "best_san": "Rb8",
+    "best_uci": "f8b8",
+    "win_before": 50.18,
+    "win_after": 51.93,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 1.3
+   },
+   {
+    "ply": 96,
+    "color": "b",
+    "number": 48,
+    "san": "Rxa5",
+    "uci": "c5a5",
+    "best_san": "Rxa5",
+    "best_uci": "c5a5",
+    "win_before": 48.07,
+    "win_after": 48.34,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": -2.3
+   },
+   {
+    "ply": 97,
+    "color": "w",
+    "number": 49,
+    "san": "Rxb7",
+    "uci": "b8b7",
+    "best_san": "Rxb7",
+    "best_uci": "b8b7",
+    "win_before": 51.66,
+    "win_after": 51.01,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 3.9
+   },
+   {
+    "ply": 98,
+    "color": "b",
+    "number": 49,
+    "san": "Ra4",
+    "uci": "a5a4",
+    "best_san": "Ra4",
+    "best_uci": "a5a4",
+    "win_before": 48.99,
+    "win_after": 48.8,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": -0.6
+   },
+   {
+    "ply": 99,
+    "color": "w",
+    "number": 50,
+    "san": "b4",
+    "uci": "b2b4",
+    "best_san": "b3",
+    "best_uci": "b2b3",
+    "win_before": 51.2,
+    "win_after": 49.91,
+    "loss": 1.29,
+    "cp_loss": 14,
+    "accuracy": 94.37,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 100,
+    "color": "b",
+    "number": 50,
+    "san": "Ra3",
+    "uci": "a4a3",
+    "best_san": "Ra3",
+    "best_uci": "a4a3",
+    "win_before": 50.09,
+    "win_after": 49.26,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 0.2
+   },
+   {
+    "ply": 101,
+    "color": "w",
+    "number": 51,
+    "san": "Kxe4",
+    "uci": "e3e4",
+    "best_san": "Rc7",
+    "best_uci": "b7c7",
+    "win_before": 50.74,
+    "win_after": 49.91,
+    "loss": 0.83,
+    "cp_loss": 9,
+    "accuracy": 96.35,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 102,
+    "color": "b",
+    "number": 51,
+    "san": "Rxc3",
+    "uci": "a3c3",
+    "best_san": "Rxc3",
+    "best_uci": "a3c3",
+    "win_before": 50.09,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 0.3
+   },
+   {
+    "ply": 103,
+    "color": "w",
+    "number": 52,
+    "san": "Rb6+",
+    "uci": "b7b6",
+    "best_san": "Kxe5",
+    "best_uci": "e4e5",
+    "win_before": 50.0,
+    "win_after": 50.09,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 104,
+    "color": "b",
+    "number": 52,
+    "san": "Kg5",
+    "uci": "g6g5",
+    "best_san": "Kh5",
+    "best_uci": "g6h5",
+    "win_before": 49.91,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 105,
+    "color": "w",
+    "number": 53,
+    "san": "Kxe5",
+    "uci": "e4e5",
+    "best_san": "Kxe5",
+    "best_uci": "e4e5",
+    "win_before": 50.0,
+    "win_after": 50.83,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 0.8
+   },
+   {
+    "ply": 106,
+    "color": "b",
+    "number": 53,
+    "san": "Rc4",
+    "uci": "c3c4",
+    "best_san": "Rxg3",
+    "best_uci": "c3g3",
+    "win_before": 49.17,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 107,
+    "color": "w",
+    "number": 54,
+    "san": "Kd5",
+    "uci": "e5d5",
+    "best_san": "Kd5",
+    "best_uci": "e5d5",
+    "win_before": 50.0,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": -0.1
+   },
+   {
+    "ply": 108,
+    "color": "b",
+    "number": 54,
+    "san": "Rg4",
+    "uci": "c4g4",
+    "best_san": "Rg4",
+    "best_uci": "c4g4",
+    "win_before": 50.0,
+    "win_after": 48.44,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 0.9
+   },
+   {
+    "ply": 109,
+    "color": "w",
+    "number": 55,
+    "san": "Kc5",
+    "uci": "d5c5",
+    "best_san": "Kc5",
+    "best_uci": "d5c5",
+    "win_before": 51.56,
+    "win_after": 50.18,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 0.4
+   },
+   {
+    "ply": 110,
+    "color": "b",
+    "number": 55,
+    "san": "Rxg3",
+    "uci": "g4g3",
+    "best_san": "Rxg3",
+    "best_uci": "g4g3",
+    "win_before": 49.82,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 0.1
+   },
+   {
+    "ply": 111,
+    "color": "w",
+    "number": 56,
+    "san": "Rxa6",
+    "uci": "b6a6",
+    "best_san": "Rxa6",
+    "best_uci": "b6a6",
+    "win_before": 50.0,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 0.0
+   },
+   {
+    "ply": 112,
+    "color": "b",
+    "number": 56,
+    "san": "Kf5",
+    "uci": "g5f5",
+    "best_san": "Rc3+",
+    "best_uci": "g3c3",
+    "win_before": 50.0,
+    "win_after": 48.99,
+    "loss": 1.01,
+    "cp_loss": 11,
+    "accuracy": 95.55,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 113,
+    "color": "w",
+    "number": 57,
+    "san": "b5",
+    "uci": "b4b5",
+    "best_san": "b5",
+    "best_uci": "b4b5",
+    "win_before": 51.01,
+    "win_after": 50.92,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": -0.4
+   },
+   {
+    "ply": 114,
+    "color": "b",
+    "number": 57,
+    "san": "Rc3+",
+    "uci": "g3c3",
+    "best_san": "Rc3+",
+    "best_uci": "g3c3",
+    "win_before": 49.08,
+    "win_after": 49.63,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": -0.3
+   },
+   {
+    "ply": 115,
+    "color": "w",
+    "number": 58,
+    "san": "Kb4",
+    "uci": "c5b4",
+    "best_san": "Kd6",
+    "best_uci": "c5d6",
+    "win_before": 50.37,
+    "win_after": 50.74,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 116,
+    "color": "b",
+    "number": 58,
+    "san": "Rc1",
+    "uci": "c3c1",
+    "best_san": "Rc1",
+    "best_uci": "c3c1",
+    "win_before": 49.26,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": -0.7
+   },
+   {
+    "ply": 117,
+    "color": "w",
+    "number": 59,
+    "san": "b6",
+    "uci": "b5b6",
+    "best_san": "b6",
+    "best_uci": "b5b6",
+    "win_before": 50.0,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": -0.6
+   },
+   {
+    "ply": 118,
+    "color": "b",
+    "number": 59,
+    "san": "Ke5",
+    "uci": "f5e5",
+    "best_san": "Rc8",
+    "best_uci": "c1c8",
+    "win_before": 50.0,
+    "win_after": 49.63,
+    "loss": 0.37,
+    "cp_loss": 4,
+    "accuracy": 98.36,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 119,
+    "color": "w",
+    "number": 60,
+    "san": "Ra7",
+    "uci": "a6a7",
+    "best_san": "Ra4",
+    "best_uci": "a6a4",
+    "win_before": 50.37,
+    "win_after": 50.64,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 120,
+    "color": "b",
+    "number": 60,
+    "san": "g5",
+    "uci": "g7g5",
+    "best_san": "g5",
+    "best_uci": "g7g5",
+    "win_before": 49.36,
+    "win_after": 49.91,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 0.8
+   },
+   {
+    "ply": 121,
+    "color": "w",
+    "number": 61,
+    "san": "Rc7",
+    "uci": "a7c7",
+    "best_san": "Ra5+",
+    "best_uci": "a7a5",
+    "win_before": 50.09,
+    "win_after": 50.0,
+    "loss": 0.09,
+    "cp_loss": 1,
+    "accuracy": 99.59,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 122,
+    "color": "b",
+    "number": 61,
+    "san": "Rb1+",
+    "uci": "c1b1",
+    "best_san": "Rb1+",
+    "best_uci": "c1b1",
+    "win_before": 50.0,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 0.0
+   },
+   {
+    "ply": 123,
+    "color": "w",
+    "number": 62,
+    "san": "Kc5",
+    "uci": "b4c5",
+    "best_san": "Kc5",
+    "best_uci": "b4c5",
+    "win_before": 50.0,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": -0.4
+   },
+   {
+    "ply": 124,
+    "color": "b",
+    "number": 62,
+    "san": "g4",
+    "uci": "g5g4",
+    "best_san": "g4",
+    "best_uci": "g5g4",
+    "win_before": 50.0,
+    "win_after": 49.72,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 0.0
+   },
+   {
+    "ply": 125,
+    "color": "w",
+    "number": 63,
+    "san": "b7",
+    "uci": "b6b7",
+    "best_san": "b7",
+    "best_uci": "b6b7",
+    "win_before": 50.28,
+    "win_after": 50.09,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 0.4
+   },
+   {
+    "ply": 126,
+    "color": "b",
+    "number": 63,
+    "san": "g3",
+    "uci": "g4g3",
+    "best_san": "g3",
+    "best_uci": "g4g3",
+    "win_before": 49.91,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": -0.1
+   },
+   {
+    "ply": 127,
+    "color": "w",
+    "number": 64,
+    "san": "Kc6",
+    "uci": "c5c6",
+    "best_san": "Rg7",
+    "best_uci": "c7g7",
+    "win_before": 50.0,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 128,
+    "color": "b",
+    "number": 64,
+    "san": "Kf6",
+    "uci": "e5f6",
+    "best_san": "g2",
+    "best_uci": "g3g2",
+    "win_before": 50.0,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 129,
+    "color": "w",
+    "number": 65,
+    "san": "Rc8",
+    "uci": "c7c8",
+    "best_san": "Rc8",
+    "best_uci": "c7c8",
+    "win_before": 50.0,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 0.0
+   },
+   {
+    "ply": 130,
+    "color": "b",
+    "number": 65,
+    "san": "g2",
+    "uci": "g3g2",
+    "best_san": "g2",
+    "best_uci": "g3g2",
+    "win_before": 50.0,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 0.0
+   },
+   {
+    "ply": 131,
+    "color": "w",
+    "number": 66,
+    "san": "Rg8",
+    "uci": "c8g8",
+    "best_san": "Rg8",
+    "best_uci": "c8g8",
+    "win_before": 50.0,
+    "win_after": 50.18,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Best",
+    "phase": "endgame",
+    "gap": 19.8
+   },
+   {
+    "ply": 132,
+    "color": "b",
+    "number": 66,
+    "san": "Rc1+",
+    "uci": "b1c1",
+    "best_san": "Rc1+",
+    "best_uci": "b1c1",
+    "win_before": 49.82,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Great",
+    "phase": "endgame",
+    "gap": 21.3
+   },
+   {
+    "ply": 133,
+    "color": "w",
+    "number": 67,
+    "san": "Kb6",
+    "uci": "c6b6",
+    "best_san": "Kd6",
+    "best_uci": "c6d6",
+    "win_before": 50.0,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 134,
+    "color": "b",
+    "number": 67,
+    "san": "Rb1+",
+    "uci": "c1b1",
+    "best_san": "g1=Q+",
+    "best_uci": "g2g1q",
+    "win_before": 50.0,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 135,
+    "color": "w",
+    "number": 68,
+    "san": "Kc6",
+    "uci": "b6c6",
+    "best_san": "Kc7",
+    "best_uci": "b6c7",
+    "win_before": 50.0,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 136,
+    "color": "b",
+    "number": 68,
+    "san": "Rc1+",
+    "uci": "b1c1",
+    "best_san": "Rc1+",
+    "best_uci": "b1c1",
+    "win_before": 50.0,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Great",
+    "phase": "endgame",
+    "gap": 21.1
+   },
+   {
+    "ply": 137,
+    "color": "w",
+    "number": 69,
+    "san": "Kb6",
+    "uci": "c6b6",
+    "best_san": "Kd5",
+    "best_uci": "c6d5",
+    "win_before": 50.0,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 138,
+    "color": "b",
+    "number": 69,
+    "san": "Rb1+",
+    "uci": "c1b1",
+    "best_san": "g1=Q+",
+    "best_uci": "g2g1q",
+    "win_before": 50.0,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   },
+   {
+    "ply": 139,
+    "color": "w",
+    "number": 70,
+    "san": "Kc6",
+    "uci": "b6c6",
+    "best_san": "Kc7",
+    "best_uci": "b6c7",
+    "win_before": 50.0,
+    "win_after": 50.0,
+    "loss": 0.0,
+    "cp_loss": 0,
+    "accuracy": 100.0,
+    "label": "Excellent",
+    "phase": "endgame",
+    "gap": null
+   }
+  ],
+  "accuracy": {
+   "white": 95.8,
+   "black": 95.6
+  },
+  "counts": {
+   "white": {
+    "Book": 3,
+    "Good": 11,
+    "Excellent": 18,
+    "Great": 5,
+    "Best": 31,
+    "Inaccuracy": 2
+   },
+   "black": {
+    "Book": 3,
+    "Excellent": 18,
+    "Good": 7,
+    "Best": 36,
+    "Inaccuracy": 2,
+    "Great": 3
+   }
+  },
+  "phases": {
+   "white": {
+    "opening": 95.8,
+    "middlegame": 94.3,
+    "endgame": 98.9
+   },
+   "black": {
+    "opening": 97.4,
+    "middlegame": 93.5,
+    "endgame": 99.4
+   }
+  },
+  "acpl": {
+   "white": 8,
+   "black": 8
+  },
+  "rating_estimate": {
+   "white": 2850,
+   "black": 2850
+  }
+ }
+}

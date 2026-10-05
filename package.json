@@ -1,0 +1,27 @@
+{
+  "name": "chessreview",
+  "private": true,
+  "version": "0.2.0",
+  "type": "module",
+  "license": "GPL-3.0-or-later",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @chessreview/web",
+    "build": "npm run build -w @chessreview/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "data": "node scripts/build-openings.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  }
+}
