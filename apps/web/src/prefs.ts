@@ -13,11 +13,15 @@ export const BOARDS: Record<
   brown: { name: 'Brown', light: '#F0D9B5', dark: '#B58863', hlLight: '#F7EC74', hlDark: '#DAC34B' },
 }
 
+export type EngineChoice = 'standard' | 'accurate'
+
 export interface Prefs {
   theme: Theme
   board: BoardTheme
   /** How hard the engine works on each position. Part of a review's id. */
   preset: PresetName
+  /** Which engine build reviews use. Part of a review's id. */
+  engine: EngineChoice
 }
 
 const KEY = 'chessreview.prefs'
@@ -30,7 +34,7 @@ function pick<T extends string>(value: unknown, allowed: readonly T[], fallback:
 }
 
 function load(): Prefs {
-  const fallback: Prefs = { theme: 'auto', board: 'slate', preset: 'standard' }
+  const fallback: Prefs = { theme: 'auto', board: 'slate', preset: 'standard', engine: 'standard' }
   try {
     const raw: unknown = JSON.parse(localStorage.getItem(KEY) ?? '{}')
     const o = typeof raw === 'object' && raw !== null ? (raw as Record<string, unknown>) : {}
@@ -38,6 +42,7 @@ function load(): Prefs {
       theme: pick(o.theme, THEMES, fallback.theme),
       board: pick(o.board, Object.keys(BOARDS) as BoardTheme[], fallback.board),
       preset: pick(o.preset, Object.keys(PRESETS) as PresetName[], fallback.preset),
+      engine: pick(o.engine, ['standard', 'accurate'] as const, fallback.engine),
     }
   } catch {
     return fallback
@@ -64,6 +69,8 @@ export function setPrefs(patch: Partial<Prefs>) {
   }
   listeners.forEach((l) => l())
 }
+
+export const getPrefs = (): Prefs => state
 
 export function usePrefs(): Prefs {
   return useSyncExternalStore(

@@ -6,6 +6,7 @@ import { usePrefs } from './prefs'
 import { Settings } from './Settings'
 import {
   ChessComError,
+  engineIdFor,
   fetchMonth,
   getReviewService,
   listMonths,
@@ -82,19 +83,20 @@ interface GamesData {
   rows: Row[]
 }
 
-async function loadGames(q: Query, preset: PresetName): Promise<GamesData> {
+async function loadGames(q: Query, preset: PresetName, engineId: string): Promise<GamesData> {
   const months = await listMonths(q.user)
   const month = q.month ?? months[0] ?? null
   const games = month ? await fetchMonth(q.user, month) : []
   const service = await getReviewService()
-  const ids = await Promise.all(games.map((g) => service.idFor(g.pgn, preset)))
+  const ids = await Promise.all(games.map((g) => service.idFor(g.pgn, preset, engineId)))
   const summaries = await service.summaries(ids)
   const rows = games.map((game, i) => ({ game, id: ids[i]!, summary: summaries.get(ids[i]!) ?? null }))
   return { user: q.user, months, month, rows }
 }
 
 export function Home() {
-  const { preset } = usePrefs()
+  const { preset, engine } = usePrefs()
+  const engineId = engineIdFor(engine)
   const [name, setName] = useState(remembered)
   const [query, setQuery] = useState<Query | null>(() => (remembered() ? { user: remembered() } : null))
   const [opening, setOpening] = useState(false)
@@ -102,9 +104,9 @@ export function Home() {
   const [pgn, setPgn] = useState('')
   const [showAll, setShowAll] = useState(false)
 
-  // Re-runs when the user, month or analysis preset changes (the preset decides which games count as reviewed).
-  const games = useAsync(query ? `${query.user}|${query.month ?? ''}|${preset}` : null, () =>
-    loadGames(query!, preset),
+  // Re-runs when the user, month, preset or engine changes (they decide which games count as reviewed).
+  const games = useAsync(query ? `${query.user}|${query.month ?? ''}|${preset}|${engineId}` : null, () =>
+    loadGames(query!, preset, engineId),
   )
   const data = games.value
   const busy = games.loading || opening
@@ -129,7 +131,7 @@ export function Home() {
     setOpening(true)
     setOpenError('')
     try {
-      const id = await (await getReviewService()).start(pgnText, preset)
+      const id = await (await getReviewService()).start(pgnText, preset, engineId)
       openReview(id, me)
     } catch (e) {
       setOpenError(messageOf(e))

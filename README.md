@@ -56,6 +56,9 @@ own ideas: the engine evaluates each position live. Exploring never changes the 
 accuracy over time, errors per 100 moves by phase, the tactics behind your mistakes, and your results
 by opening and time control. It is computed in your browser from your stored reviews.
 
+Sites that host the full Stockfish network can offer an **accurate engine** as a one-time 99 MB
+download (Settings → Engine), which matches desktop Stockfish exactly; see `docs/DEPLOY.md`.
+
 These are heuristics, not chess.com's proprietary rules, so labels differ from theirs. The rating shown in the
 Report tab is a rough estimate from average centipawn loss, not a calibrated rating.
 

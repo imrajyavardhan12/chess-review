@@ -718,6 +718,12 @@ function ExplorePanel({
   )
 }
 
+const ENGINE_NAMES: Record<string, string> = {
+  'stockfish-19-lite-single': 'Stockfish 19 (standard engine)',
+  'stockfish-19-single': 'Stockfish 19 (accurate engine, full network)',
+}
+const engineName = (id: string) => ENGINE_NAMES[id] ?? id
+
 const PHASE_NAMES: Record<Phase, string> = {
   opening: 'Opening',
   middlegame: 'Middlegame',
@@ -804,6 +810,10 @@ function Report({
       <p className="note muted">
         The rating is a rough guess from average centipawn loss, not a calibrated rating. Treat it as a way to
         compare the two players in this game. Move labels come from the engine’s win-chance model.
+      </p>
+      <p className="note muted">
+        Analysed by {engineName(review.settings.engine)} at {review.settings.nodes.toLocaleString('en')} nodes
+        per position.
       </p>
     </div>
   )

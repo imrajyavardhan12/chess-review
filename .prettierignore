@@ -1,4 +1,5 @@
 dist
+dist-full-engine
 node_modules
 reference
 apps/web/public

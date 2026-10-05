@@ -7,6 +7,7 @@ export default tseslint.config(
   {
     ignores: [
       '**/dist/**',
+      '**/dist-full-engine/**', // e2e build with a full engine configured
       '**/node_modules/**',
       'reference/**', // Python reference implementation
       'apps/web/public/**', // third-party engine build

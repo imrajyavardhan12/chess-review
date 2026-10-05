@@ -1,0 +1,87 @@
+import { expect, test, type Page } from '@playwright/test'
+
+// Runs against the build made by scripts/build-engine-fixture.mjs: a full engine configured at
+// http://127.0.0.1:4174 (scripts/serve-engine-fixture.mjs), a second origin like R2 would be.
+
+const LEGAL = `[White "Legal"]
+[Black "Saint Brie"]
+[Result "1-0"]
+
+1. e4 e5 2. Nf3 d6 3. Bc4 Bg4 4. Nc3 g6 5. Nxe5 Bxd1 6. Bxf7+ Ke7 7. Nd5# 1-0`
+
+function watchForProblems(page: Page) {
+  const problems: string[] = []
+  page.on('console', (m) => m.type() === 'error' && problems.push(`console: ${m.text()}`))
+  page.on('pageerror', (e) => problems.push(`pageerror: ${e.message}`))
+  void page.addInitScript(() => {
+    document.addEventListener('securitypolicyviolation', (e) =>
+      console.error(`CSP ${e.violatedDirective} blocked ${e.blockedURI}`),
+    )
+    // Quick analysis keeps the full engine's test short.
+    localStorage.setItem('chessreview.prefs', JSON.stringify({ preset: 'quick' }))
+  })
+  return problems
+}
+
+test('downloads the accurate engine, checks it, keeps it, and reviews with it under the CSP', async ({
+  page,
+}) => {
+  const problems = watchForProblems(page)
+  await page.goto('/')
+  const engine = page.getByLabel('Engine')
+  await expect(engine).toHaveValue('standard')
+  await engine.selectOption('accurate')
+
+  const dialog = page.getByRole('dialog', { name: 'Accurate engine' })
+  await expect(dialog).toContainText('99 MB download')
+  await dialog.getByRole('button', { name: /^Download/ }).click()
+  await expect(dialog).toBeHidden({ timeout: 60_000 })
+  await expect(engine).toHaveValue('accurate')
+  expect(await page.evaluate(() => caches.keys())).toEqual(['chessreview-engines-v1'])
+
+  // The file is fetched once: reviewing does not download it again.
+  const downloads: string[] = []
+  page.on('request', (r) => r.url().endsWith('.wasm') && downloads.push(r.url()))
+  await page.getByText('Paste a PGN instead').click()
+  await page.getByLabel('PGN').fill(LEGAL)
+  await page.getByRole('button', { name: 'Review PGN' }).click()
+  await expect(page.locator('.review')).toBeVisible()
+  await expect(page.locator('.acc-num').first()).toHaveText(/\d/)
+  await page.getByRole('tab', { name: 'Report' }).click()
+  await expect(page.getByText('Analysed by Stockfish 19 (accurate engine, full network)')).toBeVisible()
+  expect(downloads.filter((u) => u.startsWith('http://127.0.0.1:4174'))).toEqual([])
+
+  expect(problems).toEqual([])
+})
+
+test('refuses a download that does not match its checksum, and keeps the standard engine', async ({
+  page,
+}) => {
+  watchForProblems(page)
+  // The fixture server's copy with one byte flipped: the right size, the wrong fingerprint.
+  await page.route('http://127.0.0.1:4174/stockfish-19-single.wasm', (route) =>
+    route.continue({ url: 'http://127.0.0.1:4174/tampered.wasm' }),
+  )
+  await page.goto('/')
+  await page.getByLabel('Engine').selectOption('accurate')
+  const dialog = page.getByRole('dialog', { name: 'Accurate engine' })
+  await dialog.getByRole('button', { name: /^Download/ }).click()
+  await expect(dialog.getByRole('alert')).toHaveText(/did not match its checksum/, { timeout: 60_000 })
+  await dialog.getByRole('button', { name: 'Keep the standard engine' }).click()
+  await expect(page.getByLabel('Engine')).toHaveValue('standard')
+  expect(await page.evaluate(async () => (await caches.open('chessreview-engines-v1')).keys())).toHaveLength(
+    0,
+  )
+})
+
+test('the standard build offers no engine choice and keeps its CSP', async ({ page, request }) => {
+  await page.goto('http://127.0.0.1:4173/')
+  await expect(page.getByLabel('Theme')).toBeVisible()
+  await expect(page.getByLabel('Engine')).toHaveCount(0)
+  const res = await request.get('http://127.0.0.1:4173/')
+  expect(res.headers()['content-security-policy']).toContain("connect-src 'self' https://api.chess.com;")
+  const full = await request.get('/')
+  expect(full.headers()['content-security-policy']).toContain(
+    "connect-src 'self' https://api.chess.com http://127.0.0.1:4174 blob:;",
+  )
+})

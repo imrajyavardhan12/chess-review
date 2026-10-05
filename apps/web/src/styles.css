@@ -1053,4 +1053,29 @@ textarea {
   border-radius: 3px;
   background: var(--ink);
   opacity: 0.55;
+
+.engine-dialog {
+  max-width: min(520px, calc(100vw - 32px));
+  padding: 20px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--ink);
+}
+.engine-dialog::backdrop {
+  background: rgba(14, 21, 26, 0.45);
+}
+.engine-dialog h2 {
+  margin-bottom: 8px;
+}
+.engine-dialog p + p,
+.engine-dialog .download {
+  margin-top: 10px;
+}
+.dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
 }
