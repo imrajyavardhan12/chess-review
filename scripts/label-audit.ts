@@ -98,7 +98,7 @@ console.log(`| Rating | Players | Mean accuracy |`)
 console.log(`| --- | ---: | ---: |`)
 for (const [lo, hi, name] of BANDS) {
   const ps = players.filter((p) => p.elo >= lo && p.elo < hi)
-  console.log(`| ${name} | ${ps.length} | ${mean(ps.map((p) => p.acc)).toFixed(1)} |`)
+  console.log(`| ${name} | ${ps.length} | ${ps.length ? mean(ps.map((p) => p.acc)).toFixed(1) : '–'} |`)
 }
 console.log(
   `\nCorrelation of accuracy with rating: r = ${pearson(

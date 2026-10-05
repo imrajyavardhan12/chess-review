@@ -8,3 +8,8 @@ Lichess puzzle database, so they contain real mistakes. Player names are replace
 
 Used by `scripts/review-games.ts` to measure the review rules and the tactic explanations on real
 games. It is not shipped with the app.
+
+`lichess-audit-200.pgn`: 200 more rated games (rated 1506 to 2776; 2 bullet, 67 blitz, 127 rapid, 4
+classical) from the same source, taken the same deterministic way (every 250th eligible game, starting
+at the 14th, skipping the 40 above), with at least 15 moves each. Used with `lichess-40.pgn` by the
+label audit (`docs/label-audit.md`).
