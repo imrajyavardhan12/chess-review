@@ -25,6 +25,7 @@ Proposed in open pull requests; each entry moves here when it is merged.
 - Offline use after the first visit, an accessible board and graph for screen readers, full keyboard
   operation, fewer engine workers on low-memory devices, and an estimate of the time left.
 - Contributor docs, issue and pull request templates, a bundle-size budget in CI.
+- A label audit over 240 real games (`pnpm label-audit`, `docs/label-audit.md`).
 
 ### Changed
 
