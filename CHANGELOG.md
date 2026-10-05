@@ -28,6 +28,8 @@ Proposed in open pull requests; each entry moves here when it is merged.
 
 ### Changed
 
+- A recapture is no longer labelled Great (it is Best): half of all Great moves were simply taking
+  back a piece. `ANALYSIS_VERSION` 4 → 5 re-analyses stored games. See `docs/label-audit.md`.
 - npm → pnpm workspaces.
 - CI runs on `ubuntu-24.04` with current major versions of its actions.
 
