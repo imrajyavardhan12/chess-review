@@ -1,9 +1,17 @@
-import { InvalidPgnError } from '@chessreview/core'
-import { useEffect, useState } from 'react'
+import { InvalidPgnError, type PresetName } from '@chessreview/core'
+import { useState } from 'react'
 import { openReview } from './App'
+import { useAsync } from './hooks'
 import { usePrefs } from './prefs'
 import { Settings } from './Settings'
-import { ChessComError, fetchMonth, getReviewService, listMonths, type RemoteGame, type Summary } from './services'
+import {
+  ChessComError,
+  fetchMonth,
+  getReviewService,
+  listMonths,
+  type RemoteGame,
+  type Summary,
+} from './services'
 
 const STORE = 'chessreview.user'
 const PAGE = 25
@@ -54,67 +62,86 @@ function Spark({ data }: { data: number[] }) {
 }
 
 const messageOf = (e: unknown) =>
-  e instanceof ChessComError ? e.message : e instanceof InvalidPgnError ? `That PGN couldn’t be read: ${e.message}` : e instanceof Error ? e.message : 'Something went wrong.'
+  e instanceof ChessComError
+    ? e.message
+    : e instanceof InvalidPgnError
+      ? `That PGN couldn’t be read: ${e.message}`
+      : e instanceof Error
+        ? e.message
+        : 'Something went wrong.'
+
+interface Query {
+  user: string
+  month?: string
+}
+
+interface GamesData {
+  user: string
+  months: string[]
+  month: string | null
+  rows: Row[]
+}
+
+async function loadGames(q: Query, preset: PresetName): Promise<GamesData> {
+  const months = await listMonths(q.user)
+  const month = q.month ?? months[0] ?? null
+  const games = month ? await fetchMonth(q.user, month) : []
+  const service = await getReviewService()
+  const ids = await Promise.all(games.map((g) => service.idFor(g.pgn, preset)))
+  const summaries = await service.summaries(ids)
+  const rows = games.map((game, i) => ({ game, id: ids[i]!, summary: summaries.get(ids[i]!) ?? null }))
+  return { user: q.user, months, month, rows }
+}
 
 export function Home() {
   const { preset } = usePrefs()
   const [name, setName] = useState(remembered)
-  const [months, setMonths] = useState<string[]>([])
-  const [month, setMonth] = useState<string | null>(null)
-  const [rows, setRows] = useState<Row[] | null>(null)
-  const [loaded, setLoaded] = useState('')
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState('')
+  const [query, setQuery] = useState<Query | null>(() => (remembered() ? { user: remembered() } : null))
+  const [opening, setOpening] = useState(false)
+  const [openError, setOpenError] = useState('')
   const [pgn, setPgn] = useState('')
   const [showAll, setShowAll] = useState(false)
 
-  async function load(user: string, wanted?: string) {
-    setBusy(true)
-    setError('')
+  // Re-runs when the user, month or analysis preset changes (the preset decides which games count as reviewed).
+  const games = useAsync(query ? `${query.user}|${query.month ?? ''}|${preset}` : null, () =>
+    loadGames(query!, preset),
+  )
+  const data = games.value
+  const busy = games.loading || opening
+  const error = games.error ? messageOf(games.error) : openError
+  const loaded = data?.user ?? ''
+  const months = data?.months ?? []
+  const month = data?.month ?? null
+  const rows = data?.rows ?? null
+
+  function search(user: string, wanted?: string) {
+    setOpenError('')
+    setShowAll(false)
+    setQuery({ user, month: wanted })
     try {
-      const available = wanted ? months : await listMonths(user)
-      const chosen = wanted ?? available[0] ?? null
-      const games = chosen ? await fetchMonth(user, chosen) : []
-      const service = await getReviewService()
-      const ids = await Promise.all(games.map((g) => service.idFor(g.pgn, preset)))
-      const summaries = await service.summaries(ids)
-      setRows(games.map((game, i) => ({ game, id: ids[i]!, summary: summaries.get(ids[i]!) ?? null })))
-      setMonths(available)
-      setMonth(chosen)
-      setShowAll(false)
-      setLoaded(user)
-      try {
-        localStorage.setItem(STORE, user)
-      } catch {
-        /* private mode: skip remembering */
-      }
-    } catch (e) {
-      setError(messageOf(e))
-    } finally {
-      setBusy(false)
+      localStorage.setItem(STORE, user)
+    } catch {
+      /* private mode: skip remembering */
     }
   }
 
-  useEffect(() => {
-    if (name) void load(name)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [preset])
-
   async function open(pgnText: string, me: string | null) {
-    setBusy(true)
-    setError('')
+    setOpening(true)
+    setOpenError('')
     try {
       const id = await (await getReviewService()).start(pgnText, preset)
       openReview(id, me)
     } catch (e) {
-      setError(messageOf(e))
-      setBusy(false)
+      setOpenError(messageOf(e))
+      setOpening(false)
     }
   }
 
   const view = (rows ?? []).map((r) => ({ ...r, o: outcome(r.game, loaded) }))
   const tally = (tone: string) => view.filter((r) => r.o.tone === tone).length
-  const record = view.some((r) => r.o.side) ? `${tally('won')} won, ${tally('lost')} lost, ${tally('draw')} drawn` : ''
+  const record = view.some((r) => r.o.side)
+    ? `${tally('won')} won, ${tally('lost')} lost, ${tally('draw')} drawn`
+    : ''
 
   return (
     <div className="home">
@@ -128,7 +155,7 @@ export function Home() {
         className="userform"
         onSubmit={(e) => {
           e.preventDefault()
-          if (name.trim()) void load(name.trim())
+          if (name.trim()) search(name.trim())
         }}
       >
         <label htmlFor="user">chess.com username</label>
@@ -164,7 +191,7 @@ export function Home() {
             <select
               aria-label="Month"
               value={month ?? ''}
-              onChange={(e) => void load(loaded, e.target.value)}
+              onChange={(e) => search(loaded, e.target.value)}
               disabled={busy}
             >
               {months.map((m) => (
@@ -190,7 +217,10 @@ export function Home() {
                 <li key={id}>
                   <button className="gamerow" disabled={busy} onClick={() => void open(g.pgn, loaded)}>
                     <span className="g-date">
-                      {new Date(g.endTime * 1000).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                      {new Date(g.endTime * 1000).toLocaleDateString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                      })}
                     </span>
                     <span className="g-players">
                       <i className={`dot ${o.side ?? 'none'}`} aria-label={`You played ${o.side}`} />

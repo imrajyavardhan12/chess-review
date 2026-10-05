@@ -2,8 +2,23 @@ import { describe, expect, it } from 'vitest'
 import { coachLine, moveName, type MoveReview, type Review } from '../src'
 
 const move = (over: Partial<MoveReview>): MoveReview => ({
-  ply: 1, color: 'w', number: 1, san: 'e4', uci: 'e2e4', bestSan: '', bestUci: '', winBefore: 50, winAfter: 50,
-  loss: 0, cpLoss: 0, accuracy: 100, label: 'Best', phase: 'opening', gap: null, clockMs: null, ...over,
+  ply: 1,
+  color: 'w',
+  number: 1,
+  san: 'e4',
+  uci: 'e2e4',
+  bestSan: '',
+  bestUci: '',
+  winBefore: 50,
+  winAfter: 50,
+  loss: 0,
+  cpLoss: 0,
+  accuracy: 100,
+  label: 'Best',
+  phase: 'opening',
+  gap: null,
+  clockMs: null,
+  ...over,
 })
 const review = (moves: MoveReview[], white = 90, black = 80): Review =>
   ({ white: 'Ann', black: 'Bob', moves, accuracy: { white, black } }) as unknown as Review
@@ -48,7 +63,9 @@ describe('coachLine', () => {
 
   it('describes both sides by name when the reader is unknown', () => {
     const c = coachLine(review([blunder]), null)
-    expect(c.text).toBe('Ann played more accurately, 90.0 to 80.0. The biggest swing was 3. Qxf7 by Ann, worth 41% of win chance.')
+    expect(c.text).toBe(
+      'Ann played more accurately, 90.0 to 80.0. The biggest swing was 3. Qxf7 by Ann, worth 41% of win chance.',
+    )
     expect(coachLine(review([]), null).text).toMatch(/Neither side made a serious mistake\.$/)
   })
 

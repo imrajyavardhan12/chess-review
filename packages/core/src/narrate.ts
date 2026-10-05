@@ -35,7 +35,8 @@ export function coachLine(r: Review, side: Side | null): Coaching {
     const tail = worst
       ? `Your costliest error was ${moveName(worst)}, which gave up ${Math.round(worst.loss)}% of your win chance.`
       : 'You made no mistakes or blunders.'
-    const mine = (label: 'Brilliant' | 'Great') => r.moves.filter((m) => sideOf(m.color) === side && m.label === label)
+    const mine = (label: 'Brilliant' | 'Great') =>
+      r.moves.filter((m) => sideOf(m.color) === side && m.label === label)
     const brilliant = mine('Brilliant')
     const great = mine('Great')
     const plural = (n: number) => (n > 1 ? 's' : '')

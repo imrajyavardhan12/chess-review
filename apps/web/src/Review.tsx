@@ -97,10 +97,7 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
   const bestShown = showBest && !!move && !!move.bestUci && move.bestUci !== move.uci
   const fen = bestShown ? review.fens[ply - 1] : review.fens[ply]
 
-  const keyPlies = useMemo(
-    () => review.moves.filter((m) => isKeyMoment(m.label)).map((m) => m.ply),
-    [review],
-  )
+  const keyPlies = useMemo(() => review.moves.filter((m) => isKeyMoment(m.label)).map((m) => m.ply), [review])
   const prevKey = [...keyPlies].reverse().find((p) => p < ply)
   const nextKey = keyPlies.find((p) => p > ply)
 
@@ -134,7 +131,11 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
   const arrows =
     bestShown && move
       ? [
-          { startSquare: move.uci.slice(0, 2), endSquare: move.uci.slice(2, 4), color: 'rgba(200,64,60,0.75)' },
+          {
+            startSquare: move.uci.slice(0, 2),
+            endSquare: move.uci.slice(2, 4),
+            color: 'rgba(200,64,60,0.75)',
+          },
           { startSquare: move.bestUci.slice(0, 2), endSquare: move.bestUci.slice(2, 4), color: '#2E8B62' },
         ]
       : []
@@ -161,7 +162,12 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
             {review.white} vs {review.black}
           </h1>
           <p className="muted">
-            {[review.result.replace('-', '–'), h.Termination, opening, h.Date && !h.Date.includes('?') ? h.Date.replaceAll('.', '-') : '']
+            {[
+              review.result.replace('-', '–'),
+              h.Termination,
+              opening,
+              h.Date && !h.Date.includes('?') ? h.Date.replaceAll('.', '-') : '',
+            ]
               .filter(Boolean)
               .join(', ')}
           </p>
@@ -216,17 +222,30 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
           </div>
           <PlayerTag name={review[bottom]} rating={rating(bottom)} side={bottom} />
           <div className="controls">
-            <IconButton label="Start" onClick={() => goto(0)} disabled={ply === 0} d="M6 5v14M18 5l-8 7 8 7z" />
-            <IconButton label="Previous move" onClick={() => goto(ply - 1)} disabled={ply === 0} d="M15 5l-8 7 8 7z" />
-            <IconButton label="Next move" onClick={() => goto(ply + 1)} disabled={ply === n} d="M9 5l8 7-8 7z" />
+            <IconButton
+              label="Start"
+              onClick={() => goto(0)}
+              disabled={ply === 0}
+              d="M6 5v14M18 5l-8 7 8 7z"
+            />
+            <IconButton
+              label="Previous move"
+              onClick={() => goto(ply - 1)}
+              disabled={ply === 0}
+              d="M15 5l-8 7 8 7z"
+            />
+            <IconButton
+              label="Next move"
+              onClick={() => goto(ply + 1)}
+              disabled={ply === n}
+              d="M9 5l8 7-8 7z"
+            />
             <IconButton label="End" onClick={() => goto(n)} disabled={ply === n} d="M18 5v14M6 5l8 7-8 7z" />
             <button className="ghost" onClick={() => setFlipped((v) => !v)} title="Flip board (f)">
               Flip board
             </button>
           </div>
-          <p className="hint">
-            Arrow keys step through the game. F flips the board, B shows the best move.
-          </p>
+          <p className="hint">Arrow keys step through the game. F flips the board, B shows the best move.</p>
         </section>
 
         <aside className={`panel${tab === 'report' ? ' compact' : ''}`}>
@@ -243,13 +262,7 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
           </div>
           <div className="tabs" role="tablist">
             {(['moves', 'report'] as const).map((t) => (
-              <button
-                key={t}
-                role="tab"
-                aria-selected={tab === t}
-                className="tab"
-                onClick={() => setTab(t)}
-              >
+              <button key={t} role="tab" aria-selected={tab === t} className="tab" onClick={() => setTab(t)}>
                 {t === 'moves' ? 'Moves' : 'Report'}
               </button>
             ))}
@@ -290,15 +303,7 @@ function PlayerTag({ name, rating, side }: { name: string; rating?: string; side
   )
 }
 
-function EvalBar({
-  win,
-  evalLabel,
-  orientation,
-}: {
-  win: number
-  evalLabel: string
-  orientation: Side
-}) {
+function EvalBar({ win, evalLabel, orientation }: { win: number; evalLabel: string; orientation: Side }) {
   const whiteOnBottom = orientation === 'white'
   const leadWhite = win >= 50
   const labelAtBottom = leadWhite === whiteOnBottom
@@ -315,17 +320,45 @@ function EvalBar({
   )
 }
 
-function IconButton({ label, d, onClick, disabled }: { label: string; d: string; onClick: () => void; disabled: boolean }) {
+function IconButton({
+  label,
+  d,
+  onClick,
+  disabled,
+}: {
+  label: string
+  d: string
+  onClick: () => void
+  disabled: boolean
+}) {
   return (
     <button className="icon" aria-label={label} title={label} onClick={onClick} disabled={disabled}>
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
+      <svg
+        viewBox="0 0 24 24"
+        width="20"
+        height="20"
+        fill="currentColor"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      >
         <path d={d} />
       </svg>
     </button>
   )
 }
 
-function PlayerSummary({ name, acc, counts, isMe }: { name: string; acc: number; counts: Counts; isMe: boolean }) {
+function PlayerSummary({
+  name,
+  acc,
+  counts,
+  isMe,
+}: {
+  name: string
+  acc: number
+  counts: Counts
+  isMe: boolean
+}) {
   const total = ORDER.reduce((t, l) => t + (counts[l] ?? 0), 0) || 1
   return (
     <div className="psum">
@@ -421,7 +454,9 @@ function Commentary({
         <>
           <h2>
             {moveName(move)}
-            {META[move.label].glyph && <span style={{ color: META[move.label].text }}> {META[move.label].glyph}</span>}
+            {META[move.label].glyph && (
+              <span style={{ color: META[move.label].text }}> {META[move.label].glyph}</span>
+            )}
           </h2>
           <p>
             <b style={{ color: META[move.label].text }}>{move.label}.</b>{' '}
@@ -457,9 +492,21 @@ function Commentary({
   )
 }
 
-const PHASE_NAMES: Record<Phase, string> = { opening: 'Opening', middlegame: 'Middlegame', endgame: 'Endgame' }
+const PHASE_NAMES: Record<Phase, string> = {
+  opening: 'Opening',
+  middlegame: 'Middlegame',
+  endgame: 'Endgame',
+}
 
-function Report({ review, mySide, goto }: { review: Review; mySide: Side | null; goto: (p: number) => void }) {
+function Report({
+  review,
+  mySide,
+  goto,
+}: {
+  review: Review
+  mySide: Side | null
+  goto: (p: number) => void
+}) {
   const heads = (
     <tr>
       <td />
@@ -529,8 +576,8 @@ function Report({ review, mySide, goto }: { review: Review; mySide: Side | null;
         </tbody>
       </table>
       <p className="note muted">
-        The rating is a rough guess from average centipawn loss, not a calibrated rating. Treat it as a
-        way to compare the two players in this game. Move labels come from the engine’s win-chance model.
+        The rating is a rough guess from average centipawn loss, not a calibrated rating. Treat it as a way to
+        compare the two players in this game. Move labels come from the engine’s win-chance model.
       </p>
     </div>
   )
@@ -573,7 +620,11 @@ function MoveList({ review, ply, onSelect }: { review: Review; ply: number; onSe
 function Swing({ move }: { move: Move }) {
   const kept = Math.min(move.winBefore, move.winAfter)
   return (
-    <div className="swing" role="img" aria-label={`Win chance ${Math.round(move.winBefore)}% to ${Math.round(move.winAfter)}%`}>
+    <div
+      className="swing"
+      role="img"
+      aria-label={`Win chance ${Math.round(move.winBefore)}% to ${Math.round(move.winAfter)}%`}
+    >
       <span className="swing-kept" style={{ width: `${kept}%` }} />
       <span
         className="swing-lost"

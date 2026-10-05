@@ -1,0 +1,6 @@
+// Cloudflare Pages project config. Deploy with: npm run build && npx wrangler pages deploy
+{
+  "name": "chessreview",
+  "compatibility_date": "2026-10-01",
+  "pages_build_output_dir": "./apps/web/dist",
+}

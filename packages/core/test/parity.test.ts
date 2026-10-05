@@ -61,9 +61,19 @@ const near = (a: number, b: number, digits: number) => Math.abs(a - b) <= 0.5 * 
 
 describe.each(names)('parity with the Python reference: %s', (name) => {
   const fx = readFixture<Fixture>(`${name}.json`)
-  const settings: ReviewSettings = { depth: fx.settings.depth, nodes: fx.settings.nodes, hashMb: fx.settings.hash_mb, engine: 'fixture' }
+  const settings: ReviewSettings = {
+    depth: fx.settings.depth,
+    nodes: fx.settings.nodes,
+    hashMb: fx.settings.hash_mb,
+    engine: 'fixture',
+  }
   const game = parseGame(fx.pgn)
-  const records: EngineRecord[] = fx.infos.map((i) => ({ cp: i.cp, mate: i.mate, best: i.best, secondCp: i.second_cp }))
+  const records: EngineRecord[] = fx.infos.map((i) => ({
+    cp: i.cp,
+    mate: i.mate,
+    best: i.best,
+    secondCp: i.second_cp,
+  }))
   const review = buildReview(game, records, realBook(), settings)
   const py = fx.expected
 
@@ -84,7 +94,9 @@ describe.each(names)('parity with the Python reference: %s', (name) => {
     review.moves.forEach((m, i) => {
       const p = py.moves[i]!
       const at = `move ${m.ply} (${m.san})`
-      expect(near(m.winBefore, p.win_before, 2), `${at} winBefore ${m.winBefore} vs ${p.win_before}`).toBe(true)
+      expect(near(m.winBefore, p.win_before, 2), `${at} winBefore ${m.winBefore} vs ${p.win_before}`).toBe(
+        true,
+      )
       expect(near(m.winAfter, p.win_after, 2), `${at} winAfter`).toBe(true)
       expect(near(m.loss, p.loss, 2), `${at} loss ${m.loss} vs ${p.loss}`).toBe(true)
       expect(near(m.accuracy, p.accuracy, 2), `${at} accuracy ${m.accuracy} vs ${p.accuracy}`).toBe(true)
@@ -98,9 +110,15 @@ describe.each(names)('parity with the Python reference: %s', (name) => {
 
   it('totals match: accuracy, label counts, phases, centipawn loss, rating', () => {
     for (const side of ['white', 'black'] as const) {
-      expect(near(review.accuracy[side], py.accuracy[side], 1), `${side} accuracy ${review.accuracy[side]} vs ${py.accuracy[side]}`).toBe(true)
+      expect(
+        near(review.accuracy[side], py.accuracy[side], 1),
+        `${side} accuracy ${review.accuracy[side]} vs ${py.accuracy[side]}`,
+      ).toBe(true)
       expect(review.counts[side]).toEqual(py.counts[side])
-      expect(near(review.acpl[side], py.acpl[side], 0), `${side} acpl ${review.acpl[side]} vs ${py.acpl[side]}`).toBe(true)
+      expect(
+        near(review.acpl[side], py.acpl[side], 0),
+        `${side} acpl ${review.acpl[side]} vs ${py.acpl[side]}`,
+      ).toBe(true)
       expect(review.ratingEstimate[side]).toBe(py.rating_estimate[side])
       for (const [phase, value] of Object.entries(py.phases[side])) {
         const got = review.phases[side][phase as 'opening']

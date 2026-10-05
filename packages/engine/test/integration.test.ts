@@ -7,14 +7,19 @@ import { wasmNodeTransport } from '../src/node'
 
 /** Runs the real Stockfish WASM build inside Node. Slower than the unit tests, still self-contained. */
 
-const fixture = (name: string) => fileURLToPath(new URL(`../../core/test/fixtures/${name}.json`, import.meta.url))
+const fixture = (name: string) =>
+  fileURLToPath(new URL(`../../core/test/fixtures/${name}.json`, import.meta.url))
 
 describe('real engine (Stockfish 19 lite, WASM in Node)', () => {
   const start = () => UciEngine.start(wasmNodeTransport('lite-single'))
 
   it('finds a legal move and a sane score for the start position', async () => {
     const e = await start()
-    const r = await e.analyse({ fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', depth: 8, nodes: 50_000 })
+    const r = await e.analyse({
+      fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+      depth: 8,
+      nodes: 50_000,
+    })
     expect(r.best).toMatch(/^[a-h][1-8][a-h][1-8]/)
     expect(Math.abs(r.eval.cp)).toBeLessThan(150)
     expect(r.eval.mate).toBeNull()
@@ -40,9 +45,17 @@ describe('real engine (Stockfish 19 lite, WASM in Node)', () => {
 
   it('is deterministic: the same request gives the same answer, however much ran before', async () => {
     const e = await start()
-    const req = { fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4', depth: 12, nodes: 80_000 }
+    const req = {
+      fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4',
+      depth: 12,
+      nodes: 80_000,
+    }
     const first = await e.analyse(req)
-    await e.analyse({ fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', depth: 10, nodes: 60_000 })
+    await e.analyse({
+      fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+      depth: 10,
+      nodes: 60_000,
+    })
     expect(await e.analyse(req)).toEqual(first)
     e.dispose()
   })
@@ -51,28 +64,50 @@ describe('real engine (Stockfish 19 lite, WASM in Node)', () => {
 describe('parity with the Python reference (full-strength WASM engine, native-identical)', () => {
   // Same engine version, one thread, 16 MB hash, a fresh game per position and the same node limit:
   // the TypeScript stack must reproduce the recorded native evaluations exactly.
-  const names = ['synthetic-stalemate', 'synthetic-underpromotion', 'synthetic-en-passant-castling', 'opera-game-1858']
+  const names = [
+    'synthetic-stalemate',
+    'synthetic-underpromotion',
+    'synthetic-en-passant-castling',
+    'opera-game-1858',
+  ]
 
-  it.each(names.filter((n) => existsSync(fixture(n))))('%s', async (name) => {
-    const fx = JSON.parse(readFileSync(fixture(name), 'utf8')) as {
-      pgn: string
-      settings: { depth: number; nodes: number; hash_mb: number }
-      infos: Array<{ cp: number; mate: number | null; best: string | null; second_cp: number | null }>
-    }
-    const settings: ReviewSettings = { depth: fx.settings.depth, nodes: fx.settings.nodes, hashMb: fx.settings.hash_mb, engine: 'full' }
-    const pool = new EnginePool(async () => UciEngine.start(wasmNodeTransport('single'), { hashMb: fx.settings.hash_mb }), 3)
-    try {
-      const records = await evaluatePositions(parseGame(fx.pgn), pool, settings)
-      const expected: EngineRecord[] = fx.infos.map((i) => ({ cp: i.cp, mate: i.mate, best: i.best, secondCp: i.second_cp }))
-      // Report differences position by position: a bare deep-equal failure is unreadable.
-      const diffs = records.flatMap((r, i) =>
-        (['cp', 'mate', 'best', 'secondCp'] as const)
-          .filter((k) => r[k] !== expected[i]![k])
-          .map((k) => `#${i} ${k}: got ${String(r[k])}, python ${String(expected[i]![k])}`),
+  it.each(names.filter((n) => existsSync(fixture(n))))(
+    '%s',
+    async (name) => {
+      const fx = JSON.parse(readFileSync(fixture(name), 'utf8')) as {
+        pgn: string
+        settings: { depth: number; nodes: number; hash_mb: number }
+        infos: Array<{ cp: number; mate: number | null; best: string | null; second_cp: number | null }>
+      }
+      const settings: ReviewSettings = {
+        depth: fx.settings.depth,
+        nodes: fx.settings.nodes,
+        hashMb: fx.settings.hash_mb,
+        engine: 'full',
+      }
+      const pool = new EnginePool(
+        async () => UciEngine.start(wasmNodeTransport('single'), { hashMb: fx.settings.hash_mb }),
+        3,
       )
-      expect(diffs).toEqual([])
-    } finally {
-      pool.dispose()
-    }
-  }, 240_000)
+      try {
+        const records = await evaluatePositions(parseGame(fx.pgn), pool, settings)
+        const expected: EngineRecord[] = fx.infos.map((i) => ({
+          cp: i.cp,
+          mate: i.mate,
+          best: i.best,
+          secondCp: i.second_cp,
+        }))
+        // Report differences position by position: a bare deep-equal failure is unreadable.
+        const diffs = records.flatMap((r, i) =>
+          (['cp', 'mate', 'best', 'secondCp'] as const)
+            .filter((k) => r[k] !== expected[i]![k])
+            .map((k) => `#${i} ${k}: got ${String(r[k])}, python ${String(expected[i]![k])}`),
+        )
+        expect(diffs).toEqual([])
+      } finally {
+        pool.dispose()
+      }
+    },
+    240_000,
+  )
 })

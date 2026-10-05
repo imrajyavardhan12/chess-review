@@ -22,14 +22,22 @@ export interface Prefs {
 
 const KEY = 'chessreview.prefs'
 
+const THEMES: readonly Theme[] = ['auto', 'light', 'dark']
+
+/** Picks `value` if it is one of the allowed options, else the fallback. Stored data is untrusted. */
+function pick<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
+  return allowed.find((a) => a === value) ?? fallback
+}
+
 function load(): Prefs {
   const fallback: Prefs = { theme: 'auto', board: 'slate', preset: 'standard' }
   try {
-    const raw = JSON.parse(localStorage.getItem(KEY) ?? '{}')
+    const raw: unknown = JSON.parse(localStorage.getItem(KEY) ?? '{}')
+    const o = typeof raw === 'object' && raw !== null ? (raw as Record<string, unknown>) : {}
     return {
-      theme: ['auto', 'light', 'dark'].includes(raw.theme) ? raw.theme : fallback.theme,
-      board: raw.board in BOARDS ? raw.board : fallback.board,
-      preset: raw.preset in PRESETS ? raw.preset : fallback.preset,
+      theme: pick(o.theme, THEMES, fallback.theme),
+      board: pick(o.board, Object.keys(BOARDS) as BoardTheme[], fallback.board),
+      preset: pick(o.preset, Object.keys(PRESETS) as PresetName[], fallback.preset),
     }
   } catch {
     return fallback

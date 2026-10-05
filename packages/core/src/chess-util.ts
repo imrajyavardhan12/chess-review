@@ -1,4 +1,4 @@
-import { Chess, type Square } from 'chess.js'
+import { Chess } from 'chess.js'
 import type { Color } from './types'
 
 /** First four FEN fields: placement, side to move, castling, en passant. Identifies a position for the book. */
@@ -24,8 +24,8 @@ export function legalUci(fen: string): string[] {
 export function sanOf(fen: string, uci: string): string {
   const c = new Chess(fen)
   return c.move({
-    from: uci.slice(0, 2) as Square,
-    to: uci.slice(2, 4) as Square,
+    from: uci.slice(0, 2),
+    to: uci.slice(2, 4),
     promotion: uci[4],
   }).san
 }

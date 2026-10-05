@@ -5,7 +5,11 @@ import { BLACK_TO_MOVE, FakeTransport, START } from './fake'
 
 describe('parseInfo', () => {
   it('reads depth, nodes, score and pv', () => {
-    expect(parseInfo('info depth 12 seldepth 18 multipv 1 score cp -34 nodes 90210 nps 500000 time 180 pv e7e5 g1f3')).toEqual({
+    expect(
+      parseInfo(
+        'info depth 12 seldepth 18 multipv 1 score cp -34 nodes 90210 nps 500000 time 180 pv e7e5 g1f3',
+      ),
+    ).toEqual({
       depth: 12,
       nodes: 90210,
       score: { kind: 'cp', value: -34 },
@@ -13,8 +17,14 @@ describe('parseInfo', () => {
     })
   })
   it('reads mate scores and tolerates bound markers', () => {
-    expect(parseInfo('info depth 5 score mate -3 nodes 10 pv a1a2')?.score).toEqual({ kind: 'mate', value: -3 })
-    expect(parseInfo('info depth 9 score cp 120 lowerbound nodes 77 pv d2d4')?.score).toEqual({ kind: 'cp', value: 120 })
+    expect(parseInfo('info depth 5 score mate -3 nodes 10 pv a1a2')?.score).toEqual({
+      kind: 'mate',
+      value: -3,
+    })
+    expect(parseInfo('info depth 9 score cp 120 lowerbound nodes 77 pv d2d4')?.score).toEqual({
+      kind: 'cp',
+      value: 120,
+    })
   })
   it('ignores lines without a score and pv', () => {
     expect(parseInfo('info string NNUE evaluation using nn-xyz.nnue')).toBeNull()
@@ -40,7 +50,12 @@ describe('UciEngine', () => {
   it('does the handshake and applies options', async () => {
     const t = new FakeTransport()
     await UciEngine.start(t, { threads: 2, hashMb: 32 })
-    expect(t.sent).toEqual(['uci', 'setoption name Threads value 2', 'setoption name Hash value 32', 'isready'])
+    expect(t.sent).toEqual([
+      'uci',
+      'setoption name Threads value 2',
+      'setoption name Hash value 32',
+      'isready',
+    ])
   })
 
   it('turns on analysis mode only when the engine offers it', async () => {
@@ -106,14 +121,18 @@ describe('UciEngine', () => {
   })
 
   it('falls back to the pv when the engine answers "(none)"', async () => {
-    const t = new FakeTransport(FakeTransport.polite('info depth 1 score cp 0 nodes 1 pv a2a3', 'bestmove (none)'))
+    const t = new FakeTransport(
+      FakeTransport.polite('info depth 1 score cp 0 nodes 1 pv a2a3', 'bestmove (none)'),
+    )
     const r = await (await UciEngine.start(t)).analyse({ fen: START, depth: 1, nodes: 1 })
     expect(r.best).toBe('a2a3')
   })
 
   it('fails loudly if the engine returns no score', async () => {
     const t = new FakeTransport(FakeTransport.polite('info string hello', 'bestmove e2e4'))
-    await expect((await UciEngine.start(t)).analyse({ fen: START, depth: 1, nodes: 1 })).rejects.toBeInstanceOf(EngineError)
+    await expect(
+      (await UciEngine.start(t)).analyse({ fen: START, depth: 1, nodes: 1 }),
+    ).rejects.toBeInstanceOf(EngineError)
   })
 
   it('runs searches strictly one after another', async () => {
@@ -151,7 +170,9 @@ describe('UciEngine', () => {
     t.sent.length = 0
     const ctl = new AbortController()
     ctl.abort()
-    await expect(e.analyse({ fen: START, depth: 5, nodes: 5 }, ctl.signal)).rejects.toBeInstanceOf(AnalysisAborted)
+    await expect(e.analyse({ fen: START, depth: 5, nodes: 5 }, ctl.signal)).rejects.toBeInstanceOf(
+      AnalysisAborted,
+    )
     expect(t.sent).toEqual([])
   })
 

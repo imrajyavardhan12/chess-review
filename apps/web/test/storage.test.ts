@@ -1,11 +1,28 @@
 import 'fake-indexeddb/auto'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { ANALYSIS_VERSION, type Review } from '@chessreview/core'
-import { indexedDbStore, memoryStore, summarize, type ReviewStore, type StoredReview } from '../src/services/storage'
+import {
+  indexedDbStore,
+  memoryStore,
+  summarize,
+  type ReviewStore,
+  type StoredReview,
+} from '../src/services/storage'
 
 const review = (winSeries: number[], over: Partial<Review> = {}): Review =>
-  ({ schemaVersion: ANALYSIS_VERSION, winSeries, accuracy: { white: 90, black: 80 }, ...over }) as unknown as Review
-const stored = (id: string, r = review([50, 55, 60])): StoredReview => ({ id, pgn: '1. e4 *', review: r, summary: summarize(r), createdAt: 1 })
+  ({
+    schemaVersion: ANALYSIS_VERSION,
+    winSeries,
+    accuracy: { white: 90, black: 80 },
+    ...over,
+  }) as unknown as Review
+const stored = (id: string, r = review([50, 55, 60])): StoredReview => ({
+  id,
+  pgn: '1. e4 *',
+  review: r,
+  summary: summarize(r),
+  createdAt: 1,
+})
 
 describe('summarize', () => {
   it('keeps short series whole', () => {

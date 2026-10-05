@@ -65,7 +65,9 @@ export function EvalGraph({
             />
           ))}
         <line x1={x(ply)} x2={x(ply)} y1={0} y2={H} className="trace-cursor" />
-        {hover !== null && hover !== ply && <line x1={x(hover)} x2={x(hover)} y1={0} y2={H} className="trace-hover" />}
+        {hover !== null && hover !== ply && (
+          <line x1={x(hover)} x2={x(hover)} y1={0} y2={H} className="trace-hover" />
+        )}
       </svg>
       <span className="trace-axis top">Black ahead</span>
       <span className="trace-axis bottom">White ahead</span>
@@ -74,7 +76,9 @@ export function EvalGraph({
           {hm ? (
             <>
               <strong>{moveName(hm)}</strong>
-              {META[hm.label].glyph && <span style={{ color: META[hm.label].color }}> {META[hm.label].glyph}</span>}
+              {META[hm.label].glyph && (
+                <span style={{ color: META[hm.label].color }}> {META[hm.label].glyph}</span>
+              )}
               <span> {evalText(review.evals[hover]!)}</span>
             </>
           ) : (

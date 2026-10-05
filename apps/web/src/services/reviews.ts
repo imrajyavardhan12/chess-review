@@ -10,6 +10,7 @@ import {
   type PresetName,
   type Review,
 } from '@chessreview/core'
+import { EngineError } from '@chessreview/engine'
 import type { EngineHost } from './engine-host'
 import { summarize, type ReviewStore } from './storage'
 
@@ -147,6 +148,7 @@ export class ReviewService {
         this.jobs.delete(id)
         return
       }
+      console.error('review failed', e)
       // A game that can never be analysed must not be retried on every reload.
       if (e instanceof InvalidPgnError) await this.deps.store.deleteRequest(id)
       this.set(id, { status: 'error', message: friendly(e) })
@@ -156,6 +158,9 @@ export class ReviewService {
 
 function friendly(e: unknown): string {
   if (e instanceof InvalidPgnError) return `That PGN couldn’t be read: ${e.message}`
+  if (e instanceof EngineError) {
+    return `The chess engine couldn’t run in this browser (${e.message.replace(/\.$/, '')}). Try a current Chrome, Firefox or Safari, and check that no extension is blocking WebAssembly or web workers.`
+  }
   if (e instanceof Error) return `The analysis failed: ${e.message}`
   return 'The analysis failed.'
 }

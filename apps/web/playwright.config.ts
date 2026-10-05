@@ -1,0 +1,25 @@
+import { defineConfig, devices } from '@playwright/test'
+
+// Runs against the production build served with the real _headers (see scripts/serve-dist.mjs),
+// so the tests exercise the same Content-Security-Policy as the deployed site.
+// Build first: `npm run build`.
+export default defineConfig({
+  testDir: 'e2e',
+  timeout: 120_000,
+  expect: { timeout: 90_000 },
+  fullyParallel: false, // one analysis at a time keeps timings honest on small CI machines
+  retries: process.env.CI ? 1 : 0,
+  reporter: process.env.CI ? 'github' : 'list',
+  use: {
+    baseURL: 'http://127.0.0.1:4173',
+    trace: 'retain-on-failure',
+    // Some sandboxes route localhost through a system proxy, which stalls the first request.
+    launchOptions: { args: ['--no-proxy-server'] },
+  },
+  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  webServer: {
+    command: 'node ../../scripts/serve-dist.mjs',
+    url: 'http://127.0.0.1:4173',
+    reuseExistingServer: !process.env.CI,
+  },
+})

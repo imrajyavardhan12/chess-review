@@ -14,14 +14,25 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "vitest run",
     "test:watch": "vitest",
-    "data": "node scripts/build-openings.mjs"
+    "data": "node scripts/build-openings.mjs",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm test",
+    "e2e": "npm run build && npm run e2e -w @chessreview/web"
   },
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/node": "^26.6.4",
-    "typescript": "^7.0.2",
+    "eslint": "^10.12.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.9",
+    "typescript": "~6.0",
+    "typescript-eslint": "^8.71.1",
     "vitest": "^5.0.3"
   }
 }

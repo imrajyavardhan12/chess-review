@@ -80,7 +80,11 @@ describe('EnginePool', () => {
       dispose: () => undefined,
     })
     const pool = new EnginePool(create, 2, 3)
-    const results = await Promise.allSettled([pool.analyse(req(1)), pool.analyse(req(2)), pool.analyse(req(3))])
+    const results = await Promise.allSettled([
+      pool.analyse(req(1)),
+      pool.analyse(req(2)),
+      pool.analyse(req(3)),
+    ])
     expect(results.every((r) => r.status === 'rejected')).toBe(true)
   })
 
@@ -98,7 +102,7 @@ describe('EnginePool', () => {
           if (r.nodes === 1) throw new AnalysisAborted()
           return base.analyse(r, s)
         },
-        dispose: base.dispose,
+        dispose: () => base.dispose(),
       }
     }
     const pool = new EnginePool(abortable, 1)
@@ -122,7 +126,9 @@ describe('EnginePool', () => {
   })
 
   it('rejects an invalid size', () => {
-    expect(() => new EnginePool(async () => ({ analyse: async () => result(0), dispose() {} }), 0)).toThrow(RangeError)
+    expect(() => new EnginePool(async () => ({ analyse: async () => result(0), dispose() {} }), 0)).toThrow(
+      RangeError,
+    )
   })
 })
 

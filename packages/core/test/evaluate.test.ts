@@ -65,7 +65,9 @@ describe('evaluatePositions', () => {
 
   it('reports progress up to the total, once per unit of work', async () => {
     const seen: Array<[number, number]> = []
-    await evaluatePositions(game, fakeEngine(game).engine, settings, { onProgress: (d, t) => seen.push([d, t]) })
+    await evaluatePositions(game, fakeEngine(game).engine, settings, {
+      onProgress: (d, t) => seen.push([d, t]),
+    })
     expect(seen[seen.length - 1]).toEqual([7, 7]) // 4 positions + 3 moves
     expect(seen.map(([d]) => d)).toEqual([...seen.keys()].map((i) => i + 1))
   })
@@ -73,9 +75,9 @@ describe('evaluatePositions', () => {
   it('stops with AnalysisAborted when cancelled', async () => {
     const ctl = new AbortController()
     ctl.abort()
-    await expect(evaluatePositions(game, fakeEngine(game).engine, settings, { signal: ctl.signal })).rejects.toBeInstanceOf(
-      AnalysisAborted,
-    )
+    await expect(
+      evaluatePositions(game, fakeEngine(game).engine, settings, { signal: ctl.signal }),
+    ).rejects.toBeInstanceOf(AnalysisAborted)
   })
 
   it('propagates engine failures instead of swallowing them', async () => {

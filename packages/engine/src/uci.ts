@@ -1,4 +1,10 @@
-import { AnalysisAborted, type AnalyseRequest, type AnalyseResult, type Engine, MATE_CP } from '@chessreview/core'
+import {
+  AnalysisAborted,
+  type AnalyseRequest,
+  type AnalyseResult,
+  type Engine,
+  MATE_CP,
+} from '@chessreview/core'
 import { Emitter, type Transport } from './transport'
 
 export class EngineError extends Error {
@@ -40,10 +46,7 @@ export function parseInfo(line: string): Info | null {
 }
 
 /** White-POV centipawns and mate distance from an engine score, which UCI reports for the side to move. */
-export function toWhitePov(
-  score: Info['score'],
-  turn: 'w' | 'b',
-): { cp: number; mate: number | null } {
+export function toWhitePov(score: Info['score'], turn: 'w' | 'b'): { cp: number; mate: number | null } {
   const sign = turn === 'w' ? 1 : -1
   if (score.kind === 'cp') return { cp: sign * score.value, mate: null }
   const mate = sign * score.value
@@ -159,7 +162,12 @@ export class UciEngine implements Engine {
       const best = token && token !== '(none)' ? token : null
       const info = last as Info | null
       if (!info) throw new EngineError(`engine returned no score for ${req.fen}`)
-      return { eval: toWhitePov(info.score, turn), best: best ?? info.pv[0] ?? null, depth: info.depth, nodes: info.nodes }
+      return {
+        eval: toWhitePov(info.score, turn),
+        best: best ?? info.pv[0] ?? null,
+        depth: info.depth,
+        nodes: info.nodes,
+      }
     } finally {
       signal?.removeEventListener('abort', onAbort)
     }

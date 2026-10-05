@@ -66,7 +66,11 @@ export function resultOf(g: Pick<RawGame, 'white' | 'black'>): RemoteGame['resul
 }
 
 /** Standard-chess games of a month, newest first. Variants and games without a PGN are skipped. */
-export async function fetchMonth(user: string, month: string, fetchImpl: typeof fetch = fetch): Promise<RemoteGame[]> {
+export async function fetchMonth(
+  user: string,
+  month: string,
+  fetchImpl: typeof fetch = fetch,
+): Promise<RemoteGame[]> {
   const name = encodeURIComponent(user.trim().toLowerCase())
   const { games } = await getJson<{ games: RawGame[] }>(`${API}/${name}/games/${month}`, user, fetchImpl)
   return games

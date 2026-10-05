@@ -83,8 +83,7 @@ export function buildReview(
 
     let label = classifyByLoss(loss, isBest)
     const prevLoss = moves.length ? moves[moves.length - 1]!.loss : 0
-    const gap =
-      cur.secondCp === null ? null : wBefore - winPercent(moverPov(cur.secondCp, color))
+    const gap = cur.secondCp === null ? null : wBefore - winPercent(moverPov(cur.secondCp, color))
 
     if (book.has(mv.fenAfter) && loss <= BOOK_MAX_LOSS) {
       label = 'Book'
@@ -97,7 +96,13 @@ export function buildReview(
       !mv.promotion
     ) {
       label = 'Brilliant'
-    } else if (isBest && gap !== null && gap >= GREAT_GAP && wBefore >= GREAT_RANGE[0] && wBefore <= GREAT_RANGE[1]) {
+    } else if (
+      isBest &&
+      gap !== null &&
+      gap >= GREAT_GAP &&
+      wBefore >= GREAT_RANGE[0] &&
+      wBefore <= GREAT_RANGE[1]
+    ) {
       label = 'Great'
     } else if ((label === 'Mistake' || label === 'Blunder') && prevLoss >= 10 && wBefore >= 50) {
       label = 'Miss'
@@ -153,7 +158,9 @@ export function buildReview(
     phases: both((s) => {
       const out = {} as Record<Phase, number | null>
       for (const p of PHASES) {
-        const accs = mine(s).filter((m) => m.phase === p).map((m) => m.accuracy)
+        const accs = mine(s)
+          .filter((m) => m.phase === p)
+          .map((m) => m.accuracy)
         out[p] = accs.length ? mean(accs) : null
       }
       return out

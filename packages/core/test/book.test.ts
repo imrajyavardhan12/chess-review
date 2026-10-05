@@ -2,7 +2,6 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { Chess } from 'chess.js'
-// @ts-expect-error plain .mjs build script, no types
 import { buildBook } from '../../../scripts/build-openings.mjs'
 import { createBook, emptyBook, type BookData } from '../src'
 import { readFixture, realBook } from './helpers'
@@ -16,7 +15,9 @@ describe('opening book', () => {
   })
 
   it('has exactly the same positions and names as the Python reference', () => {
-    const py = readFixture<{ positions: string[]; named: Record<string, [string, string]> }>('book-python.json')
+    const py = readFixture<{ positions: string[]; named: Record<string, [string, string]> }>(
+      'book-python.json',
+    )
     expect(openings.positions).toEqual(py.positions)
     expect(openings.named).toEqual(py.named)
   })
