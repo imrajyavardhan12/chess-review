@@ -49,6 +49,10 @@ piece or overloaded defender, a missed or allowed mate, a recapture, or the mate
 squares involved are ringed on the board and the best line is shown in full. When no tactic can be
 confirmed from the engine's lines, the review says only what the move cost.
 
+**Insights** (linked from the home page) sums up every game reviewed on your device for one player:
+accuracy over time, errors per 100 moves by phase, the tactics behind your mistakes, and your results
+by opening and time control. It is computed in your browser from your stored reviews.
+
 These are heuristics, not chess.com's proprietary rules, so labels differ from theirs. The rating shown in the
 Report tab is a rough estimate from average centipawn loss, not a calibrated rating.
 
