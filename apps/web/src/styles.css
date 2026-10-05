@@ -198,7 +198,8 @@ textarea {
 }
 .settings {
   display: flex;
-  gap: 14px;
+  flex-wrap: wrap;
+  gap: 8px 14px;
   align-items: center;
   font-size: 13px;
   color: var(--muted);
@@ -222,6 +223,7 @@ textarea {
 }
 .homebar {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
@@ -893,4 +895,39 @@ textarea {
 .note {
   margin-top: 10px;
   font-size: 12.5px;
+}
+
+/* ---------- time ---------- */
+.tchart {
+  position: relative;
+  margin: 4px 0 8px;
+  cursor: pointer;
+}
+.tchart svg {
+  display: block;
+}
+.tchart-trouble {
+  fill: var(--t-mistake);
+  opacity: 0.12;
+}
+.tchart-line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.tchart-line.dashed {
+  stroke-dasharray: 5 3;
+  opacity: 0.7;
+}
+.tchart-grid {
+  stroke: var(--line);
+}
+.tchart-axis {
+  fill: var(--muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.tchart-cursor {
+  stroke: var(--muted);
+  stroke-dasharray: 3 3;
 }
