@@ -14,7 +14,7 @@ import {
   type Side,
 } from '@chessreview/core'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Chessboard } from 'react-chessboard'
+import { Chessboard, defaultPieces, type PieceRenderObject } from 'react-chessboard'
 import { EvalGraph } from './EvalGraph'
 import { explore, fenOf, lineMoves, play, stepTo, targets, type Exploration } from './explore'
 import { cancelReview, downloadReview, useLiveEval, useReviewState } from './hooks'
@@ -82,6 +82,31 @@ export function ReviewPage({ id, me }: { id: string; me: string | null }) {
 
 // Where the explored line goes next.
 const LINE_ARROW = 'rgba(76,127,214,0.8)'
+
+const PIECE_NAMES: Record<string, string> = {
+  K: 'king',
+  Q: 'queen',
+  R: 'rook',
+  B: 'bishop',
+  N: 'knight',
+  P: 'pawn',
+}
+
+/** The default pieces, each named ("White knight, f3") so a screen reader can tell what it would drag. */
+const NAMED_PIECES: PieceRenderObject = Object.fromEntries(
+  Object.entries(defaultPieces).map(([code, draw]) => [
+    code,
+    (props) => (
+      <div
+        role="img"
+        aria-label={`${code[0] === 'w' ? 'White' : 'Black'} ${PIECE_NAMES[code[1]!]}${props?.square ? `, ${props.square}` : ''}`}
+        style={{ width: '100%', height: '100%' }}
+      >
+        {draw(props)}
+      </div>
+    ),
+  ]),
+)
 
 /** Pieces slide between moves unless the user asked the system for less motion. */
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -263,12 +288,13 @@ function ReviewView({ id, review, me }: { id: string; review: Review; me: string
             <EvalBar win={win} evalLabel={evalLabel} orientation={orientation} />
             {/* Screen readers get the position in words; the drawn board (which can be dragged on to
                 explore) is hidden from them. Keyboard users step through the game with the move list. */}
-            <div className="board" role="img" aria-label={`Board. ${describePosition(fen)}`}>
-              <div aria-hidden="true">
+            <div className="board" role="group" aria-label={`Board. ${describePosition(fen)}`}>
+              <div>
                 <Chessboard
                   options={{
                     position: fen,
                     boardOrientation: orientation,
+                    pieces: NAMED_PIECES,
                     allowDragging: true,
                     onPieceDrop: ({ sourceSquare, targetSquare }) =>
                       targetSquare !== null && tryMove(sourceSquare, targetSquare),
