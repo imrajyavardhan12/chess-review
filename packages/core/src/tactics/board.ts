@@ -168,3 +168,42 @@ export class Board {
     return total
   }
 }
+
+/** Value of a piece in an exchange: the king counts as more than anything, so it recaptures last. */
+const EXCHANGE_VALUE: Record<PieceType, number> = { ...VALUE, k: 100 }
+
+/**
+ * Static exchange evaluation by geometry: the net material (pawns) the side capturing from `from`
+ * to `to` keeps if both sides keep recapturing on `to` with their cheapest piece, each free to stop.
+ * Lines open up as pieces leave them (x-rays). It does not check pins, and a king only recaptures
+ * when nothing can take it back. Much cheaper than a legal-move search, which the detectors need.
+ */
+export function staticExchange(fen: string, from: string, to: string): number {
+  const b = new Board(fen)
+  const piece = b.at(from)
+  if (!piece) return 0
+  const target = b.at(to)
+  const enPassant = piece.type === 'p' && !target && from[0] !== to[0]
+  const gain = [target ? VALUE[target.type] : enPassant ? 1 : 0]
+  if (enPassant) b.cells[index(to[0]! + from[1]!)] = null
+  b.cells[index(to)] = piece
+  b.cells[index(from)] = null
+  let onSquare = EXCHANGE_VALUE[piece.type]
+  let side = other(piece.color)
+  while (gain.length < 32) {
+    const hitters = b.attackers(to, side)
+    if (hitters.length === 0) break
+    const next = hitters.reduce((x, y) =>
+      EXCHANGE_VALUE[b.at(y)!.type] < EXCHANGE_VALUE[b.at(x)!.type] ? y : x,
+    )
+    const nextPiece = b.at(next)!
+    if (nextPiece.type === 'k' && b.attackers(to, other(side)).length > 0) break
+    gain.push(onSquare - gain[gain.length - 1]!)
+    onSquare = EXCHANGE_VALUE[nextPiece.type]
+    b.cells[index(to)] = nextPiece
+    b.cells[index(next)] = null
+    side = other(side)
+  }
+  for (let d = gain.length - 1; d > 0; d--) gain[d - 1] = -Math.max(-gain[d - 1]!, gain[d]!)
+  return gain[0] || 0
+}

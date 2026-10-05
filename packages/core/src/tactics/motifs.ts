@@ -1,7 +1,6 @@
 import { Chess } from 'chess.js'
-import { see } from '../see'
 import type { Color } from '../types'
-import { Board, VALUE, other, slides, type PieceType } from './board'
+import { Board, VALUE, other, slides, staticExchange, type PieceType } from './board'
 import type { Step } from './line'
 
 /** A piece on a square. */
@@ -48,13 +47,7 @@ const START_WITHIN = 3
 /** How many of its moves after that the payoff may take. */
 const PAYOFF_WITHIN = 2
 
-const safeSee = (fen: string, uci: string): number => {
-  try {
-    return see(fen, uci)
-  } catch {
-    return 0
-  }
-}
+const safeSee = (fen: string, uci: string): number => staticExchange(fen, uci.slice(0, 2), uci.slice(2, 4))
 
 /** A capture by `color` that wins material by static exchange. */
 const winsMaterial = (s: Step | undefined, color: Color): s is Step =>
@@ -81,6 +74,9 @@ function passTurn(fen: string): string {
 function threatOn(fen: string, sq: string, color: Color): number {
   const turn = fen.split(' ')[1] === 'b' ? 'b' : 'w'
   const pos = turn === color ? fen : passTurn(fen)
+  // Only pieces whose line of fire reaches the square can capture there: generate just their moves.
+  const hitters = new Board(pos).attackers(sq, color)
+  if (hitters.length === 0) return 0
   let chess: Chess
   try {
     chess = new Chess(pos)
@@ -88,8 +84,10 @@ function threatOn(fen: string, sq: string, color: Color): number {
     return 0
   }
   let best = 0
-  for (const m of chess.moves({ verbose: true })) {
-    if (m.to === sq && m.captured) best = Math.max(best, safeSee(pos, m.from + m.to + (m.promotion ?? '')))
+  for (const from of hitters) {
+    for (const m of chess.moves({ square: from as never, verbose: true })) {
+      if (m.to === sq && m.captured) best = Math.max(best, safeSee(pos, m.from + m.to))
+    }
   }
   return best
 }
@@ -322,6 +320,9 @@ export function trapped(steps: readonly Step[], k: number): Motif | null {
   if (!s || s.check) return null // a check forces the reply; that is not a trap
   const a = s.color
   const v = other(a)
+  // Only a piece the line goes on to win can have been trapped: look at nothing else.
+  const won = new Set(payoffSteps(steps, k, a).flatMap((j) => steps[j]!.captured ?? []))
+  if (![...won].some((t) => t !== 'p')) return null
   const after = new Board(s.after)
   let chess: Chess
   try {
@@ -333,7 +334,7 @@ export function trapped(steps: readonly Step[], k: number): Motif | null {
   for (const sq of after.pieces(v)) {
     const piece = after.at(sq)!
     // A pinned piece that cannot get away is the pin's doing; the pin detector names it.
-    if (piece.type === 'p' || piece.type === 'k' || pinned.has(sq)) continue
+    if (!won.has(piece.type) || piece.type === 'k' || pinned.has(sq)) continue
     if (threatOn(s.after, sq, a) <= 0 || threatOn(s.before, sq, a) > 0) continue // must be newly threatened
     const exits = chess.moves({ square: sq as never, verbose: true })
     const safe = exits.some((m) => {

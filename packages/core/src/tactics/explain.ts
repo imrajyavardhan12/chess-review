@@ -1,8 +1,7 @@
 import { Chess } from 'chess.js'
 import { turnOf } from '../chess-util'
-import { see } from '../see'
 import type { Color, Eval, Label, Review } from '../types'
-import { Board, PIECE_NAME, VALUE, other, sideName, type PieceType } from './board'
+import { Board, PIECE_NAME, VALUE, other, sideName, staticExchange, type PieceType } from './board'
 import { gain, outcome, replay, type Step } from './line'
 import { findMotif, type Motif, type Placed } from './motifs'
 
@@ -308,7 +307,7 @@ export function explainMove(f: MoveFacts): Explanation | null {
       m?.kind === 'hanging' &&
       m.target.square === f.played.slice(2, 4) &&
       capturedBy(f) &&
-      see(f.fenBefore, f.played) >= 0
+      staticExchange(f.fenBefore, f.played.slice(0, 2), f.played.slice(2, 4)) >= 0
     )
       return null
     const need = needFor(m)

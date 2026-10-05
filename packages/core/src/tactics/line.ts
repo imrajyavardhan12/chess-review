@@ -1,7 +1,6 @@
 import { Chess } from 'chess.js'
-import { see } from '../see'
 import type { Color } from '../types'
-import { VALUE, type PieceType } from './board'
+import { VALUE, staticExchange, type PieceType } from './board'
 
 /** One move of a line, with the positions either side of it. */
 export interface Step {
@@ -61,23 +60,29 @@ export function gain(step: Step): number {
 
 /** The most the side to move can win by one capture sequence, by static exchange; 0 if nothing. */
 export function bestCapture(fen: string): number {
+  const captures = new Chess(fen)
+    .moves({ verbose: true })
+    .filter((m) => m.captured)
+    .sort((x, y) => VALUE[y.captured!] - VALUE[x.captured!])
   let best = 0
-  for (const m of new Chess(fen).moves({ verbose: true })) {
-    if (m.captured) best = Math.max(best, see(fen, m.from + m.to + (m.promotion ?? '')))
+  for (const m of captures) {
+    // An exchange never wins more than the piece it starts by taking.
+    if (VALUE[m.captured!] <= best) break
+    best = Math.max(best, staticExchange(fen, m.from, m.to))
   }
   return best
 }
 
 /**
  * Material `color` gains (negative: loses) along a line, in pawns, settled at the end: if the line
- * stops in the middle of an exchange, the side to move is credited with what it can still take.
+ * stops in the middle of an exchange (its last move a capture), the side to move is credited with
+ * what it can still take.
  */
 export function outcome(fen: string, line: readonly string[], color: Color): number {
   const steps = replay(fen, line)
   let total = 0
   for (const s of steps) total += (s.color === color ? 1 : -1) * gain(s)
-  const end = steps.length ? steps[steps.length - 1]!.after : fen
-  const toMove: Color = end.split(' ')[1] === 'b' ? 'b' : 'w'
-  if (new Chess(end).isGameOver()) return total
-  return total + (toMove === color ? 1 : -1) * bestCapture(end)
+  const last = steps[steps.length - 1]
+  if (!last?.captured || last.mate) return total
+  return total + (last.color === color ? -1 : 1) * bestCapture(last.after)
 }

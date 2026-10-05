@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { explainMove, findMotif, outcome, replay, type Motif, type MoveFacts } from '../src'
 import { isBackRankMate } from '../src/tactics/explain'
-import { Board } from '../src/tactics/board'
+import { Board, staticExchange } from '../src/tactics/board'
 
 /**
  * Positions from the Lichess puzzle database (CC0), each checked by hand. A puzzle's first move is
@@ -133,6 +133,19 @@ describe('line helpers', () => {
 
   it('counts promotions as material', () => {
     expect(outcome('8/P6k/8/8/8/8/8/K7 w - - 0 1', ['a7a8q'], 'w')).toBe(8)
+  })
+
+  it('evaluates exchanges by geometry, seeing through pieces that have moved', () => {
+    // Rxd5 Rxd5 Qxd5: the queen behind the rook joins in, so the defended pawn is won...
+    expect(staticExchange('3rk3/8/8/3p4/8/8/3R4/3QK3 w - - 0 1', 'd2', 'd5')).toBe(1)
+    // ...and without the queen the rook is lost for it.
+    expect(staticExchange('3rk3/8/8/3p4/8/8/3R4/4K3 w - - 0 1', 'd2', 'd5')).toBe(-4)
+    // A knight taking a pawn defended by a pawn loses two pawns' worth.
+    expect(staticExchange('4k3/8/4p3/3p4/8/4N3/8/4K3 w - - 0 1', 'e3', 'd5')).toBe(-2)
+    // En passant takes the pawn beside the capturing pawn, not one on the target square.
+    expect(staticExchange('4k3/8/8/3pP3/8/8/8/4K3 w - d6 0 1', 'e5', 'd6')).toBe(1)
+    // The king only recaptures when nothing can take it back.
+    expect(staticExchange('4k3/3r4/8/8/8/8/3R4/3QK3 w - - 0 1', 'd2', 'd7')).toBe(5)
   })
 
   it('reads attacks and lines off a board', () => {
