@@ -4,7 +4,10 @@ Chess game review that runs entirely in your browser: move labels (brilliant, gr
 miss), accuracy, a win-chance graph, accuracy by phase and a plain-language summary. Stockfish runs in Web
 Workers on your own CPU, so there is no server, no account, and your games never leave your device.
 
-Import games from a chess.com username or paste any PGN.
+Import games from a chess.com or Lichess username, or paste any PGN. "Review all new games" queues every
+unreviewed game in the list; the queue keeps going if you leave the page and picks up again after a
+reload. A review can be downloaded as an annotated PGN (labels as NAGs, `[%eval]` and `[%clk]`
+comments) or as a review file, which opens on another device.
 
 ## Develop
 

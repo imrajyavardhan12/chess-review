@@ -101,6 +101,16 @@ The rules are documented in `packages/core/src/rules.ts` and the README. `GREAT_
 tuned against real games (Kasparov–Topalov for brilliancies); they are judgement calls and will be
 revisited as more games are reviewed.
 
+### 11. Two game sources, batches, and portable reviews
+
+Games come from chess.com's public archive API or Lichess's public games export (ndjson, last 30
+games, more on request); both are plain CORS GETs with no account. "Review all new games" starts
+every unreviewed game through `ReviewService.startMany`, in list order; the existing request store
+makes the queue durable, and `resumePending` restarts unfinished requests at start-up. Reviews
+export as annotated PGN (`exportPgn`) and as JSON (`exportJson`); `importJson` treats a file as
+untrusted, checks every field against the PGN it carries, and recomputes the id from the review's own
+settings before storing it. `docs/adr/0006-import-export.md` has the details.
+
 ## Changing the rules
 
 1. Change `reference/python/src/chessreview/analysis.py` and its tests.
@@ -115,7 +125,7 @@ Adding a label means: the `LABELS` list and `GLYPH` in core, the rule in `buildR
 
 No backend and no accounts. The deployed site sets a strict Content-Security-Policy
 (`apps/web/public/_headers`): scripts and workers from the same origin only, `wasm-unsafe-eval` for the
-engine, and `connect-src` limited to `api.chess.com`. The end-to-end tests run under that policy and fail on
+engine, and `connect-src` limited to `api.chess.com` and `lichess.org`. The end-to-end tests run under that policy and fail on
 any violation. The engine is GPL-3.0 software, so the project is GPL-3.0-or-later and ships the licence and
 source pointers with the engine files.
 
