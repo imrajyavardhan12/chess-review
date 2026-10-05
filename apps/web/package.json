@@ -8,7 +8,7 @@
     "typecheck": "tsc --noEmit",
     "predev": "node ../../scripts/copy-engine.mjs",
     "prebuild": "node ../../scripts/copy-engine.mjs",
-    "e2e": "playwright test"
+    "e2e": "node ../../scripts/build-engine-fixture.mjs && playwright test"
   },
   "type": "module",
   "dependencies": {
