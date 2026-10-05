@@ -15,4 +15,4 @@ export function getReviewService(): Promise<ReviewService> {
 
 export type { JobState } from './reviews'
 export { ChessComError, fetchMonth, listMonths, type RemoteGame } from './chesscom'
-export type { Summary } from './storage'
+export type { StoredReview, Summary } from './storage'

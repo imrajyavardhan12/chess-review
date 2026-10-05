@@ -27,6 +27,8 @@ export interface ReviewStore {
   getReview(id: string): Promise<StoredReview | undefined>
   putReview(r: StoredReview): Promise<void>
   summaries(ids: readonly string[]): Promise<Map<string, Summary>>
+  /** Every stored review, for statistics across games. */
+  allReviews(): Promise<StoredReview[]>
   getRequest(id: string): Promise<StoredRequest | undefined>
   putRequest(r: StoredRequest): Promise<void>
   deleteRequest(id: string): Promise<void>
@@ -50,6 +52,7 @@ export function memoryStore(): ReviewStore {
     putReview: async (r) => void reviews.set(r.id, r),
     summaries: async (ids) =>
       new Map(ids.flatMap((id) => (reviews.has(id) ? [[id, reviews.get(id)!.summary] as const] : []))),
+    allReviews: async () => [...reviews.values()],
     getRequest: async (id) => requests.get(id),
     putRequest: async (r) => void requests.set(r.id, r),
     deleteRequest: async (id) => void requests.delete(id),
@@ -84,6 +87,7 @@ export async function indexedDbStore(name = 'chessreview'): Promise<ReviewStore>
       }
       return out
     },
+    allReviews: () => db.getAll('reviews'),
     getRequest: (id) => db.get('requests', id),
     putRequest: async (r) => void (await db.put('requests', r)),
     deleteRequest: (id) => db.delete('requests', id),
