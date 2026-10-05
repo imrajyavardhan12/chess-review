@@ -19,7 +19,8 @@
     "review-games": "node --experimental-transform-types --no-warnings --import ./scripts/ts-hooks.mjs scripts/review-games.ts",
     "explain-corpus": "node --experimental-transform-types --no-warnings --import ./scripts/ts-hooks.mjs scripts/explain-corpus.ts",
     "tactics-eval": "node --experimental-transform-types --no-warnings --import ./scripts/ts-hooks.mjs scripts/tactics-eval.ts",
-    "budget": "node scripts/check-bundle.mjs"
+    "budget": "node scripts/check-bundle.mjs",
+    "label-audit": "node --experimental-transform-types --no-warnings --import ./scripts/ts-hooks.mjs scripts/label-audit.ts"
   },
   "engines": {
     "node": ">=20"
