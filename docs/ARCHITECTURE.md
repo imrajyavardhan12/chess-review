@@ -101,6 +101,15 @@ The rules are documented in `packages/core/src/rules.ts` and the README. `GREAT_
 tuned against real games (Kasparov–Topalov for brilliancies); they are judgement calls and will be
 revisited as more games are reviewed.
 
+### 11. Time analysis is read from the clocks already in the review
+
+`packages/core/src/clock.ts` derives think time per move (the clock difference plus the increment,
+the first move timed from the starting clock), time trouble (less than a tenth of the base time,
+capped at two minutes) and per-side counts of errors with and without time trouble, from
+`MoveReview.clockMs` and the `TimeControl` header. It needs no change to stored reviews or to
+`ANALYSIS_VERSION`. Games without clocks, or daily games without a base time, are handled: no
+graph, or no time-trouble figures. `docs/adr/0005-time-analysis.md` has the details.
+
 ## Changing the rules
 
 1. Change `reference/python/src/chessreview/analysis.py` and its tests.
@@ -122,7 +131,6 @@ source pointers with the engine files.
 ## Known limits and next steps
 
 - Tactic explanations (fork, pin, hanging piece), written once in `core`.
-- Time-trouble analysis: `MoveReview.clockMs` already carries the clock from the PGN.
 - The full-strength engine as an optional download.
 - Share links for a review (today a review lives on the device that made it).
 - Offline use (a service worker for the app shell and engine).

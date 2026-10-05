@@ -43,6 +43,10 @@ it gave up:
 | Inaccuracy / Mistake / Blunder | gave up up to 10% / 20% / more                                                                |
 | Miss                           | a mistake or blunder right after the opponent made one (10%+), from an at-least-even position |
 
+When the PGN carries clock times (chess.com and Lichess exports do), each move shows how long it took,
+and the Report tab graphs both clocks and counts the errors made in time trouble (under a tenth of the
+starting time, at most two minutes) against the rest.
+
 These are heuristics, not chess.com's proprietary rules, so labels differ from theirs. The rating shown in the
 Report tab is a rough estimate from average centipawn loss, not a calibrated rating.
 
