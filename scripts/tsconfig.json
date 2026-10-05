@@ -1,0 +1,6 @@
+{
+  "extends": "../tsconfig.base.json",
+  // The measurement scripts run directly with Node's type stripping, so they import .ts paths.
+  "compilerOptions": { "lib": ["ES2022", "DOM"], "types": ["node"], "allowImportingTsExtensions": true },
+  "include": ["*.ts"]
+}
