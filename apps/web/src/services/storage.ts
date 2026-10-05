@@ -20,6 +20,8 @@ export interface StoredRequest {
   id: string
   pgn: string
   preset: PresetName
+  /** Engine build the review was asked for; absent on requests from before it was selectable. */
+  engine?: string
   createdAt: number
 }
 

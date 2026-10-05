@@ -11,6 +11,7 @@ import {
   type Review,
 } from '@chessreview/core'
 import { EngineError } from '@chessreview/engine'
+import { EngineNotInstalled } from './full-engine'
 import type { EngineHost } from './engine-host'
 import { summarize, type ReviewStore } from './storage'
 
@@ -29,9 +30,10 @@ interface Job {
 
 export interface ReviewServiceDeps {
   store: ReviewStore
-  host: EngineHost
+  /** The engine pool for an engine build. May refuse, e.g. for an engine that is not downloaded. */
+  engine: (engineId: string) => Promise<EngineHost>
   loadBook: () => Promise<OpeningBook>
-  /** Identifies the engine build; part of every review's id. */
+  /** The engine build used unless another is asked for; part of every review's id. */
   engineId: string
   now?: () => number
 }
@@ -47,19 +49,25 @@ export class ReviewService {
 
   constructor(private deps: ReviewServiceDeps) {}
 
-  /** The id a game would have under the given preset. Stable across sessions and devices. */
-  idFor(pgn: string, preset: PresetName): Promise<string> {
-    return reviewKey(pgn, settingsFor(preset, this.deps.engineId))
+  /** The id a game would have under the given preset and engine. Stable across sessions and devices. */
+  idFor(pgn: string, preset: PresetName, engineId = this.deps.engineId): Promise<string> {
+    return reviewKey(pgn, settingsFor(preset, engineId))
   }
 
   /** Starts a review (or finds the finished one) and returns its id. */
-  async start(pgn: string, preset: PresetName): Promise<string> {
-    const id = await this.idFor(pgn, preset)
+  async start(pgn: string, preset: PresetName, engineId = this.deps.engineId): Promise<string> {
+    const id = await this.idFor(pgn, preset, engineId)
     if (this.jobs.get(id)?.state.status === 'running') return id
     if (await this.deps.store.getReview(id)) return id
     parseGame(pgn) // reject bad input before queueing anything
-    await this.deps.store.putRequest({ id, pgn, preset, createdAt: (this.deps.now ?? Date.now)() })
-    this.launch(id, pgn, preset)
+    await this.deps.store.putRequest({
+      id,
+      pgn,
+      preset,
+      engine: engineId,
+      createdAt: (this.deps.now ?? Date.now)(),
+    })
+    this.launch(id, pgn, preset, engineId)
     return id
   }
 
@@ -76,7 +84,8 @@ export class ReviewService {
     if (stored) return this.track(id, { status: 'done', review: stored.review }).state
     const request = await this.deps.store.getRequest(id)
     if (request) {
-      this.launch(id, request.pgn, request.preset)
+      // Requests from before engines were selectable used the default build.
+      this.launch(id, request.pgn, request.preset, request.engine ?? this.deps.engineId)
       return this.jobs.get(id)!.state
     }
     return { status: 'missing' }
@@ -115,14 +124,15 @@ export class ReviewService {
     for (const l of [...job.listeners]) l(state)
   }
 
-  private launch(id: string, pgn: string, preset: PresetName): void {
+  private launch(id: string, pgn: string, preset: PresetName, engineId: string): void {
     const job = this.track(id, { status: 'running', done: 0, total: 0 })
     const run = async () => {
       if (job.controller.signal.aborted) throw new AnalysisAborted()
-      const settings = settingsFor(preset, this.deps.engineId)
+      const settings = settingsFor(preset, engineId)
       const game = parseGame(pgn)
       const book = await this.deps.loadBook()
-      const records = await this.deps.host.use((engine) =>
+      const host = await this.deps.engine(engineId)
+      const records = await host.use((engine) =>
         evaluatePositions(game, engine, settings, {
           signal: job.controller.signal,
           onProgress: (done, total) => this.set(id, { status: 'running', done, total }),
@@ -158,6 +168,7 @@ export class ReviewService {
 
 function friendly(e: unknown): string {
   if (e instanceof InvalidPgnError) return `That PGN couldn’t be read: ${e.message}`
+  if (e instanceof EngineNotInstalled) return e.message
   if (e instanceof EngineError) {
     return `The chess engine couldn’t run in this browser (${e.message.replace(/\.$/, '')}). Try a current Chrome, Firefox or Safari, and check that no extension is blocking WebAssembly or web workers.`
   }

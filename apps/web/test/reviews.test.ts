@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { InvalidPgnError, emptyBook, legalUci, parseGame, type AnalyseRequest } from '@chessreview/core'
 import { EngineError, type PoolEngine } from '@chessreview/engine'
 import { EngineHost } from '../src/services/engine-host'
+import { EngineNotInstalled } from '../src/services/full-engine'
 import { ReviewService, type JobState } from '../src/services/reviews'
 import { memoryStore, type ReviewStore } from '../src/services/storage'
 
@@ -25,10 +26,11 @@ function setup(opts: { gate?: Promise<void>; fail?: string; engineFailure?: bool
     dispose() {},
   })
   const store = memoryStore()
+  const host = new EngineHost(create, 2, 60_000)
   const make = (s: ReviewStore = store) =>
     new ReviewService({
       store: s,
-      host: new EngineHost(create, 2, 60_000),
+      engine: async () => host,
       loadBook: async () => emptyBook,
       engineId: 'fake',
       now: () => 1,
@@ -173,6 +175,33 @@ describe('ReviewService', () => {
     const at = count
     await finish(service, id)
     expect(count).toBe(at)
+  })
+
+  it('keys a review by its engine, and resumes a request with the engine it asked for', async () => {
+    const gate = new Promise<void>(() => undefined)
+    const first = setup({ gate })
+    expect(await first.service.idFor(PGN, 'quick', 'full')).not.toBe(await first.service.idFor(PGN, 'quick'))
+    const id = await first.service.start(PGN, 'quick', 'full')
+    expect(await first.store.getRequest(id)).toMatchObject({ engine: 'full' })
+
+    const second = setup()
+    await second.store.putRequest((await first.store.getRequest(id))!)
+    const state = await finish(second.service, id)
+    expect(state.status === 'done' && state.review.settings.engine).toBe('full')
+  })
+
+  it('reports an engine that is not available on this device in words the user can act on', async () => {
+    const { store } = setup()
+    const service = new ReviewService({
+      store,
+      engine: async () => {
+        throw new EngineNotInstalled()
+      },
+      loadBook: async () => emptyBook,
+      engineId: 'fake',
+    })
+    const state = await finish(service, await service.start(PGN, 'quick'))
+    expect(state).toMatchObject({ status: 'error', message: expect.stringContaining('isn’t downloaded') })
   })
 
   it('parses fixtures the same way the service does', () => {
