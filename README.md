@@ -49,6 +49,9 @@ piece or overloaded defender, a missed or allowed mate, a recapture, or the mate
 squares involved are ringed on the board and the best line is shown in full. When no tactic can be
 confirmed from the engine's lines, the review says only what the move cost.
 
+Click any move of the best line to step through it, or move a piece on the board to explore your
+own ideas: the engine evaluates each position live. Exploring never changes the stored review.
+
 These are heuristics, not chess.com's proprietary rules, so labels differ from theirs. The rating shown in the
 Report tab is a rough estimate from average centipawn loss, not a calibrated rating.
 

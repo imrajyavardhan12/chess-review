@@ -128,6 +128,14 @@ line that shows it and the squares to highlight.
 - **Python parity is unchanged.** The reference implementation does not record lines; the parity
   tests compare every field it produces.
 
+### 11. Free analysis is separate from the review
+
+Stepping through an engine line or trying moves on the board (`apps/web/src/explore.ts`) is page
+state only: it is never written to storage and never changes a `Review`. Positions are evaluated by
+`LiveAnalysis` (`services/analysis.ts`) on the same engine pool as reviews, at the user's preset
+(depth- and node-limited, so it ends on its own). Moving on aborts the search for the position left
+behind (the engine gets `stop`), and answers are remembered per position, so stepping back is free.
+
 ## Changing the rules
 
 1. Change `reference/python/src/chessreview/analysis.py` and its tests.
