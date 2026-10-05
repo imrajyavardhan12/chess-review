@@ -37,16 +37,3 @@ export function overlayFor(e: Explanation | null, shownFen: string): Overlay {
   if (positionKey(key.after) === shown) return { arrows: [], rings: e.squares }
   return NONE
 }
-
-/** A line in SAN with move numbers, e.g. "23. Rb4 Kf7 24. Rxb7" or "23… Kf7 24. Rxb7". */
-export function sanLine(fen: string, uci: readonly string[], max = 8): string {
-  const steps = replay(fen, uci.slice(0, max))
-  const fullmove = Number(fen.split(' ')[5] ?? 1)
-  const offset = steps[0]?.color === 'b' ? 1 : 0
-  return steps
-    .map((s, i) => {
-      if (s.color === 'w') return `${fullmove + Math.floor((i + offset) / 2)}. ${s.san}`
-      return i === 0 ? `${fullmove}… ${s.san}` : s.san
-    })
-    .join(' ')
-}

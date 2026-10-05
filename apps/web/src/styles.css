@@ -903,3 +903,41 @@ textarea {
 .bestline .muted {
   margin-right: 4px;
 }
+.chips {
+  display: inline;
+}
+.chips > span {
+  display: inline;
+}
+.chip {
+  padding: 1px 4px;
+  margin: 0 1px;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.chip:hover {
+  background: var(--line);
+}
+.chip[aria-current='true'] {
+  background: var(--ink);
+  color: var(--paper);
+}
+.explore-eval {
+  margin: 10px 0 4px;
+  font-size: 20px;
+}
+.dot-target {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 26%;
+  height: 26%;
+  border-radius: 50%;
+  background: rgba(22, 34, 43, 0.35);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}

@@ -2,6 +2,7 @@ import {
   coachLine,
   explainReviewMove,
   moveName,
+  winPercent,
   type Counts,
   type Explanation,
   type MoveReview as Move,
@@ -12,11 +13,13 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Chessboard } from 'react-chessboard'
 import { EvalGraph } from './EvalGraph'
-import { cancelReview, useReviewState } from './hooks'
+import { explore, fenOf, lineMoves, play, stepTo, targets, type Exploration } from './explore'
+import { cancelReview, useLiveEval, useReviewState } from './hooks'
 import { ERRORS, META, ORDER, evalText, isKeyMoment, isNotable } from './labels'
 import { BOARDS, usePrefs } from './prefs'
+import type { LiveEval } from './services'
 import { Settings } from './Settings'
-import { overlayFor, sanLine } from './tactics'
+import { overlayFor } from './tactics'
 
 export function ReviewPage({ id, me }: { id: string; me: string | null }) {
   const state = useReviewState(id)
@@ -71,6 +74,9 @@ export function ReviewPage({ id, me }: { id: string; me: string | null }) {
   )
 }
 
+// Where the explored line goes next.
+const LINE_ARROW = 'rgba(76,127,214,0.8)'
+
 const isLight = (sq: string) => (sq.charCodeAt(0) - 97 + Number(sq[1]) - 1) % 2 === 1
 
 function ReviewView({ review, me }: { review: Review; me: string | null }) {
@@ -86,6 +92,10 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
   const [flipped, setFlipped] = useState(mySide === 'black')
   const [showBest, setShowBest] = useState(false)
   const [tab, setTab] = useState<'moves' | 'report'>('moves')
+  // Moves the user is trying out on the board: never stored, never part of the review.
+  const [exploring, setExploring] = useState<Exploration | null>(null)
+  // A piece picked up by clicking, waiting for a click on where it goes.
+  const [picked, setPicked] = useState<string | null>(null)
   const sq = BOARDS[usePrefs().board]
   const orientation = flipped ? 'black' : 'white'
   const n = review.fens.length - 1
@@ -93,15 +103,37 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
   const goto = (p: number) => {
     setPly(Math.max(0, Math.min(n, p)))
     setShowBest(false)
+    setExploring(null)
+    setPicked(null)
+    setTab('moves')
+  }
+  const startExploring = (x: Exploration) => {
+    setExploring(x)
+    setShowBest(false)
+    setPicked(null)
     setTab('moves')
   }
 
   const move: Move | null = ply > 0 ? (review.moves[ply - 1] ?? null) : null
-  const bestShown = showBest && !!move && !!move.bestUci && move.bestUci !== move.uci
-  const fen = bestShown ? review.fens[ply - 1] : review.fens[ply]
+  const bestShown = !exploring && showBest && !!move && !!move.bestUci && move.bestUci !== move.uci
+  const exploreFen = exploring ? fenOf(exploring) : null
+  const fen = exploreFen ?? (bestShown ? review.fens[ply - 1]! : review.fens[ply]!)
+  const { live, last, thinking } = useLiveEval(exploreFen)
 
   const tactic = useMemo(() => (ply > 0 ? explainReviewMove(review, ply - 1) : null), [review, ply])
-  const overlay = overlayFor(tactic, fen!)
+  const overlay = overlayFor(tactic, fen)
+
+  // The step buttons walk the exploration while there is one, the game otherwise.
+  const at = exploring ? exploring.at : ply
+  const end = exploring ? exploring.moves.length : n
+  const walk = (p: number) => (exploring ? setExploring(stepTo(exploring, p)) : goto(p))
+
+  /** Plays a move on the board, starting an exploration from the shown position if none is running. */
+  const tryMove = (from: string, to: string): boolean => {
+    const next = play(exploring ?? explore(fen), from, to)
+    if (next) startExploring(next)
+    return next !== null
+  }
 
   const keyPlies = useMemo(() => review.moves.filter((m) => isKeyMoment(m.label)).map((m) => m.ply), [review])
   const prevKey = [...keyPlies].reverse().find((p) => p < ply)
@@ -116,14 +148,23 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
       if (e.metaKey || e.ctrlKey || e.altKey) return
       const t = e.target as HTMLElement
       if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT') return
-      const keys: Record<string, () => void> = {
-        ArrowLeft: () => goto(ply - 1),
-        ArrowRight: () => goto(ply + 1),
-        Home: () => goto(0),
-        End: () => goto(n),
-        f: () => setFlipped((v) => !v),
-        b: () => setShowBest((v) => !v),
-      }
+      const keys: Record<string, () => void> = exploring
+        ? {
+            ArrowLeft: () => setExploring(stepTo(exploring, exploring.at - 1)),
+            ArrowRight: () => setExploring(stepTo(exploring, exploring.at + 1)),
+            Home: () => setExploring(stepTo(exploring, 0)),
+            End: () => setExploring(stepTo(exploring, exploring.moves.length)),
+            Escape: () => setExploring(null),
+            f: () => setFlipped((v) => !v),
+          }
+        : {
+            ArrowLeft: () => goto(ply - 1),
+            ArrowRight: () => goto(ply + 1),
+            Home: () => goto(0),
+            End: () => goto(n),
+            f: () => setFlipped((v) => !v),
+            b: () => setShowBest((v) => !v),
+          }
       const run = keys[e.key]
       if (run) {
         e.preventDefault()
@@ -145,24 +186,41 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
           { startSquare: move.bestUci.slice(0, 2), endSquare: move.bestUci.slice(2, 4), color: '#2E8B62' },
         ]
       : []
+  // While exploring: where the line goes next, and the engine's choice.
+  const exploreArrows: typeof moveArrows = []
+  if (exploring) {
+    const next = exploring.moves[exploring.at]
+    if (next)
+      exploreArrows.push({ startSquare: next.slice(0, 2), endSquare: next.slice(2, 4), color: LINE_ARROW })
+    const best = live?.line[0]
+    if (best && best !== next)
+      exploreArrows.push({ startSquare: best.slice(0, 2), endSquare: best.slice(2, 4), color: '#2E8B62' })
+  }
   // The tactic's own arrow, unless it repeats one already drawn.
+  const drawn = [...moveArrows, ...exploreArrows]
   const arrows = [
-    ...moveArrows,
+    ...drawn,
     ...overlay.arrows.filter(
-      (a) => !moveArrows.some((m) => m.startSquare === a.startSquare && m.endSquare === a.endSquare),
+      (a) => !drawn.some((m) => m.startSquare === a.startSquare && m.endSquare === a.endSquare),
     ),
   ]
   const ringColor = move ? META[move.label].color : 'transparent'
 
-  const lastSquares = move && !bestShown ? [move.uci.slice(0, 2), move.uci.slice(2, 4)] : []
-  const badge = move && !bestShown && (isNotable(move.label) || move.label === 'Best') ? move : null
+  const lastUci = exploring ? exploring.moves[exploring.at - 1] : bestShown ? undefined : move?.uci
+  const lastSquares = lastUci ? [lastUci.slice(0, 2), lastUci.slice(2, 4)] : []
+  const badge =
+    move && !bestShown && !exploring && (isNotable(move.label) || move.label === 'Best') ? move : null
+  const dots = picked ? targets(fen, picked) : []
 
   const top: Side = orientation === 'white' ? 'black' : 'white'
   const bottom: Side = orientation === 'white' ? 'white' : 'black'
   const h = review.headers
   const rating = (s: Side) => (s === 'white' ? h.WhiteElo : h.BlackElo)
   const evalPly = bestShown ? ply - 1 : ply // the eval of whichever position is on the board
-  const win = review.winSeries[evalPly] ?? 50
+  // While exploring, the live eval; until it arrives, the bar holds the last one it had.
+  const shownEval = exploring ? (live ?? last)?.eval : review.evals[evalPly]
+  const win = shownEval ? winPercent(shownEval.cp) : (review.winSeries[evalPly] ?? 50)
+  const evalLabel = exploring && thinking ? '…' : shownEval ? evalText(shownEval) : '…'
   const opening = [review.eco, review.opening].filter(Boolean).join(' ')
 
   return (
@@ -193,13 +251,20 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
         <section className="boardcol" aria-label="Board">
           <PlayerTag name={review[top]} rating={rating(top)} side={top} />
           <div className="board-row">
-            <EvalBar win={win} evalLabel={evalText(review.evals[evalPly]!)} orientation={orientation} />
+            <EvalBar win={win} evalLabel={evalLabel} orientation={orientation} />
             <div className="board">
               <Chessboard
                 options={{
                   position: fen,
                   boardOrientation: orientation,
-                  allowDragging: false,
+                  allowDragging: true,
+                  onPieceDrop: ({ sourceSquare, targetSquare }) =>
+                    targetSquare !== null && tryMove(sourceSquare, targetSquare),
+                  onSquareClick: ({ piece, square }) => {
+                    if (picked && dots.includes(square) && tryMove(picked, square)) return
+                    const mine = piece && piece.pieceType[0] === fen.split(' ')[1]
+                    setPicked(mine && square !== picked ? square : null)
+                  },
                   allowDrawingArrows: false,
                   clearArrowsOnPositionChange: false,
                   animationDurationInMs: 160,
@@ -210,6 +275,7 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
                     const hl = lastSquares.includes(square)
                     const showBadge = badge && square === badge.uci.slice(2, 4)
                     const ring = overlay.rings.includes(square)
+                    const dot = dots.includes(square)
                     return (
                       <div
                         data-ring={ring || undefined}
@@ -217,11 +283,13 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
                           width: '100%',
                           height: '100%',
                           position: 'relative',
-                          backgroundColor: hl ? (isLight(square) ? sq.hlLight : sq.hlDark) : undefined,
+                          backgroundColor:
+                            hl || square === picked ? (isLight(square) ? sq.hlLight : sq.hlDark) : undefined,
                           boxShadow: ring ? `inset 0 0 0 3px ${ringColor}` : undefined,
                         }}
                       >
                         {children}
+                        {dot && <span className="dot-target" aria-hidden="true" />}
                         {showBadge && (
                           <span
                             className="badge"
@@ -241,28 +309,42 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
           <div className="controls">
             <IconButton
               label="Start"
-              onClick={() => goto(0)}
-              disabled={ply === 0}
+              onClick={() => walk(0)}
+              disabled={at === 0}
               d="M6 5v14M18 5l-8 7 8 7z"
             />
             <IconButton
               label="Previous move"
-              onClick={() => goto(ply - 1)}
-              disabled={ply === 0}
+              onClick={() => walk(at - 1)}
+              disabled={at === 0}
               d="M15 5l-8 7 8 7z"
             />
             <IconButton
               label="Next move"
-              onClick={() => goto(ply + 1)}
-              disabled={ply === n}
+              onClick={() => walk(at + 1)}
+              disabled={at === end}
               d="M9 5l8 7-8 7z"
             />
-            <IconButton label="End" onClick={() => goto(n)} disabled={ply === n} d="M18 5v14M6 5l8 7-8 7z" />
+            <IconButton
+              label="End"
+              onClick={() => walk(end)}
+              disabled={at === end}
+              d="M18 5v14M6 5l8 7-8 7z"
+            />
             <button className="ghost" onClick={() => setFlipped((v) => !v)} title="Flip board (f)">
               Flip board
             </button>
+            {!exploring && (
+              <button className="ghost" onClick={() => startExploring(explore(fen))}>
+                Explore
+              </button>
+            )}
           </div>
-          <p className="hint">Arrow keys step through the game. F flips the board, B shows the best move.</p>
+          <p className="hint">
+            {exploring
+              ? 'Arrow keys step through your moves. Esc returns to the game.'
+              : 'Arrow keys step through the game. F flips the board, B shows the best move. Move a piece to explore.'}
+          </p>
         </section>
 
         <aside className={`panel${tab === 'report' ? ' compact' : ''}`}>
@@ -286,18 +368,29 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
           </div>
           {tab === 'moves' ? (
             <>
-              <Commentary
-                move={move}
-                tactic={tactic}
-                review={review}
-                mySide={mySide}
-                ply={ply}
-                bestShown={bestShown}
-                onToggleBest={() => setShowBest((v) => !v)}
-                prevKey={prevKey}
-                nextKey={nextKey}
-                goto={goto}
-              />
+              {exploring ? (
+                <ExplorePanel
+                  x={exploring}
+                  live={live}
+                  thinking={thinking}
+                  onChange={setExploring}
+                  onExit={() => setExploring(null)}
+                />
+              ) : (
+                <Commentary
+                  move={move}
+                  tactic={tactic}
+                  review={review}
+                  mySide={mySide}
+                  ply={ply}
+                  bestShown={bestShown}
+                  onToggleBest={() => setShowBest((v) => !v)}
+                  onExplore={startExploring}
+                  prevKey={prevKey}
+                  nextKey={nextKey}
+                  goto={goto}
+                />
+              )}
               <MoveList review={review} ply={ply} onSelect={goto} />
             </>
           ) : (
@@ -458,6 +551,7 @@ function Commentary({
   ply,
   bestShown,
   onToggleBest,
+  onExplore,
   prevKey,
   nextKey,
   goto,
@@ -469,6 +563,7 @@ function Commentary({
   ply: number
   bestShown: boolean
   onToggleBest: () => void
+  onExplore: (x: Exploration) => void
   prevKey?: number
   nextKey?: number
   goto: (p: number) => void
@@ -494,10 +589,23 @@ function Commentary({
             {evalText(review.evals[ply - 1]!)} → {evalText(review.evals[ply]!)}.
           </p>
           {move.bestUci && move.bestUci !== move.uci && (review.lines[ply - 1]?.length ?? 0) > 0 && (
-            <p className="bestline">
-              <span className="muted">Best line</span>{' '}
-              {sanLine(review.fens[ply - 1]!, review.lines[ply - 1]!)}
-            </p>
+            <div className="bestline">
+              <span className="muted">Best line</span>
+              <MoveChips
+                fen={review.fens[ply - 1]!}
+                line={review.lines[ply - 1]!.slice(0, 8)}
+                label="Best line"
+                onPick={(i) => onExplore(explore(review.fens[ply - 1]!, review.lines[ply - 1], i + 1))}
+              />
+            </div>
+          )}
+          {tactic && tactic.line.length > 0 && (
+            <button
+              className="link"
+              onClick={() => onExplore(explore(tactic.fen, tactic.line, Math.max(0, tactic.at) + 1))}
+            >
+              Step through it
+            </button>
           )}
           {move.bestUci && move.bestUci !== move.uci && (
             <button className="secondary" onClick={onToggleBest}>
@@ -520,6 +628,92 @@ function Commentary({
           Next mistake
         </button>
       </div>
+    </div>
+  )
+}
+
+/** A line as buttons, one per move; `current` marks the move on the board. */
+function MoveChips({
+  fen,
+  line,
+  label,
+  current,
+  onPick,
+}: {
+  fen: string
+  line: readonly string[]
+  label: string
+  current?: number
+  onPick: (index: number) => void
+}) {
+  return (
+    <span className="chips" role="list" aria-label={label}>
+      {lineMoves(fen, line).map((m) => (
+        <span role="listitem" key={m.index}>
+          <button className="chip" aria-current={m.index === current} onClick={() => onPick(m.index)}>
+            {m.text}
+          </button>
+        </span>
+      ))}
+    </span>
+  )
+}
+
+/** Free analysis: what the user is trying, and what the engine thinks of it. Nothing here is saved. */
+function ExplorePanel({
+  x,
+  live,
+  thinking,
+  onChange,
+  onExit,
+}: {
+  x: Exploration
+  live: LiveEval | undefined
+  thinking: boolean
+  onChange: (x: Exploration) => void
+  onExit: () => void
+}) {
+  const fen = fenOf(x)
+  return (
+    <div className="comment explore" aria-live="polite">
+      <h2>Exploring</h2>
+      <p className="muted">Try moves on the board. They are not part of the review and are not saved.</p>
+      <p className="nums explore-eval">
+        <b>{thinking || !live ? 'Thinking…' : evalText(live.eval)}</b>
+        {live && !thinking && live.depth > 0 && <span className="muted"> depth {live.depth}</span>}
+      </p>
+      {live && !thinking && live.line.length > 0 && (
+        <div className="bestline">
+          <span className="muted">Engine</span>
+          <MoveChips
+            fen={fen}
+            line={live.line.slice(0, 8)}
+            label="Engine line"
+            onPick={(i) =>
+              onChange(
+                explore(x.root, [...x.moves.slice(0, x.at), ...live.line.slice(0, i + 1)], x.at + i + 1),
+              )
+            }
+          />
+        </div>
+      )}
+      <div className="bestline">
+        <span className="muted">Moves</span>
+        {x.moves.length ? (
+          <MoveChips
+            fen={x.root}
+            line={x.moves}
+            label="Your moves"
+            current={x.at - 1}
+            onPick={(i) => onChange(stepTo(x, i + 1))}
+          />
+        ) : (
+          <span className="muted"> none yet</span>
+        )}
+      </div>
+      <button className="secondary" onClick={onExit}>
+        Back to the game
+      </button>
     </div>
   )
 }

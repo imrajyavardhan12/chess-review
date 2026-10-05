@@ -108,6 +108,40 @@ test('explains a blunder with the tactic behind it, the best line, and the squar
   expect(problems).toEqual([])
 })
 
+test('explores a line and free moves with a live engine, apart from the review', async ({ page }) => {
+  const problems = watchForProblems(page)
+  await page.goto('/')
+  await page.getByText('Paste a PGN instead').click()
+  await page.getByLabel('PGN').fill(LEGAL)
+  await page.getByRole('button', { name: 'Review PGN' }).click()
+  await expect(page.locator('.review')).toBeVisible()
+
+  // Step through the mate the blunder allowed.
+  await page.getByRole('button', { name: /^Bxd1/ }).click()
+  await page.getByRole('button', { name: 'Step through it' }).click()
+  await expect(page.getByRole('heading', { name: 'Exploring' })).toBeVisible()
+  const mine = page.getByRole('list', { name: 'Your moves' })
+  await expect(mine).toContainText('6. Bxf7+')
+  await expect(mine.locator('[aria-current="true"]')).toHaveText('6. Bxf7+')
+  await page.keyboard.press('ArrowRight')
+  await expect(mine.locator('[aria-current="true"]')).toHaveText('Ke7')
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('heading', { name: 'Exploring' })).toHaveCount(0)
+
+  // From the start position, click a pawn and its square: the engine evaluates the new position.
+  await page.keyboard.press('Home')
+  await page.locator('[data-square="d2"]').click()
+  await page.locator('[data-square="d4"]').click()
+  await expect(mine).toHaveText('1. d4')
+  await expect(page.locator('.explore-eval b')).not.toHaveText('Thinking…')
+  await expect(page.locator('.explore-eval b')).toHaveText(/^[+−]\d+\.\d$/)
+
+  // Leaving puts the game back exactly as it was.
+  await page.getByRole('button', { name: 'Back to the game' }).click()
+  await expect(page.locator('.comment h2')).toHaveText('Start of the game')
+  expect(problems).toEqual([])
+})
+
 test('lists games from chess.com, then reopens a stored review without running the engine again', async ({
   page,
 }) => {
