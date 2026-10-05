@@ -17,3 +17,5 @@ export * from './tactics'
 export * from './insights'
 
 export * from './clock'
+
+export * from './exchange'

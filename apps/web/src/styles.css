@@ -1110,4 +1110,40 @@ textarea {
 .tchart-cursor {
   stroke: var(--muted);
   stroke-dasharray: 3 3;
+
+/* ---------- sources, batches, files ---------- */
+.source {
+  display: flex;
+  gap: 16px;
+  margin: 0 0 10px;
+  padding: 0;
+  border: 0;
+  font-size: 14px;
+}
+.source legend {
+  float: left;
+  margin-right: 4px;
+  color: var(--muted);
+}
+.source label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.reviewall {
+  margin: 4px 0 10px;
+}
+.queuebar {
+  margin: 16px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+.queuebar .bar {
+  margin: 8px 0;
+}
+.downloads {
+  line-height: 1.8;
+  font-size: 14px;
 }

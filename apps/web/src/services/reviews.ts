@@ -46,6 +46,9 @@ export interface ReviewServiceDeps {
 export class ReviewService {
   private jobs = new Map<string, Job>()
   private queue: Promise<unknown> = Promise.resolve()
+  private watchers = new Set<() => void>()
+  /** How many reviews have finished in this session; lets lists know when to refresh. */
+  completed = 0
 
   constructor(private deps: ReviewServiceDeps) {}
 
@@ -69,6 +72,61 @@ export class ReviewService {
     })
     this.launch(id, pgn, preset, engineId)
     return id
+  }
+
+  /**
+   * Starts reviews for several games, queued in the order given (each start is awaited, so the
+   * queue order is the list's order). Returns their ids.
+   */
+  async startMany(
+    pgns: readonly string[],
+    preset: PresetName,
+    engineId = this.deps.engineId,
+  ): Promise<string[]> {
+    const ids: string[] = []
+    for (const pgn of pgns) ids.push(await this.start(pgn, preset, engineId))
+    return ids
+  }
+
+  /** The stored review with its PGN, for exporting. */
+  stored(id: string) {
+    return this.deps.store.getReview(id)
+  }
+
+  /** Keeps a review read from a file, checked by `importJson`, as if it had been made here. */
+  async importReview(id: string, pgn: string, review: Review): Promise<void> {
+    await this.deps.store.putReview({
+      id,
+      pgn,
+      review,
+      summary: summarize(review),
+      createdAt: (this.deps.now ?? Date.now)(),
+    })
+    this.track(id, { status: 'done', review })
+  }
+
+  /** Reviews that are running or waiting their turn, in queue order. */
+  active(): Array<{ id: string; state: Extract<JobState, { status: 'running' }> }> {
+    return [...this.jobs].flatMap(([id, job]) =>
+      job.state.status === 'running' ? [{ id, state: job.state }] : [],
+    )
+  }
+
+  /** Called whenever any review's state changes. Returns an unsubscribe function. */
+  onChange(listener: () => void): () => void {
+    this.watchers.add(listener)
+    return () => this.watchers.delete(listener)
+  }
+
+  /** Cancels every running and waiting review. */
+  cancelAll(): void {
+    for (const { id } of this.active()) this.cancel(id)
+  }
+
+  /** Picks up requests left unfinished in an earlier session (a closed tab, a reload), oldest first. */
+  async resumePending(): Promise<void> {
+    const pending = (await this.deps.store.allRequests()).sort((a, b) => a.createdAt - b.createdAt)
+    for (const r of pending) await this.open(r.id)
   }
 
   /** Accuracy and trace for already-reviewed games, keyed by id. Used by the game list. */
@@ -119,6 +177,7 @@ export class ReviewService {
   private track(id: string, state: JobState): Job {
     const job: Job = { state, listeners: new Set(), controller: new AbortController() }
     this.jobs.set(id, job)
+    for (const w of [...this.watchers]) w()
     return job
   }
 
@@ -126,7 +185,9 @@ export class ReviewService {
     const job = this.jobs.get(id)
     if (!job) return
     job.state = state
+    if (state.status === 'done') this.completed++
     for (const l of [...job.listeners]) l(state)
+    for (const w of [...this.watchers]) w()
   }
 
   private launch(id: string, pgn: string, preset: PresetName, engineId: string): void {
@@ -161,6 +222,7 @@ export class ReviewService {
         await this.deps.store.deleteRequest(id)
         this.set(id, { status: 'missing' }) // tell listeners before forgetting the job
         this.jobs.delete(id)
+        for (const w of [...this.watchers]) w()
         return
       }
       console.error('review failed', e)

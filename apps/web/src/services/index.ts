@@ -25,9 +25,12 @@ async function engineHost(id: string): Promise<EngineHost> {
 
 /** The app-wide review service, created on first use. */
 export function getReviewService(): Promise<ReviewService> {
-  service ??= openStore().then(
-    (store) => new ReviewService({ store, engine: engineHost, loadBook, engineId: ENGINE_ID }),
-  )
+  service ??= openStore().then((store) => {
+    const s = new ReviewService({ store, engine: engineHost, loadBook, engineId: ENGINE_ID })
+    // Reviews left unfinished last time (a batch, a closed tab) carry on in the background.
+    void s.resumePending()
+    return s
+  })
   return service
 }
 
@@ -41,4 +44,5 @@ export type { LiveEval } from './analysis'
 export { ChessComError, fetchMonth, listMonths, type RemoteGame } from './chesscom'
 export { engineIdFor, fullEngine } from './engine'
 export { EngineDownloadError, type Progress } from './full-engine'
+export { LichessError, fetchLichessGames } from './lichess'
 export type { StoredReview, Summary } from './storage'

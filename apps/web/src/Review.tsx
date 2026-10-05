@@ -18,7 +18,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Chessboard } from 'react-chessboard'
 import { EvalGraph } from './EvalGraph'
 import { explore, fenOf, lineMoves, play, stepTo, targets, type Exploration } from './explore'
-import { cancelReview, useLiveEval, useReviewState } from './hooks'
+import { cancelReview, downloadReview, useLiveEval, useReviewState } from './hooks'
 import { TimeChart } from './TimeChart'
 import { ERRORS, META, ORDER, evalText, isKeyMoment, isNotable } from './labels'
 import { BOARDS, usePrefs } from './prefs'
@@ -28,7 +28,7 @@ import { overlayFor } from './tactics'
 
 export function ReviewPage({ id, me }: { id: string; me: string | null }) {
   const state = useReviewState(id)
-  if (state?.status === 'done') return <ReviewView review={state.review} me={me} />
+  if (state?.status === 'done') return <ReviewView id={id} review={state.review} me={me} />
 
   return (
     <div className="home">
@@ -84,7 +84,7 @@ const LINE_ARROW = 'rgba(76,127,214,0.8)'
 
 const isLight = (sq: string) => (sq.charCodeAt(0) - 97 + Number(sq[1]) - 1) % 2 === 1
 
-function ReviewView({ review, me }: { review: Review; me: string | null }) {
+function ReviewView({ id, review, me }: { id: string; review: Review; me: string | null }) {
   const mySide: Side | null = !me
     ? null
     : review.white.toLowerCase() === me.toLowerCase()
@@ -399,7 +399,7 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
               <MoveList review={review} ply={ply} onSelect={goto} />
             </>
           ) : (
-            <Report review={review} mySide={mySide} goto={goto} />
+            <Report review={review} mySide={mySide} goto={goto} id={id} />
           )}
         </aside>
       </div>
@@ -844,10 +844,12 @@ function Report({
   review,
   mySide,
   goto,
+  id,
 }: {
   review: Review
   mySide: Side | null
   goto: (p: number) => void
+  id: string
 }) {
   const heads = (
     <tr>
@@ -926,6 +928,19 @@ function Report({
       <p className="note muted">
         Analysed by {engineName(review.settings.engine)} at {review.settings.nodes.toLocaleString('en')} nodes
         per position.
+      </p>
+
+      <h3>Download</h3>
+      <p className="downloads">
+        <button className="link" onClick={() => void downloadReview(id, 'pgn')}>
+          Annotated PGN
+        </button>{' '}
+        <span className="muted">labels, evaluations and clocks, for any chess program</span>
+        <br />
+        <button className="link" onClick={() => void downloadReview(id, 'json')}>
+          Review file
+        </button>{' '}
+        <span className="muted">to open this review in chessreview on another device</span>
       </p>
     </div>
   )
