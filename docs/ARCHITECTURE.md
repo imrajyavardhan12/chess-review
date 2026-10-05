@@ -150,6 +150,15 @@ stored review from IndexedDB and tags each of the player's errors with `explainR
 to the page every 20 ms (about 2.5 s for 40 games in Chromium) and caching per game for the session.
 Nothing is stored or sent; `docs/adr/0004-insights.md` has the choices.
 
+### 11. Time analysis is read from the clocks already in the review
+
+`packages/core/src/clock.ts` derives think time per move (the clock difference plus the increment,
+the first move timed from the starting clock), time trouble (less than a tenth of the base time,
+capped at two minutes) and per-side counts of errors with and without time trouble, from
+`MoveReview.clockMs` and the `TimeControl` header. It needs no change to stored reviews or to
+`ANALYSIS_VERSION`. Games without clocks, or daily games without a base time, are handled: no
+graph, or no time-trouble figures. `docs/adr/0005-time-analysis.md` has the details.
+
 ## Changing the rules
 
 1. Change `reference/python/src/chessreview/analysis.py` and its tests.
@@ -171,5 +180,8 @@ source pointers with the engine files.
 ## Known limits and next steps
 
 - Time-trouble analysis: `MoveReview.clockMs` already carries the clock from the PGN.
+
+- Tactic explanations (fork, pin, hanging piece), written once in `core`.
+- The full-strength engine as an optional download.
 - Share links for a review (today a review lives on the device that made it).
 - Offline use (a service worker for the app shell and engine).

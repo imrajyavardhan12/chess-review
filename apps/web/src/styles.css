@@ -1031,6 +1031,21 @@ textarea {
   font-variant-numeric: tabular-nums;
 }
 .achart-line {
+
+/* ---------- time ---------- */
+.tchart {
+  position: relative;
+  margin: 4px 0 8px;
+  cursor: pointer;
+}
+.tchart svg {
+  display: block;
+}
+.tchart-trouble {
+  fill: var(--t-mistake);
+  opacity: 0.12;
+}
+.tchart-line {
   fill: none;
   stroke: var(--ink);
   stroke-width: 2;
@@ -1078,4 +1093,21 @@ textarea {
   justify-content: flex-end;
   gap: 8px;
   margin-top: 18px;
+}
+
+.tchart-line.dashed {
+  stroke-dasharray: 5 3;
+  opacity: 0.7;
+}
+.tchart-grid {
+  stroke: var(--line);
+}
+.tchart-axis {
+  fill: var(--muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.tchart-cursor {
+  stroke: var(--muted);
+  stroke-dasharray: 3 3;
 }

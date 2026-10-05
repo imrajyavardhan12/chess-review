@@ -15,3 +15,5 @@ export { legalUci, positionKey, sanOf, terminal } from './chess-util'
 export { coachLine, moveName, type Coaching } from './narrate'
 export * from './tactics'
 export * from './insights'
+
+export * from './clock'

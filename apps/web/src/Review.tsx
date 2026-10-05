@@ -1,6 +1,10 @@
 import {
   coachLine,
   explainReviewMove,
+
+  formatClock,
+  formatSpent,
+  timeReport,
   moveName,
   winPercent,
   type Counts,
@@ -15,6 +19,7 @@ import { Chessboard } from 'react-chessboard'
 import { EvalGraph } from './EvalGraph'
 import { explore, fenOf, lineMoves, play, stepTo, targets, type Exploration } from './explore'
 import { cancelReview, useLiveEval, useReviewState } from './hooks'
+import { TimeChart } from './TimeChart'
 import { ERRORS, META, ORDER, evalText, isKeyMoment, isNotable } from './labels'
 import { BOARDS, usePrefs } from './prefs'
 import type { LiveEval } from './services'
@@ -607,6 +612,8 @@ function Commentary({
               Step through it
             </button>
           )}
+
+          <ThinkTime review={review} ply={ply} />
           {move.bestUci && move.bestUci !== move.uci && (
             <button className="secondary" onClick={onToggleBest}>
               {bestShown ? 'Back to the game' : `Show ${move.bestSan} instead`}
@@ -724,6 +731,109 @@ const ENGINE_NAMES: Record<string, string> = {
 }
 const engineName = (id: string) => ENGINE_NAMES[id] ?? id
 
+/** How long the move took and what was left, when the PGN has clocks. */
+function ThinkTime({ review, ply }: { review: Review; ply: number }) {
+  const report = useMemo(() => timeReport(review), [review])
+  const t = report?.times.find((m) => m.ply === ply)
+  if (!t) return null
+  return (
+    <p className="muted nums">
+      {t.spentMs !== null ? `Took ${formatSpent(t.spentMs)}, ` : ''}
+      {formatClock(t.clockMs)} left{t.inTrouble ? ', in time trouble' : ''}.
+    </p>
+  )
+}
+
+/** Clock use for both players: a graph, then the numbers, including errors made in time trouble. */
+function TimeSection({ review, goto }: { review: Review; goto: (p: number) => void }) {
+  const report = useMemo(() => timeReport(review), [review])
+  if (!report) {
+    return (
+      <>
+        <h3>Time</h3>
+        <p className="note muted">This game’s PGN has no clock times, so there is no time analysis.</p>
+      </>
+    )
+  }
+  const rate = (errors: number, moves: number) => (moves ? `${errors} of ${moves}` : '–')
+  const sides = ['white', 'black'] as const
+  return (
+    <>
+      <h3>Time</h3>
+      <TimeChart review={review} report={report} onSelect={goto} />
+      <table className="rtable">
+        <thead>
+          <tr>
+            <td />
+            {sides.map((s) => (
+              <th key={s} scope="col" className="who">
+                {review[s]}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Average per move</th>
+            {sides.map((s) => (
+              <td key={s}>{formatSpent(report.sides[s].averageMs)}</td>
+            ))}
+          </tr>
+          <tr>
+            <th scope="row">Longest think</th>
+            {sides.map((s) => {
+              const l = report.sides[s].longest
+              return (
+                <td key={s}>
+                  {l ? (
+                    <button className="link" onClick={() => goto(l.ply)}>
+                      {formatSpent(l.ms)}, {moveName(review.moves[l.ply - 1]!)}
+                    </button>
+                  ) : (
+                    '–'
+                  )}
+                </td>
+              )
+            })}
+          </tr>
+          {report.thresholdMs !== null && (
+            <>
+              <tr>
+                <th scope="row">Moves in time trouble</th>
+                {sides.map((s) => (
+                  <td key={s}>{report.sides[s].troubleMoves}</td>
+                ))}
+              </tr>
+              <tr>
+                <th scope="row" title="Mistakes, misses and blunders">
+                  Errors in time trouble
+                </th>
+                {sides.map((s) => (
+                  <td key={s}>{rate(report.sides[s].troubleErrors, report.sides[s].troubleMoves)}</td>
+                ))}
+              </tr>
+              <tr>
+                <th scope="row" title="Mistakes, misses and blunders">
+                  Errors otherwise
+                </th>
+                {sides.map((s) => (
+                  <td key={s}>{rate(report.sides[s].calmErrors, report.sides[s].calmMoves)}</td>
+                ))}
+              </tr>
+            </>
+          )}
+        </tbody>
+      </table>
+      {report.thresholdMs !== null && (
+        <p className="note muted">
+          Time trouble means under {formatClock(report.thresholdMs)} on the clock: a tenth of the starting
+          time, at most two minutes. The shaded band on the graph.
+        </p>
+      )}
+    </>
+  )
+}
+
 const PHASE_NAMES: Record<Phase, string> = {
   opening: 'Opening',
   middlegame: 'Middlegame',
@@ -790,6 +900,8 @@ function Report({
           ))}
         </tbody>
       </table>
+
+      <TimeSection review={review} goto={goto} />
 
       <h3>Performance estimate</h3>
       <table className="rtable">

@@ -59,6 +59,10 @@ by opening and time control. It is computed in your browser from your stored rev
 Sites that host the full Stockfish network can offer an **accurate engine** as a one-time 99 MB
 download (Settings → Engine), which matches desktop Stockfish exactly; see `docs/DEPLOY.md`.
 
+When the PGN carries clock times (chess.com and Lichess exports do), each move shows how long it took,
+and the Report tab graphs both clocks and counts the errors made in time trouble (under a tenth of the
+starting time, at most two minutes) against the rest.
+
 These are heuristics, not chess.com's proprietary rules, so labels differ from theirs. The rating shown in the
 Report tab is a rough estimate from average centipawn loss, not a calibrated rating.
 
