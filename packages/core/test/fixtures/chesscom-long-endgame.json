@@ -2222,7 +2222,7 @@
     "loss": 0.0,
     "cp_loss": 0,
     "accuracy": 100.0,
-    "label": "Great",
+    "label": "Best",
     "phase": "middlegame",
     "gap": 53.8
    },
@@ -3458,12 +3458,12 @@
   "counts": {
    "white": {
     "Book": 3,
-    "Best": 26,
+    "Best": 27,
     "Good": 5,
     "Excellent": 19,
     "Inaccuracy": 2,
-    "Great": 2,
     "Mistake": 1,
+    "Great": 1,
     "Blunder": 1
    },
    "black": {

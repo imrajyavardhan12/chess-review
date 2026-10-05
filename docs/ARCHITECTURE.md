@@ -179,7 +179,9 @@ settings before storing it. `docs/adr/0006-import-export.md` has the details.
 
 1. Change `reference/python/src/chessreview/analysis.py` and its tests.
 2. Bump `ANALYSIS_VERSION` in `packages/core/src/rules.ts`.
-3. Regenerate fixtures (`reference/python/README.md`) and make `packages/core` match.
+3. Regenerate fixtures (`reference/python/README.md`) and make `packages/core` match. When only the
+   classification changed (not what the engine is asked), `scripts/reclassify_fixtures.py` rebuilds
+   the expected reviews from the recorded engine output, with no engine or network.
 4. `pnpm check` and `pnpm e2e`.
 
 Adding a label means: the `LABELS` list and `GLYPH` in core, the rule in `buildReview`, a colour in

@@ -2354,7 +2354,7 @@
     "loss": 0.0,
     "cp_loss": 0,
     "accuracy": 100.0,
-    "label": "Great",
+    "label": "Best",
     "phase": "middlegame",
     "gap": 32.4
    },
@@ -2643,7 +2643,7 @@
     "loss": 0.0,
     "cp_loss": 0,
     "accuracy": 100.0,
-    "label": "Great",
+    "label": "Best",
     "phase": "middlegame",
     "gap": 45.6
    },
@@ -3051,7 +3051,7 @@
     "loss": 0.0,
     "cp_loss": 0,
     "accuracy": 100.0,
-    "label": "Great",
+    "label": "Best",
     "phase": "middlegame",
     "gap": 58.0
    },
@@ -4037,7 +4037,7 @@
     "loss": 0.0,
     "cp_loss": 0,
     "accuracy": 100.0,
-    "label": "Great",
+    "label": "Best",
     "phase": "endgame",
     "gap": 40.1
    },
@@ -4271,17 +4271,16 @@
    "white": {
     "Inaccuracy": 5,
     "Excellent": 23,
-    "Best": 33,
+    "Best": 34,
     "Good": 6,
-    "Great": 4,
+    "Great": 3,
     "Mistake": 2
    },
    "black": {
     "Good": 11,
     "Excellent": 19,
-    "Best": 30,
+    "Best": 33,
     "Mistake": 5,
-    "Great": 3,
     "Inaccuracy": 4
    }
   },

@@ -1,9 +1,12 @@
 import chess
 
 from chessreview.analysis import (
+    build_review,
     classify,
     estimate_rating,
     game_phase,
+    is_recapture,
+    load_game,
     move_accuracy,
     opening_book,
     see,
@@ -75,3 +78,34 @@ def test_game_phase():
 def test_rating_estimate_falls_as_acpl_rises_and_is_clamped():
     assert estimate_rating(10) > estimate_rating(40) > estimate_rating(120)
     assert 100 <= estimate_rating(0) <= 3000 and estimate_rating(10_000) == 100
+
+
+def test_is_recapture():
+    board = chess.Board()
+    for san in ["e4", "d5"]:
+        board.push_san(san)
+    exd5 = board.parse_san("exd5")
+    after = board.copy()
+    after.push(exd5)
+    assert is_recapture(board, exd5, after, after.parse_san("Qxd5"))
+    assert not is_recapture(board, exd5, after, after.parse_san("Nf6"))  # not a capture
+    quiet = board.parse_san("Nf3")
+    after_quiet = board.copy()
+    after_quiet.push(quiet)
+    assert not is_recapture(board, quiet, after_quiet, after_quiet.parse_san("dxe4"))  # nothing was taken
+    assert not is_recapture(board, None, board, exd5)  # the first move of the game
+
+
+def test_great_is_not_given_for_taking_back():
+    def label_of_last(pgn):
+        game, positions, played = load_game(pgn)
+        infos = [{"cp": 0, "mate": None, "best": mv, "second_cp": None} for mv in played]
+        infos.append({"cp": 0, "mate": None, "best": None, "second_cp": None})
+        # The last move is the only one that holds: the runner-up loses a piece.
+        infos[-2]["second_cp"] = 300 if positions[-2].turn == chess.BLACK else -300
+        return build_review(game, positions, played, infos).moves[-1].label
+
+    # 3... Qxd5 takes back the pawn that just captured on d5: forced, but not great.
+    assert label_of_last("1. e4 d5 2. exd5 Nf6 3. Nc3 Nxd5 4. Nxd5 Qxd5 *") == "Best"
+    # The same engine verdict on a move that is not a recapture still earns Great.
+    assert label_of_last("1. e4 d5 2. exd5 Nf6 3. Nc3 Nxd5 4. Nxd5 Qd6 *") == "Great"
