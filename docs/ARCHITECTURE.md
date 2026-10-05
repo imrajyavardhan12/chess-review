@@ -101,6 +101,33 @@ The rules are documented in `packages/core/src/rules.ts` and the README. `GREAT_
 tuned against real games (Kasparov–Topalov for brilliancies); they are judgement calls and will be
 revisited as more games are reviewed.
 
+### 10. Tactic explanations are computed when a review is read
+
+A mistake says _why_ ("Allows a fork: Nc7+ attacks the king and the rook on a8"), not just what it
+cost. The review stores the engine's principal variation for every position (`Review.lines`, up to
+`PV_PLIES` = 12 plies); `explainReviewMove` in `packages/core/src/tactics` reads the position, the
+move and the two lines either side of it and returns a typed `Explanation` with its sentence, the
+line that shows it and the squares to highlight.
+
+- **At read time, not stored.** The detectors are pure functions of data the review already holds,
+  so they can improve without bumping `ANALYSIS_VERSION` or re-analysing anything, and only the move
+  on screen is explained (a median of 13 ms, 47 ms at worst, on the corpus in Node). Storing the
+  lines is the only change to the `Review` (version 4).
+- **Their own exchange evaluator.** The detectors judge captures with a geometric static exchange
+  (`staticExchange`, with x-rays, without pins) rather than `see`, which searches legal moves and
+  cost up to half a second per explanation. They agree on 99.8% of the corpus's captures; `see`
+  still decides the Brilliant rule, unchanged.
+- **Confirmed by the engine, or not said.** A motif (hanging piece, fork, pin, skewer, discovered
+  attack, trapped piece, overloaded defender, mate, back-rank mate) is named only if the engine's own
+  line plays it and then wins material with it, and the material matches the difference between the
+  best line and the played one. A plain "loses material" claim quotes only the captures in the first
+  six plies. When nothing qualifies, the commentary keeps its plain wording.
+- **Measured.** On the Lichess puzzle database the detectors agree with Lichess's theme tags at the
+  rates in `docs/adr/0001-tactic-explanations.md`, and a hand audit of every explanation given in the
+  40-game corpus (`data/corpus`) found no false statement. `scripts/README.md` has the commands.
+- **Python parity is unchanged.** The reference implementation does not record lines; the parity
+  tests compare every field it produces.
+
 ## Changing the rules
 
 1. Change `reference/python/src/chessreview/analysis.py` and its tests.
@@ -121,7 +148,6 @@ source pointers with the engine files.
 
 ## Known limits and next steps
 
-- Tactic explanations (fork, pin, hanging piece), written once in `core`.
 - Time-trouble analysis: `MoveReview.clockMs` already carries the clock from the PGN.
 - The full-strength engine as an optional download.
 - Share links for a review (today a review lives on the device that made it).

@@ -43,6 +43,12 @@ it gave up:
 | Inaccuracy / Mistake / Blunder | gave up up to 10% / 20% / more                                                                |
 | Miss                           | a mistake or blunder right after the opponent made one (10%+), from an at-least-even position |
 
+For mistakes, blunders, misses, great and brilliant moves the review also says _why_, when the
+engine's own lines show it: a piece left hanging, a fork, pin, skewer, discovered attack, trapped
+piece or overloaded defender, a missed or allowed mate, a recapture, or the material a line wins. The
+squares involved are ringed on the board and the best line is shown in full. When no tactic can be
+confirmed from the engine's lines, the review says only what the move cost.
+
 These are heuristics, not chess.com's proprietary rules, so labels differ from theirs. The rating shown in the
 Report tab is a rough estimate from average centipawn loss, not a calibrated rating.
 
