@@ -33,10 +33,11 @@ export interface Async<T> {
 }
 
 /**
- * Runs `load` whenever `key` changes (null means "don't"), ignoring answers for superseded keys.
+ * Runs `load` whenever `key` changes (null means "don't"), ignoring answers for superseded keys and
+ * aborting their signal, so work nobody wants any more can stop.
  * Loading and error are derived from the key rather than stored, so there is no reset to forget.
  */
-export function useAsync<T>(key: string | null, load: () => Promise<T>): Async<T> {
+export function useAsync<T>(key: string | null, load: (signal: AbortSignal) => Promise<T>): Async<T> {
   const [settled, setSettled] = useState<{ key: string; value?: T; error?: unknown } | null>(null)
   const [last, setLast] = useState<T | undefined>(undefined)
   const run = useEffectEvent(load)
@@ -44,7 +45,8 @@ export function useAsync<T>(key: string | null, load: () => Promise<T>): Async<T
   useEffect(() => {
     if (key === null) return
     let stale = false
-    run().then(
+    const controller = new AbortController()
+    run(controller.signal).then(
       (value) => {
         if (stale) return
         setSettled({ key, value })
@@ -56,6 +58,7 @@ export function useAsync<T>(key: string | null, load: () => Promise<T>): Async<T
     )
     return () => {
       stale = true
+      controller.abort()
     }
   }, [key])
 

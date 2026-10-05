@@ -147,6 +147,9 @@ export function Home() {
     <div className="home">
       <header className="homebar">
         <span className="wordmark">chessreview</span>
+        <a href="#/insights" className="navlink">
+          Insights
+        </a>
         <Settings />
       </header>
       <h1>Review a game</h1>
