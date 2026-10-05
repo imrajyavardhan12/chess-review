@@ -2,20 +2,46 @@
 
 Win% and accuracy formulas are the published Lichess ones, so the numbers are
 comparable to Lichess (and close to, but not identical to, chess.com's).
+
+Move labels, in the order shown to the user:
+  Brilliant   near-best move that sacrifices material, in a position that is not already decided
+  Great       the best move when the runner-up is 20%+ worse, in a contested position (an "only move")
+  Book        a known opening position (Lichess chess-openings, CC0)
+  Best / Excellent / Good / Inaccuracy / Mistake / Blunder
+              by win-chance lost: 0 (engine's choice), <=2, <=5, <=10, <=20, more
+  Miss        a mistake-sized loss right after the opponent made one: the chance was given, not taken
 """
 import io
 import math
+import re
 import statistics
 from dataclasses import dataclass, field
+from functools import lru_cache
+from pathlib import Path
 
 import chess
 import chess.engine
 import chess.pgn
 
 MATE_CP = 10_000
+CP_CLAMP = 1_000  # centipawn losses are clamped so one mate score can't dominate the average
+
+LABELS = [
+    "Brilliant", "Great", "Book", "Best", "Excellent", "Good",
+    "Inaccuracy", "Mistake", "Miss", "Blunder",
+]
 
 # (max win% lost, label); anything above the last threshold is a blunder
 THRESHOLDS = [(2, "Excellent"), (5, "Good"), (10, "Inaccuracy"), (20, "Mistake")]
+
+PIECE_VALUE = {
+    chess.PAWN: 1, chess.KNIGHT: 3, chess.BISHOP: 3, chess.ROOK: 5, chess.QUEEN: 9, chess.KING: 100,
+}
+
+GREAT_GAP = 20  # win% the runner-up must be behind for the best move to count as "Great"
+GREAT_RANGE = (25, 75)  # ...and only in a contested position: forced lines in decided games are not "great"
+BRILLIANT_SEE = -2  # net material (pawns) given up on the destination square
+PHASES = ["opening", "middlegame", "endgame"]
 
 
 def win_percent(cp: float) -> float:
@@ -37,6 +63,79 @@ def classify(loss: float, is_best: bool) -> str:
     return "Blunder"
 
 
+def estimate_rating(acpl: float) -> int:
+    """Rough performance rating from average centipawn loss: 3100 * e^(-0.01 * ACPL).
+
+    A coarse public fit, not a calibrated rating: engine depth, time control and
+    game length all move it. Shown as an estimate only.
+    """
+    return int(max(100, min(3000, 3100 * math.exp(-0.01 * acpl))) // 10 * 10)
+
+
+# ---------- opening book ----------
+
+DATA = Path(__file__).parent / "data" / "openings.tsv"
+
+
+@lru_cache(maxsize=1)
+def opening_book() -> tuple[frozenset[str], dict[str, tuple[str, str]]]:
+    """(every position on a known opening line, final position -> (ECO, name))."""
+    positions: set[str] = set()
+    named: dict[str, tuple[str, str]] = {}
+    if not DATA.exists():
+        return frozenset(), {}
+    for line in DATA.read_text().splitlines()[1:]:
+        eco, name, pgn = line.split("\t")
+        board = chess.Board()
+        for tok in pgn.split():
+            if re.fullmatch(r"\d+\.", tok):
+                continue
+            board.push_san(tok)
+            positions.add(board.epd())
+        named[board.epd()] = (eco, name)
+    return frozenset(positions), named
+
+
+# ---------- board heuristics ----------
+
+
+def see(board: chess.Board, move: chess.Move) -> int:
+    """Static exchange evaluation: net material (in pawns) the mover keeps if both
+    sides keep capturing on the destination square with their cheapest piece."""
+    to = move.to_square
+    b = board.copy(stack=False)
+    captured = b.piece_at(to)
+    gain = [PIECE_VALUE[captured.piece_type] if captured else (1 if b.is_en_passant(move) else 0)]
+    attacker = PIECE_VALUE[b.piece_type_at(move.from_square)]
+    b.push(move)
+    while len(gain) < 14:
+        caps = [m for m in b.legal_moves if m.to_square == to and b.is_capture(m)]
+        if not caps:
+            break
+        nxt = min(caps, key=lambda m: PIECE_VALUE[b.piece_type_at(m.from_square)])
+        gain.append(attacker - gain[-1])
+        attacker = PIECE_VALUE[b.piece_type_at(nxt.from_square)]
+        b.push(nxt)
+    for d in range(len(gain) - 1, 0, -1):
+        gain[d - 1] = -max(-gain[d - 1], gain[d])
+    return gain[0]
+
+
+def game_phase(board: chess.Board) -> str:
+    """Opening until move 10, endgame at six or fewer minor/major pieces (Lichess's rule)."""
+    pieces = sum(
+        len(board.pieces(t, c))
+        for t in (chess.KNIGHT, chess.BISHOP, chess.ROOK, chess.QUEEN)
+        for c in (chess.WHITE, chess.BLACK)
+    )
+    if pieces <= 6:
+        return "endgame"
+    return "opening" if board.fullmove_number <= 10 else "middlegame"
+
+
+# ---------- results ----------
+
+
 @dataclass
 class MoveReview:
     ply: int
@@ -51,8 +150,11 @@ class MoveReview:
     win_before: float  # mover-POV win%
     win_after: float
     win_loss: float
+    cp_loss: float
     accuracy: float
     label: str
+    phase: str
+    gap: float | None = None  # win% the best move beat the runner-up by (only for moves that matched the engine)
 
 
 @dataclass
@@ -61,6 +163,7 @@ class GameReview:
     black: str
     result: str
     headers: dict[str, str] = field(default_factory=dict)
+    opening: tuple[str, str] | None = None  # (ECO, name) of the deepest book line reached
     moves: list[MoveReview] = field(default_factory=list)
     win_series: list[float] = field(default_factory=list)  # white win% per position
     fens: list[str] = field(default_factory=list)  # position before move 1, then after each move
@@ -69,13 +172,38 @@ class GameReview:
     def accuracy(self, color: chess.Color) -> float:
         return game_accuracy(self.win_series, self.moves, color)
 
+    def counts(self, color: chess.Color) -> dict[str, int]:
+        out: dict[str, int] = {}
+        for m in self.moves:
+            if m.color == color:
+                out[m.label] = out.get(m.label, 0) + 1
+        return out
+
+    def acpl(self, color: chess.Color) -> float:
+        mine = [m.cp_loss for m in self.moves if m.color == color]
+        return sum(mine) / len(mine) if mine else 0.0
+
+    def phase_accuracy(self, color: chess.Color) -> dict[str, float | None]:
+        out: dict[str, float | None] = {}
+        for ph in PHASES:
+            accs = [m.accuracy for m in self.moves if m.color == color and m.phase == ph]
+            out[ph] = round(sum(accs) / len(accs), 1) if accs else None
+        return out
+
     def to_dict(self) -> dict:
+        sides = {"white": chess.WHITE, "black": chess.BLACK}
+        opening = (
+            {"eco": self.opening[0], "name": self.opening[1]}
+            if self.opening
+            else {"eco": self.headers.get("ECO", ""), "name": opening_name(self.headers)}
+        )
         return {
             "white": self.white,
             "black": self.black,
             "result": self.result,
             "headers": self.headers,
-            "opening": opening_name(self.headers),
+            "opening": opening["name"],
+            "eco": opening["eco"],
             "fens": self.fens,
             "evals": self.evals,
             "win_series": [round(w, 2) for w in self.win_series],
@@ -91,27 +219,20 @@ class GameReview:
                     "win_before": round(m.win_before, 2),
                     "win_after": round(m.win_after, 2),
                     "loss": round(m.win_loss, 2),
+                    "cp_loss": round(m.cp_loss),
                     "accuracy": round(m.accuracy, 2),
                     "label": m.label,
+                    "phase": m.phase,
+                    "gap": None if m.gap is None else round(m.gap, 1),
                 }
                 for m in self.moves
             ],
-            "accuracy": {
-                "white": round(self.accuracy(chess.WHITE), 1),
-                "black": round(self.accuracy(chess.BLACK), 1),
-            },
-            "counts": {
-                "white": self.counts(chess.WHITE),
-                "black": self.counts(chess.BLACK),
-            },
+            "accuracy": {k: round(self.accuracy(c), 1) for k, c in sides.items()},
+            "counts": {k: self.counts(c) for k, c in sides.items()},
+            "phases": {k: self.phase_accuracy(c) for k, c in sides.items()},
+            "acpl": {k: round(self.acpl(c)) for k, c in sides.items()},
+            "rating_estimate": {k: estimate_rating(self.acpl(c)) for k, c in sides.items()},
         }
-
-    def counts(self, color: chess.Color) -> dict[str, int]:
-        out: dict[str, int] = {}
-        for m in self.moves:
-            if m.color == color:
-                out[m.label] = out.get(m.label, 0) + 1
-        return out
 
 
 def opening_name(headers: dict[str, str]) -> str:
@@ -151,6 +272,10 @@ def _eval(info: chess.engine.InfoDict) -> dict:
     return {"cp": score.score(mate_score=MATE_CP), "mate": score.mate()}
 
 
+def _mover(cp: float, color: chess.Color) -> float:
+    return cp if color == chess.WHITE else -cp
+
+
 def review_game(
     pgn: str,
     engine_path: str = "stockfish",
@@ -174,27 +299,51 @@ def review_game(
         positions.append(board.copy())
         played.append(mv)
 
+    limit = chess.engine.Limit(depth=depth, nodes=nodes)
+    total = len(positions) + len(played)  # one pass to evaluate, one to find "only moves"
+    done = 0
+
+    def tick() -> None:
+        nonlocal done
+        done += 1
+        if progress:
+            progress(done, total)
+
+    book, named = opening_book()
+
     with chess.engine.SimpleEngine.popen_uci(engine_path) as engine:
         engine.configure({"Threads": threads, "Hash": 256})
-        infos = []
-        for i, pos in enumerate(positions):
+        infos: list[dict] = []
+        for pos in positions:
             if pos.is_game_over():
                 # engine can't search a finished game: score it directly
                 winner = pos.outcome().winner
                 cp = {chess.WHITE: MATE_CP, chess.BLACK: -MATE_CP}.get(winner, 0)
                 infos.append({"cp": cp, "mate": 0 if winner is not None else None, "best": None})
             else:
-                info = engine.analyse(pos, chess.engine.Limit(depth=depth, nodes=nodes))
+                info = engine.analyse(pos, limit)
                 infos.append({**_eval(info), "best": info["pv"][0]})
-            if progress:
-                progress(i + 1, len(positions))
+            tick()
+
+        # Second pass: for moves that matched the engine's choice, search again with that
+        # move excluded. A big drop to the runner-up means the move was the only one.
+        for i, mv in enumerate(played):
+            pos, info = positions[i], infos[i]
+            info["second_cp"] = None
+            win_best = win_percent(_mover(info["cp"], pos.turn))
+            if info["best"] == mv and pos.legal_moves.count() > 1 and win_best <= 97:
+                others = [m for m in pos.legal_moves if m != mv]
+                second = engine.analyse(pos, limit, root_moves=others)
+                info["second_cp"] = _eval(second)["cp"]
+            tick()
 
     review.win_series = [win_percent(i["cp"]) for i in infos]
     review.fens = [p.fen() for p in positions]
     review.evals = [{"cp": i["cp"], "mate": i["mate"]} for i in infos]
 
+    phase_floor = 0
     for i, mv in enumerate(played):
-        pos = positions[i]
+        pos, after = positions[i], positions[i + 1]
         color = pos.turn
         w_before, w_after = review.win_series[i], review.win_series[i + 1]
         if color == chess.BLACK:
@@ -202,7 +351,26 @@ def review_game(
         best = infos[i]["best"]
         is_best = best == mv
         loss = 0.0 if is_best else max(0.0, w_before - w_after)
+        cp_before = max(-CP_CLAMP, min(CP_CLAMP, _mover(infos[i]["cp"], color)))
+        cp_after = max(-CP_CLAMP, min(CP_CLAMP, _mover(infos[i + 1]["cp"], color)))
+        cp_loss = 0.0 if is_best else max(0.0, cp_before - cp_after)
         acc = 100.0 if is_best else move_accuracy(w_before, w_after)
+
+        label = classify(loss, is_best)
+        prev_loss = review.moves[-1].win_loss if review.moves else 0.0
+        second = infos[i]["second_cp"]
+        gap = (w_before - win_percent(_mover(second, color))) if second is not None else None
+
+        if after.epd() in book and loss <= 5:
+            label, acc = "Book", 100.0
+        elif loss <= 2 and see(pos, mv) <= BRILLIANT_SEE and w_before < 90 and w_after >= 45 and not mv.promotion:
+            label = "Brilliant"
+        elif is_best and gap is not None and gap >= GREAT_GAP and GREAT_RANGE[0] <= w_before <= GREAT_RANGE[1]:
+            label = "Great"
+        elif label in ("Mistake", "Blunder") and prev_loss >= 10 and w_before >= 50:
+            label = "Miss"
+
+        phase_floor = max(phase_floor, PHASES.index(game_phase(pos)))
         review.moves.append(
             MoveReview(
                 ply=i + 1,
@@ -217,8 +385,15 @@ def review_game(
                 win_before=w_before,
                 win_after=w_after,
                 win_loss=loss,
+                cp_loss=cp_loss,
                 accuracy=acc,
-                label=classify(loss, is_best),
+                label=label,
+                phase=PHASES[phase_floor],
+                gap=gap,
             )
         )
+
+    for pos in positions:
+        if pos.epd() in named:
+            review.opening = named[pos.epd()]
     return review

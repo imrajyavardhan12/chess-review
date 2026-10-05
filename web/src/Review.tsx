@@ -2,15 +2,17 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Chessboard } from 'react-chessboard'
 import { getReview } from './api'
 import { EvalGraph } from './EvalGraph'
-import { META, ORDER, evalText, isKeyMoment, isNotable, moveLabel } from './labels'
+import { ERRORS, META, ORDER, evalText, isKeyMoment, isNotable, moveLabel } from './labels'
 import { BOARDS, usePrefs } from './prefs'
 import { Settings } from './Settings'
-import type { Counts, Label, Move, Review } from './types'
+import type { Counts, Move, Phase, Review } from './types'
 
 type View =
   | { kind: 'running'; done: number; total: number; queued: boolean }
   | { kind: 'done'; review: Review }
   | { kind: 'error'; message: string }
+
+type Side = 'white' | 'black'
 
 function useReviewJob(id: string): View {
   const [view, setView] = useState<View>({ kind: 'running', done: 0, total: 0, queued: true })
@@ -62,7 +64,7 @@ export function ReviewPage({ id, me }: { id: string; me: string | null }) {
           <p className="muted">
             {view.queued || !view.total
               ? 'Waiting for the engine to start.'
-              : `Position ${view.done} of ${view.total}. This takes about half a minute.`}
+              : `Step ${view.done} of ${view.total}. This takes about a minute.`}
           </p>
           <div className="bar">
             <div style={{ width: `${view.total ? (view.done / view.total) * 100 : 3}%` }} />
@@ -74,9 +76,10 @@ export function ReviewPage({ id, me }: { id: string; me: string | null }) {
 }
 
 const isLight = (sq: string) => (sq.charCodeAt(0) - 97 + Number(sq[1]) - 1) % 2 === 1
+const sideOf = (m: Move): Side => (m.color === 'w' ? 'white' : 'black')
 
 function ReviewView({ review, me }: { review: Review; me: string | null }) {
-  const mySide = !me
+  const mySide: Side | null = !me
     ? null
     : review.white.toLowerCase() === me.toLowerCase()
       ? 'white'
@@ -87,6 +90,7 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
   const [ply, setPly] = useState(0)
   const [flipped, setFlipped] = useState(mySide === 'black')
   const [showBest, setShowBest] = useState(false)
+  const [tab, setTab] = useState<'moves' | 'report'>('moves')
   const sq = BOARDS[usePrefs().board]
   const orientation = flipped ? 'black' : 'white'
   const n = review.fens.length - 1
@@ -94,10 +98,11 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
   const goto = (p: number) => {
     setPly(Math.max(0, Math.min(n, p)))
     setShowBest(false)
+    setTab('moves')
   }
 
   const move: Move | null = ply > 0 ? review.moves[ply - 1] : null
-  const bestShown = showBest && !!move && !!move.best_uci && move.label !== 'Best'
+  const bestShown = showBest && !!move && !!move.best_uci && move.best_uci !== move.uci
   const fen = bestShown ? review.fens[ply - 1] : review.fens[ply]
 
   const keyPlies = useMemo(
@@ -145,12 +150,13 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
   const lastSquares = move && !bestShown ? [move.uci.slice(0, 2), move.uci.slice(2, 4)] : []
   const badge = move && !bestShown && (isNotable(move.label) || move.label === 'Best') ? move : null
 
-  const top = orientation === 'white' ? 'black' : 'white'
-  const bottom = orientation === 'white' ? 'white' : 'black'
+  const top: Side = orientation === 'white' ? 'black' : 'white'
+  const bottom: Side = orientation === 'white' ? 'white' : 'black'
   const h = review.headers
-  const rating = (s: 'white' | 'black') => (s === 'white' ? h.WhiteElo : h.BlackElo)
+  const rating = (s: Side) => (s === 'white' ? h.WhiteElo : h.BlackElo)
   const evalPly = bestShown ? ply - 1 : ply // the eval of whichever position is on the board
   const win = review.win_series[evalPly]
+  const opening = [review.eco, review.opening].filter(Boolean).join(' ')
 
   return (
     <div className="review">
@@ -163,7 +169,7 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
             {review.white} vs {review.black}
           </h1>
           <p className="muted">
-            {[review.result.replace('-', '–'), h.Termination, review.opening, h.Date?.replaceAll('.', '-')]
+            {[review.result.replace('-', '–'), h.Termination, opening, h.Date && !h.Date.includes('?') ? h.Date.replaceAll('.', '-') : '']
               .filter(Boolean)
               .join(', ')}
           </p>
@@ -231,7 +237,7 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
           </p>
         </section>
 
-        <aside className="panel">
+        <aside className={`panel${tab === 'report' ? ' compact' : ''}`}>
           <div className="summary">
             {(['white', 'black'] as const).map((s) => (
               <PlayerSummary
@@ -243,17 +249,37 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
               />
             ))}
           </div>
-          <Commentary
-            move={move}
-            review={review}
-            ply={ply}
-            bestShown={bestShown}
-            onToggleBest={() => setShowBest((v) => !v)}
-            prevKey={prevKey}
-            nextKey={nextKey}
-            goto={goto}
-          />
-          <MoveList review={review} ply={ply} onSelect={goto} />
+          <div className="tabs" role="tablist">
+            {(['moves', 'report'] as const).map((t) => (
+              <button
+                key={t}
+                role="tab"
+                aria-selected={tab === t}
+                className="tab"
+                onClick={() => setTab(t)}
+              >
+                {t === 'moves' ? 'Moves' : 'Report'}
+              </button>
+            ))}
+          </div>
+          {tab === 'moves' ? (
+            <>
+              <Commentary
+                move={move}
+                review={review}
+                mySide={mySide}
+                ply={ply}
+                bestShown={bestShown}
+                onToggleBest={() => setShowBest((v) => !v)}
+                prevKey={prevKey}
+                nextKey={nextKey}
+                goto={goto}
+              />
+              <MoveList review={review} ply={ply} onSelect={goto} />
+            </>
+          ) : (
+            <Report review={review} mySide={mySide} goto={goto} />
+          )}
         </aside>
       </div>
 
@@ -262,7 +288,7 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
   )
 }
 
-function PlayerTag({ name, rating, side }: { name: string; rating?: string; side: 'white' | 'black' }) {
+function PlayerTag({ name, rating, side }: { name: string; rating?: string; side: Side }) {
   return (
     <div className="ptag">
       <i className={`dot ${side}`} aria-label={side} />
@@ -279,7 +305,7 @@ function EvalBar({
 }: {
   win: number
   evalLabel: string
-  orientation: 'white' | 'black'
+  orientation: Side
 }) {
   const whiteOnBottom = orientation === 'white'
   const leadWhite = win >= 50
@@ -325,7 +351,7 @@ function PlayerSummary({ name, acc, counts, isMe }: { name: string; acc: number;
         ))}
       </div>
       <div className="errs">
-        {(['Inaccuracy', 'Mistake', 'Blunder'] as Label[]).map((l) => (
+        {ERRORS.map((l) => (
           <span key={l} title={l}>
             <b style={{ color: META[l].text }}>{META[l].glyph}</b> {counts[l] ?? 0}
           </span>
@@ -335,9 +361,95 @@ function PlayerSummary({ name, acc, counts, isMe }: { name: string; acc: number;
   )
 }
 
+// A short plain-language read of the game, written from the numbers. Speaks to "you" when we
+// know which player is the user, otherwise describes both sides.
+function coachLine(r: Review, side: Side | null): { text: string; move: Move | null } {
+  const errs = r.moves.filter((m) => isKeyMoment(m.label) && (!side || sideOf(m) === side))
+  const worst = [...errs].sort((a, b) => b.loss - a.loss)[0] ?? null
+  const gap = (a: number, b: number) => `${a.toFixed(1)} to ${b.toFixed(1)}`
+
+  if (side) {
+    const opp: Side = side === 'white' ? 'black' : 'white'
+    const a = r.accuracy[side]
+    const b = r.accuracy[opp]
+    const lead =
+      Math.abs(a - b) < 3
+        ? `Accuracy was close, ${gap(a, b)}.`
+        : a > b
+          ? `You played more accurately than ${r[opp]}, ${gap(a, b)}.`
+          : `${r[opp]} played more accurately, ${gap(b, a)}.`
+    const tail = worst
+      ? `Your costliest error was ${moveLabel(worst.number, worst.color, worst.san)}, which gave up ${Math.round(worst.loss)}% of your win chance.`
+      : 'You made no mistakes or blunders.'
+    const found = (label: 'Brilliant' | 'Great') => r.moves.filter((m) => sideOf(m) === side && m.label === label)
+    const brill = found('Brilliant')
+    const great = found('Great')
+    const star = brill.length
+      ? ` You found ${brill.length} brilliant move${brill.length > 1 ? 's' : ''}.`
+      : great.length
+        ? ` You found ${great.length} great move${great.length > 1 ? 's' : ''}.`
+        : ''
+    return { text: `${lead} ${tail}${star}`, move: worst ?? brill[0] ?? great[0] ?? null }
+  }
+
+  const w = r.accuracy.white
+  const b = r.accuracy.black
+  const lead =
+    Math.abs(w - b) < 3
+      ? `Accuracy was close, ${gap(w, b)}.`
+      : w > b
+        ? `${r.white} played more accurately, ${gap(w, b)}.`
+        : `${r.black} played more accurately, ${gap(b, w)}.`
+  const tail = worst
+    ? `The biggest swing was ${moveLabel(worst.number, worst.color, worst.san)} by ${worst.color === 'w' ? r.white : r.black}, worth ${Math.round(worst.loss)}% of win chance.`
+    : 'Neither side made a serious mistake.'
+  return { text: `${lead} ${tail}`, move: worst }
+}
+
+function Coach({ review, mySide, goto }: { review: Review; mySide: Side | null; goto: (p: number) => void }) {
+  const { text, move } = coachLine(review, mySide)
+  return (
+    <div className="coach">
+      <p>
+        {text}
+        {move && (
+          <>
+            {' '}
+            <button className="link" onClick={() => goto(move.ply)}>
+              Go to {moveLabel(move.number, move.color, move.san)}
+            </button>
+          </>
+        )}
+      </p>
+    </div>
+  )
+}
+
+function explain(m: Move, side: string, opening: string): string {
+  const cost = m.loss < 1 ? 'less than 1%' : `${Math.round(m.loss)}%`
+  const best = m.best_san && m.best_uci !== m.uci ? ` The best move was ${m.best_san}.` : ''
+  switch (m.label) {
+    case 'Brilliant':
+      return 'A sacrifice that works out. The engine rates it among the best moves in the position.'
+    case 'Great':
+      return m.gap
+        ? `The only move that held the position. The next best would have cost ${side} ${Math.round(m.gap)}% of win chance.`
+        : 'The only move that held the position.'
+    case 'Book':
+      return `A known opening move${opening ? `: ${opening}` : ''}.`
+    case 'Best':
+      return 'The engine’s top choice.'
+    case 'Miss':
+      return `The last move gave ${side} a chance and this one let it go, costing ${cost} of win chance.${best}`
+    default:
+      return `It cost ${side} ${cost} of win chance.${best}`
+  }
+}
+
 function Commentary({
   move,
   review,
+  mySide,
   ply,
   bestShown,
   onToggleBest,
@@ -347,6 +459,7 @@ function Commentary({
 }: {
   move: Move | null
   review: Review
+  mySide: Side | null
   ply: number
   bestShown: boolean
   onToggleBest: () => void
@@ -355,7 +468,6 @@ function Commentary({
   goto: (p: number) => void
 }) {
   const side = move?.color === 'w' ? 'White' : 'Black'
-  const cost = move && (move.loss < 1 ? 'less than 1%' : `${Math.round(move.loss)}%`)
   return (
     <div className="comment" aria-live="polite">
       {move ? (
@@ -366,16 +478,14 @@ function Commentary({
           </h2>
           <p>
             <b style={{ color: META[move.label].text }}>{move.label}.</b>{' '}
-            {move.label === 'Best'
-              ? 'The engine’s top choice.'
-              : `It cost ${side} ${cost} of win chance. The best move was ${move.best_san}.`}
+            {explain(move, side, review.opening)}
           </p>
-          <Swing move={move} />
+          {move.loss > 0.5 && <Swing move={move} />}
           <p className="muted nums">
             {side} win chance {Math.round(move.win_before)}% → {Math.round(move.win_after)}%. Eval{' '}
             {evalText(review.evals[ply - 1])} → {evalText(review.evals[ply])}.
           </p>
-          {move.label !== 'Best' && move.best_uci && (
+          {move.best_uci && move.best_uci !== move.uci && (
             <button className="secondary" onClick={onToggleBest}>
               {bestShown ? 'Back to the game' : `Show ${move.best_san} instead`}
             </button>
@@ -384,6 +494,7 @@ function Commentary({
       ) : (
         <>
           <h2>Start of the game</h2>
+          <Coach review={review} mySide={mySide} goto={goto} />
           <p className="muted">Step with the arrow keys, click a move, or click the graph below.</p>
         </>
       )}
@@ -395,6 +506,85 @@ function Commentary({
           Next mistake
         </button>
       </div>
+    </div>
+  )
+}
+
+const PHASE_NAMES: Record<Phase, string> = { opening: 'Opening', middlegame: 'Middlegame', endgame: 'Endgame' }
+
+function Report({ review, mySide, goto }: { review: Review; mySide: Side | null; goto: (p: number) => void }) {
+  const heads = (
+    <tr>
+      <td />
+      {(['white', 'black'] as const).map((s) => (
+        <th key={s} scope="col" className="who">
+          {review[s]}
+        </th>
+      ))}
+    </tr>
+  )
+  const num = (v: number | null, suffix = '') => (v === null ? '–' : `${v}${suffix}`)
+  return (
+    <div className="report">
+      <Coach review={review} mySide={mySide} goto={goto} />
+
+      <h3>Move quality</h3>
+      <table className="rtable">
+        <thead>{heads}</thead>
+        <tbody>
+          {ORDER.map((l) => (
+            <tr key={l}>
+              <th scope="row" title={META[l].help}>
+                <i className="sw" style={{ background: META[l].color }} />
+                {l}
+              </th>
+              {(['white', 'black'] as const).map((s) => {
+                const c = review.counts[s][l] ?? 0
+                return (
+                  <td key={s} className={c ? '' : 'zero'}>
+                    {c}
+                  </td>
+                )
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <h3>Accuracy by phase</h3>
+      <table className="rtable">
+        <thead>{heads}</thead>
+        <tbody>
+          {(Object.keys(PHASE_NAMES) as Phase[]).map((p) => (
+            <tr key={p}>
+              <th scope="row">{PHASE_NAMES[p]}</th>
+              <td>{num(review.phases.white[p], '%')}</td>
+              <td>{num(review.phases.black[p], '%')}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <h3>Performance estimate</h3>
+      <table className="rtable">
+        <thead>{heads}</thead>
+        <tbody>
+          <tr>
+            <th scope="row">Rating</th>
+            <td>{review.rating_estimate.white}</td>
+            <td>{review.rating_estimate.black}</td>
+          </tr>
+          <tr>
+            <th scope="row">Average centipawn loss</th>
+            <td>{review.acpl.white}</td>
+            <td>{review.acpl.black}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p className="note muted">
+        The rating is a rough guess from average centipawn loss, not a calibrated rating. Treat it as a
+        way to compare the two players in this game. Move labels come from the engine’s win-chance model.
+      </p>
     </div>
   )
 }
@@ -421,7 +611,9 @@ function MoveList({ review, ply, onSelect }: { review: Review; ply: number; onSe
               onClick={() => onSelect(m.ply)}
             >
               {m.san}
-              {isNotable(m.label) && <b style={{ color: m.ply === ply ? 'inherit' : META[m.label].text }}>{META[m.label].glyph}</b>}
+              {isNotable(m.label) && (
+                <b style={{ color: m.ply === ply ? 'inherit' : META[m.label].text }}>{META[m.label].glyph}</b>
+              )}
             </button>
           ))}
         </div>
@@ -436,12 +628,10 @@ function Swing({ move }: { move: Move }) {
   return (
     <div className="swing" role="img" aria-label={`Win chance ${Math.round(move.win_before)}% to ${Math.round(move.win_after)}%`}>
       <span className="swing-kept" style={{ width: `${kept}%` }} />
-      {move.loss > 0.5 && (
-        <span
-          className="swing-lost"
-          style={{ left: `${kept}%`, width: `${move.loss}%`, background: META[move.label].color }}
-        />
-      )}
+      <span
+        className="swing-lost"
+        style={{ left: `${kept}%`, width: `${move.loss}%`, background: META[move.label].color }}
+      />
     </div>
   )
 }

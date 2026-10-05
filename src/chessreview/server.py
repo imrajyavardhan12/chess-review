@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parents[2]
 CACHE = ROOT / "cache"
 WEB_DIST = ROOT / "web" / "dist"
 DEPTH, NODES = 16, 1_500_000
+ANALYSIS_VERSION = 2  # bump when the review format changes so old cache entries are ignored
 ENGINE = os.environ.get("CHESSREVIEW_ENGINE") or shutil.which("stockfish") or "stockfish"
 
 app = FastAPI(title="chessreview")
@@ -33,7 +34,7 @@ engine_lock = threading.Lock()  # Stockfish already uses several threads; run on
 
 
 def review_id(pgn: str) -> str:
-    return hashlib.sha1(f"{pgn}|{DEPTH}|{NODES}".encode()).hexdigest()[:16]
+    return hashlib.sha1(f"{pgn}|{DEPTH}|{NODES}|v{ANALYSIS_VERSION}".encode()).hexdigest()[:16]
 
 
 def cache_path(rid: str) -> Path:

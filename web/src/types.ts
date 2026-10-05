@@ -1,4 +1,17 @@
-export type Label = 'Best' | 'Excellent' | 'Good' | 'Inaccuracy' | 'Mistake' | 'Blunder'
+export type Label =
+  | 'Brilliant'
+  | 'Great'
+  | 'Book'
+  | 'Best'
+  | 'Excellent'
+  | 'Good'
+  | 'Inaccuracy'
+  | 'Mistake'
+  | 'Miss'
+  | 'Blunder'
+
+export type Phase = 'opening' | 'middlegame' | 'endgame'
+export type Sides<T> = { white: T; black: T }
 
 export interface Move {
   ply: number
@@ -11,8 +24,11 @@ export interface Move {
   win_before: number
   win_after: number
   loss: number
+  cp_loss: number
   accuracy: number
   label: Label
+  phase: Phase
+  gap: number | null
 }
 
 export interface Eval {
@@ -28,12 +44,16 @@ export interface Review {
   result: string
   headers: Record<string, string>
   opening: string
+  eco: string
   fens: string[]
   evals: Eval[]
   win_series: number[]
   moves: Move[]
-  accuracy: { white: number; black: number }
-  counts: { white: Counts; black: Counts }
+  accuracy: Sides<number>
+  counts: Sides<Counts>
+  phases: Sides<Record<Phase, number | null>>
+  acpl: Sides<number>
+  rating_estimate: Sides<number>
 }
 
 export interface RemoteGame {

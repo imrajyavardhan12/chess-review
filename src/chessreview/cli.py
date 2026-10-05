@@ -7,7 +7,7 @@ import chess
 from . import chesscom
 from .analysis import GameReview, review_game
 
-ORDER = ["Best", "Excellent", "Good", "Inaccuracy", "Mistake", "Blunder"]
+from .analysis import LABELS as ORDER
 
 
 def _progress(done: int, total: int) -> None:
@@ -32,7 +32,7 @@ def print_report(r: GameReview) -> None:
     for label in ORDER:
         print(f"{label:12}{cw.get(label, 0):>10}{cb.get(label, 0):>10}")
 
-    key = [m for m in r.moves if m.label in ("Mistake", "Blunder")]
+    key = [m for m in r.moves if m.label in ("Mistake", "Miss", "Blunder")]
     if key:
         print("\nKey moments")
         for m in key:

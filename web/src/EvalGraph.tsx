@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { META, evalText, isKeyMoment, isNotable, moveLabel } from './labels'
+import { META, evalText, isHighlight, isKeyMoment, isNotable, moveLabel } from './labels'
 import type { Review } from './types'
 
 const H = 120
@@ -59,7 +59,7 @@ export function EvalGraph({
               key={m.ply}
               cx={x(m.ply)}
               cy={y(wins[m.ply])}
-              r={isKeyMoment(m.label) ? 4.5 : 3}
+              r={isKeyMoment(m.label) || isHighlight(m.label) ? 4.5 : 3}
               fill={META[m.label].color}
               className="trace-mark"
             />
