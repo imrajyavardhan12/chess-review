@@ -43,6 +43,9 @@ it gave up:
 | Inaccuracy / Mistake / Blunder | gave up up to 10% / 20% / more                                                                |
 | Miss                           | a mistake or blunder right after the opponent made one (10%+), from an at-least-even position |
 
+Sites that host the full Stockfish network can offer an **accurate engine** as a one-time 99 MB
+download (Settings → Engine), which matches desktop Stockfish exactly; see `docs/DEPLOY.md`.
+
 These are heuristics, not chess.com's proprietary rules, so labels differ from theirs. The rating shown in the
 Report tab is a rough estimate from average centipawn loss, not a calibrated rating.
 

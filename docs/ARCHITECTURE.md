@@ -92,8 +92,14 @@ positions:
 
 Lite has a floor of roughly 1.5% error that more search barely lowers, so label boundaries (2%, 5%,
 10%) are fuzzy by about that much. The real quality lever is the full net, whose WASM build is
-bit-identical to native Stockfish. Offering it means hosting the file outside Pages (for example R2) and
-loading it on demand; `ENGINE_ID` is part of every review's id, so adding it is a configuration change.
+bit-identical to native Stockfish. It is offered as an opt-in "Accurate engine" when the deployment
+configures where the file is hosted (`docs/DEPLOY.md`): the app downloads it with progress, checks its
+size and SHA-256 against the build's manifest, keeps it in Cache Storage, and hands it to the workers as
+a `blob:` URL. Its id (`stockfish-19-single`) is part of every review's id, so the two engines' reviews
+never mix, and a pending request remembers which engine it asked for. Measured in Node, it searches at
+about half the lite engine's speed (255 vs 479 thousand nodes per second) and needs about 500 MB per
+worker (lite: 130 MB), so it runs on at most two workers, one on devices reporting 4 GB or less.
+`docs/adr/0003-full-engine.md` has the details.
 
 ### 9. Labels are heuristics, not chess.com's rules
 
@@ -123,6 +129,5 @@ source pointers with the engine files.
 
 - Tactic explanations (fork, pin, hanging piece), written once in `core`.
 - Time-trouble analysis: `MoveReview.clockMs` already carries the clock from the PGN.
-- The full-strength engine as an optional download.
 - Share links for a review (today a review lives on the device that made it).
 - Offline use (a service worker for the app shell and engine).
