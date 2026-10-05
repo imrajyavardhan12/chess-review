@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react'
+import { Suspense, lazy, useEffect, useState } from 'react'
 import { Home } from './Home'
-import { InsightsPage } from './Insights'
+
+// Insights is a page of its own, loaded only when opened.
+const InsightsPage = lazy(() => import('./Insights').then((m) => ({ default: m.InsightsPage })))
 import { ReviewPage } from './Review'
 
 // Routes live in the hash so a reload keeps you on the same review:
@@ -20,7 +22,12 @@ export function App() {
     return () => removeEventListener('hashchange', on)
   }, [])
 
-  if (hash === '#/insights') return <InsightsPage />
+  if (hash === '#/insights')
+    return (
+      <Suspense fallback={null}>
+        <InsightsPage />
+      </Suspense>
+    )
   const route = parse(hash)
   return route ? <ReviewPage id={route.id} me={route.me} /> : <Home />
 }
