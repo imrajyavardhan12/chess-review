@@ -148,7 +148,7 @@ state only: it is never written to storage and never changes a `Review`. Positio
 (depth- and node-limited, so it ends on its own). Moving on aborts the search for the position left
 behind (the engine gets `stop`), and answers are remembered per position, so stepping back is free.
 
-### 11. Insights are computed from stored reviews, in the browser
+### 12. Insights are computed from stored reviews, in the browser
 
 `packages/core/src/insights.ts` turns reviews into one player's statistics (`gameFacts` per game,
 then `insights` across them): pure functions, tested with seeded reviews. The web app reads every
@@ -156,7 +156,7 @@ stored review from IndexedDB and tags each of the player's errors with `explainR
 to the page every 20 ms (about 2.5 s for 40 games in Chromium) and caching per game for the session.
 Nothing is stored or sent; `docs/adr/0004-insights.md` has the choices.
 
-### 11. Time analysis is read from the clocks already in the review
+### 13. Time analysis is read from the clocks already in the review
 
 `packages/core/src/clock.ts` derives think time per move (the clock difference plus the increment,
 the first move timed from the starting clock), time trouble (less than a tenth of the base time,
@@ -165,7 +165,7 @@ capped at two minutes) and per-side counts of errors with and without time troub
 `ANALYSIS_VERSION`. Games without clocks, or daily games without a base time, are handled: no
 graph, or no time-trouble figures. `docs/adr/0005-time-analysis.md` has the details.
 
-### 11. Two game sources, batches, and portable reviews
+### 14. Two game sources, batches, and portable reviews
 
 Games come from chess.com's public archive API or Lichess's public games export (ndjson, last 30
 games, more on request); both are plain CORS GETs with no account. "Review all new games" starts
@@ -197,8 +197,7 @@ source pointers with the engine files.
 
 ## Known limits and next steps
 
-- Time-trouble analysis: `MoveReview.clockMs` already carries the clock from the PGN.
-
-- Tactic explanations (fork, pin, hanging piece), written once in `core`.
-- The full-strength engine as an optional download.
 - Share links for a review (today a review lives on the device that made it).
+- The browser tests run in Chromium only; Firefox and WebKit are next.
+
+The longer list is in [ROADMAP.md](ROADMAP.md).
