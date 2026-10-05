@@ -337,7 +337,11 @@ export function Home() {
                       })}
                     </span>
                     <span className="g-players">
-                      <i className={`dot ${o.side ?? 'none'}`} aria-label={`You played ${o.side}`} />
+                      <i
+                        className={`dot ${o.side ?? 'none'}`}
+                        role="img"
+                        aria-label={o.side ? `You played ${o.side}` : 'Neither player is you'}
+                      />
                       <span>
                         {o.side ? opp : `${g.white} vs ${g.black}`}
                         {o.side && oppRating ? <em> {oppRating}</em> : null}

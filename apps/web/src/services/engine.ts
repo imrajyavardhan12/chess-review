@@ -28,7 +28,8 @@ export function fullEngineWorkers(cores: number, deviceMemoryGb: number | undefi
 }
 
 export function createEngineHost(id: string = ENGINE_ID): EngineHost {
-  const cores = defaultConcurrency(navigator.hardwareConcurrency)
+  const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory
+  const cores = defaultConcurrency(navigator.hardwareConcurrency, memory)
   if (id !== FULL_ENGINE_ID) {
     return new EngineHost(() => UciEngine.start(workerTransport(scriptUrl(id)), { hashMb: HASH_MB }), cores)
   }
@@ -41,6 +42,6 @@ export function createEngineHost(id: string = ENGINE_ID): EngineHost {
       url.hash = encodeURIComponent(wasm)
       return UciEngine.start(workerTransport(url), { hashMb: HASH_MB })
     },
-    fullEngineWorkers(cores, (navigator as Navigator & { deviceMemory?: number }).deviceMemory),
+    fullEngineWorkers(cores, memory),
   )
 }

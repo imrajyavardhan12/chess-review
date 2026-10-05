@@ -75,7 +75,13 @@ Reviews and in-flight requests live in IndexedDB (`services/storage.ts`), with a
 where it is unavailable. A request is written before analysis starts and removed when it finishes, so a
 reload mid-analysis resumes instead of losing work. Analyses queue and run one at a time; cancelling
 rejects queued searches and tells the engine to `stop`. Engine failures are reported in terms a user
-can act on, and a crashed worker is replaced and its task retried once.
+can act on, and a crashed worker is replaced and its task retried once. Because a crash usually means
+memory ran short, the pool then runs with one worker fewer, and its starting size respects
+`navigator.deviceMemory`.
+
+A service worker (`apps/web/sw/`, generated per build by `scripts/precache.mjs`) caches the whole build,
+so a pasted PGN can be reviewed offline. A new version waits until the user chooses to reload into it.
+See `docs/adr/0007-offline-and-low-end-devices.md`.
 
 ### 8. The lite engine, and the path to the full one
 
@@ -194,4 +200,3 @@ source pointers with the engine files.
 - Tactic explanations (fork, pin, hanging piece), written once in `core`.
 - The full-strength engine as an optional download.
 - Share links for a review (today a review lives on the device that made it).
-- Offline use (a service worker for the app shell and engine).

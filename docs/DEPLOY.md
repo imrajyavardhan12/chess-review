@@ -77,6 +77,8 @@ Upload `apps/web/dist`. The host must:
 - fall back to `index.html` for unknown paths (or the app can be served from a sub-path: build with
   `BASE_PATH=/repo-name/ pnpm build`);
 - ideally apply the headers in `_headers`. Without them the app still works; you lose the CSP.
+- serve `sw.js` (the offline service worker, written by the build) from the same directory as
+  `index.html`, ideally with `Cache-Control: no-cache` as `_headers` sets it.
 
 GitHub Pages cannot set custom headers, so it works but runs without the Content-Security-Policy.
 

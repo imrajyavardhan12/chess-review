@@ -3,6 +3,22 @@ import { moveName, type Review } from '@chessreview/core'
 import { META, evalText, isHighlight, isKeyMoment, isNotable } from './labels'
 
 const H = 120
+
+/** The graph in words: where White's win chance started and ended, and the moves that moved it most. */
+export function graphSummary(review: Review): string {
+  const ws = review.winSeries
+  const swings = review.moves
+    .map((m) => ({ m, d: (ws[m.ply] ?? 50) - (ws[m.ply - 1] ?? 50) }))
+    .filter((s) => Math.abs(s.d) >= 10)
+    .sort((a, b) => Math.abs(b.d) - Math.abs(a.d))
+    .slice(0, 3)
+    .sort((a, b) => a.m.ply - b.m.ply)
+  const pct = (v: number) => `${Math.round(v)}%`
+  const moves = swings.length
+    ? ` Biggest swings: ${swings.map((s) => `${moveName(s.m)} (${s.d > 0 ? 'up' : 'down'} ${pct(Math.abs(s.d))})`).join(', ')}.`
+    : ' No move swung it by 10% or more.'
+  return `White's win chance over the game, from ${pct(ws[0] ?? 50)} to ${pct(ws[ws.length - 1] ?? 50)}.${moves} The move list has every move.`
+}
 const PAD = 8
 
 // The game's trace: white's win chance over time. White fills the area under the line,
@@ -48,7 +64,7 @@ export function EvalGraph({
       onMouseLeave={() => setHover(null)}
       onClick={(e) => onSelect(plyAt(e.clientX))}
     >
-      <svg width={w} height={H} role="img" aria-label="Win chance over the game. Click to jump to a move.">
+      <svg width={w} height={H} role="img" aria-label={graphSummary(review)}>
         <path d={`${line}L${w},${H}L0,${H}Z`} className="trace-white" />
         <line x1={0} x2={w} y1={y(50)} y2={y(50)} className="trace-mid" />
         <path d={line} className="trace-line" />

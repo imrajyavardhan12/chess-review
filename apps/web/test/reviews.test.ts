@@ -9,7 +9,9 @@ import { memoryStore, type ReviewStore } from '../src/services/storage'
 const PGN = '[White "Ann"]\n[Black "Bob"]\n[Result "1-0"]\n\n1. e4 e5 2. Nf3 Nc6 1-0'
 
 /** Deterministic fake: "best" is the first legal move, score zero. `gate` lets a test hold searches open. */
-function setup(opts: { gate?: Promise<void>; fail?: string; engineFailure?: boolean } = {}) {
+function setup(
+  opts: { gate?: Promise<void>; fail?: string; engineFailure?: boolean; now?: () => number } = {},
+) {
   const calls: AnalyseRequest[] = []
   const create = async (): Promise<PoolEngine> => ({
     async analyse(req) {
@@ -35,7 +37,7 @@ function setup(opts: { gate?: Promise<void>; fail?: string; engineFailure?: bool
       engine: async () => host,
       loadBook: async () => emptyBook,
       engineId: 'fake',
-      now: () => 1,
+      now: opts.now ?? (() => 1),
     })
   return { calls, store, service: make(), make }
 }
@@ -93,6 +95,20 @@ describe('ReviewService', () => {
     expect(last).toBeDefined()
     expect(last!.done).toBeLessThanOrEqual(last!.total)
     expect(seen.at(-1)?.status).toBe('done')
+  })
+
+  it('estimates the time left once it has seen enough steps, reaching zero at the end', async () => {
+    let t = 0
+    const { service } = setup({ now: () => (t += 400) })
+    const id = await service.start(PGN, 'quick')
+    const seen: JobState[] = []
+    const off = service.subscribe(id, (s) => seen.push(s))
+    await finish(service, id)
+    off()
+    const etas = seen.flatMap((s) => (s.status === 'running' ? [s.etaMs] : []))
+    expect(etas[0]).toBeNull() // no guess before there is a rate
+    expect(etas.some((e) => e !== null && e > 0)).toBe(true)
+    expect(etas.at(-1)).toBe(0)
   })
 
   it('rejects a PGN it cannot read and leaves nothing behind', async () => {

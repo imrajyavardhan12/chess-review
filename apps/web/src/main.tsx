@@ -5,6 +5,7 @@ import '@fontsource-variable/geist'
 import './prefs'
 import './styles.css'
 import { App } from './App'
+import { registerServiceWorker } from './offline'
 import { getPrefs, setPrefs } from './prefs'
 import { fullEngine } from './services'
 
@@ -20,3 +21,5 @@ createRoot(document.getElementById('root')!).render(
     <App />
   </StrictMode>,
 )
+
+registerServiceWorker()

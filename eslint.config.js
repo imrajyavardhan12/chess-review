@@ -62,4 +62,13 @@ export default tseslint.config(
     files: ['*.js', '*.ts', 'scripts/**'],
     languageOptions: { ...tseslint.configs.disableTypeChecked.languageOptions, globals: globals.node },
   },
+  {
+    // The service worker is plain JS that runs in its own global scope.
+    ...tseslint.configs.disableTypeChecked,
+    files: ['apps/web/sw/**'],
+    languageOptions: {
+      ...tseslint.configs.disableTypeChecked.languageOptions,
+      globals: globals.serviceworker,
+    },
+  },
 )
