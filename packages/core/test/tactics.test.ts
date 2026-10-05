@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { explainMove, findMotif, outcome, replay, type Motif, type MoveFacts } from '../src'
 import { isBackRankMate } from '../src/tactics/explain'
+import { trapped } from '../src/tactics/motifs'
 import { Board, staticExchange } from '../src/tactics/board'
 
 /**
@@ -94,6 +95,12 @@ describe('tactic detectors on known puzzles', () => {
     expect(motifIn('5rk1/Q4p2/5p1p/2q5/8/8/P1r2PPP/3RR1K1 w - - 4 23', 'a7d7 c5f2 g1h1 f2g2')?.kind).not.toBe(
       'pin',
     )
+  })
+
+  it('never calls a pawn trapped (Lichess 01u1v: Rxb2 wins a pawn on c3, which had no escape)', () => {
+    const fen = '1qr3k1/1r3ppp/p2p4/b2P4/4PNPP/2P5/PP1Q4/K2R3R b - - 0 23'
+    const steps = replay(fen, 'b7b2 d2b2 a5c3 b2c3 c8c3'.split(' '))
+    expect(steps.map((_, k) => trapped(steps, k))).toEqual(steps.map(() => null))
   })
 
   it('does not call a check that only wins a pawn a discovered attack (00h8Z)', () => {

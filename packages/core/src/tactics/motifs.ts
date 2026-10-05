@@ -334,7 +334,7 @@ export function trapped(steps: readonly Step[], k: number): Motif | null {
   for (const sq of after.pieces(v)) {
     const piece = after.at(sq)!
     // A pinned piece that cannot get away is the pin's doing; the pin detector names it.
-    if (!won.has(piece.type) || piece.type === 'k' || pinned.has(sq)) continue
+    if (!won.has(piece.type) || piece.type === 'p' || piece.type === 'k' || pinned.has(sq)) continue
     if (threatOn(s.after, sq, a) <= 0 || threatOn(s.before, sq, a) > 0) continue // must be newly threatened
     const exits = chess.moves({ square: sq as never, verbose: true })
     const safe = exits.some((m) => {
