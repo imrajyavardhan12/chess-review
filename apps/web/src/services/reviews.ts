@@ -68,6 +68,11 @@ export class ReviewService {
     return this.deps.store.summaries(ids)
   }
 
+  /** Every review stored on this device. */
+  allReviews() {
+    return this.deps.store.allReviews()
+  }
+
   /** Makes sure the review for `id` is running, finished or known to be missing, and returns its state. */
   async open(id: string): Promise<JobState> {
     const live = this.jobs.get(id)

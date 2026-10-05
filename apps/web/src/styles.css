@@ -198,7 +198,8 @@ textarea {
 }
 .settings {
   display: flex;
-  gap: 14px;
+  flex-wrap: wrap;
+  gap: 8px 14px;
   align-items: center;
   font-size: 13px;
   color: var(--muted);
@@ -222,6 +223,7 @@ textarea {
 }
 .homebar {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
@@ -940,4 +942,115 @@ textarea {
   background: rgba(22, 34, 43, 0.35);
   transform: translate(-50%, -50%);
   pointer-events: none;
+
+
+/* ---------- insights ---------- */
+.navlink {
+  margin-right: auto;
+  font-size: 14px;
+  color: var(--muted);
+  text-underline-offset: 3px;
+}
+.insights h2 {
+  margin: 28px 0 8px;
+  font-size: 18px;
+}
+.insights .lead {
+  margin-top: 10px;
+  font-size: 17px;
+}
+.insights .player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.insights .rtable {
+  width: 100%;
+  font-size: 14px;
+}
+/* Numbers take what they need; names get the rest of the row. */
+.insights .rtable td,
+.insights .rtable thead th {
+  width: 1%;
+  max-width: none;
+  padding-left: 14px;
+  white-space: nowrap;
+}
+.insights .rtable thead th:first-child {
+  text-align: left;
+  padding-left: 0;
+}
+.insights .rtable .sw {
+  margin-right: 5px;
+}
+.insights .short {
+  display: none;
+}
+@media (max-width: 560px) {
+  /* Narrow screens show the labels' glyphs; the names stay for screen readers. */
+  .insights .long {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .insights .short {
+    display: inline;
+  }
+}
+.insights details {
+  margin-top: 8px;
+  font-size: 14px;
+}
+.insights .empty {
+  margin-top: 16px;
+  max-width: 560px;
+}
+.insights .empty p + p,
+.insights .empty a {
+  display: block;
+  margin-top: 8px;
+}
+.achart {
+  position: relative;
+  cursor: pointer;
+}
+.achart svg {
+  display: block;
+}
+.achart-grid {
+  stroke: var(--line);
+}
+.achart-axis {
+  fill: var(--muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.achart-line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.achart-dot {
+  fill: var(--ink);
+  stroke: var(--panel);
+  stroke-width: 2;
+}
+.achart-cursor {
+  stroke: var(--muted);
+  stroke-dasharray: 3 3;
+}
+.insights .tally .barcell {
+  width: 45%;
+}
+.tally .barcell span {
+  display: block;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--ink);
+  opacity: 0.55;
 }

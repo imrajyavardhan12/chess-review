@@ -28,4 +28,4 @@ export function getLiveAnalysis(): LiveAnalysis {
 export type { JobState } from './reviews'
 export type { LiveEval } from './analysis'
 export { ChessComError, fetchMonth, listMonths, type RemoteGame } from './chesscom'
-export type { Summary } from './storage'
+export type { StoredReview, Summary } from './storage'

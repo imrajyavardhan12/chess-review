@@ -62,6 +62,13 @@ describe.each([
     expect(s.get('a')?.accuracy.white).toBe(90)
   })
 
+  it('lists every stored review', async () => {
+    expect(await store.allReviews()).toEqual([])
+    await store.putReview(stored('a'))
+    await store.putReview(stored('b'))
+    expect((await store.allReviews()).map((r) => r.id).sort()).toEqual(['a', 'b'])
+  })
+
   it('stores and deletes requests', async () => {
     await store.putRequest({ id: 'r', pgn: '1. e4 *', preset: 'standard', createdAt: 1 })
     expect((await store.getRequest('r'))?.preset).toBe('standard')

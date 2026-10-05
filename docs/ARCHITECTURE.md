@@ -136,6 +136,14 @@ state only: it is never written to storage and never changes a `Review`. Positio
 (depth- and node-limited, so it ends on its own). Moving on aborts the search for the position left
 behind (the engine gets `stop`), and answers are remembered per position, so stepping back is free.
 
+### 11. Insights are computed from stored reviews, in the browser
+
+`packages/core/src/insights.ts` turns reviews into one player's statistics (`gameFacts` per game,
+then `insights` across them): pure functions, tested with seeded reviews. The web app reads every
+stored review from IndexedDB and tags each of the player's errors with `explainReviewMove`, yielding
+to the page every 20 ms (about 2.5 s for 40 games in Chromium) and caching per game for the session.
+Nothing is stored or sent; `docs/adr/0004-insights.md` has the choices.
+
 ## Changing the rules
 
 1. Change `reference/python/src/chessreview/analysis.py` and its tests.
