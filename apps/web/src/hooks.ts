@@ -1,10 +1,7 @@
-import { exportJson, exportPgn } from '@chessreview/core'
+import { PRESETS, exportJson, exportPgn } from '@chessreview/core'
 import { useEffect, useEffectEvent, useState } from 'react'
-import { PRESETS } from '@chessreview/core'
 import { usePrefs } from './prefs'
 import { getLiveAnalysis, getReviewService, type JobState, type LiveEval } from './services'
-
-import { getReviewService, type JobState } from './services'
 import type { ReviewService } from './services/reviews'
 
 /** Live state of one review: null until the service has answered for this id. */
@@ -88,6 +85,7 @@ export function useLiveEval(fen: string | null): {
     getLiveAnalysis().analyse(fen!, PRESETS[preset], signal),
   )
   return { live: r.loading ? undefined : r.value, last: r.value, thinking: r.loading, error: r.error }
+}
 
 /** Reviews running or waiting, and how many have finished this session; updates as they progress. */
 export function useQueue(): { active: ReturnType<ReviewService['active']>; completed: number } {

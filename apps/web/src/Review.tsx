@@ -1,7 +1,6 @@
 import {
   coachLine,
   explainReviewMove,
-
   formatClock,
   formatSpent,
   timeReport,

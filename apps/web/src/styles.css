@@ -547,6 +547,12 @@ textarea {
   display: flex;
   flex-direction: column;
 }
+.tabpanel {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
 .summary {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -760,6 +766,10 @@ textarea {
   .comment {
     min-height: 0;
   }
+  .tabpanel,
+  .panel .report {
+    flex: none;
+  }
   .moves {
     flex: none;
     max-height: 260px;
@@ -896,7 +906,6 @@ textarea {
   margin-top: 10px;
   font-size: 12.5px;
 }
-
 .bestline {
   margin-top: 8px;
   font-size: 14px;
@@ -905,6 +914,7 @@ textarea {
 .bestline .muted {
   margin-right: 4px;
 }
+
 .chips {
   display: inline;
 }
@@ -942,7 +952,7 @@ textarea {
   background: rgba(22, 34, 43, 0.35);
   transform: translate(-50%, -50%);
   pointer-events: none;
-
+}
 
 /* ---------- insights ---------- */
 .navlink {
@@ -1031,21 +1041,6 @@ textarea {
   font-variant-numeric: tabular-nums;
 }
 .achart-line {
-
-/* ---------- time ---------- */
-.tchart {
-  position: relative;
-  margin: 4px 0 8px;
-  cursor: pointer;
-}
-.tchart svg {
-  display: block;
-}
-.tchart-trouble {
-  fill: var(--t-mistake);
-  opacity: 0.12;
-}
-.tchart-line {
   fill: none;
   stroke: var(--ink);
   stroke-width: 2;
@@ -1068,6 +1063,7 @@ textarea {
   border-radius: 3px;
   background: var(--ink);
   opacity: 0.55;
+}
 
 .engine-dialog {
   max-width: min(520px, calc(100vw - 32px));
@@ -1095,6 +1091,24 @@ textarea {
   margin-top: 18px;
 }
 
+/* ---------- time ---------- */
+.tchart {
+  position: relative;
+  margin: 4px 0 8px;
+  cursor: pointer;
+}
+.tchart svg {
+  display: block;
+}
+.tchart-trouble {
+  fill: var(--t-mistake);
+  opacity: 0.12;
+}
+.tchart-line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+}
 .tchart-line.dashed {
   stroke-dasharray: 5 3;
   opacity: 0.7;
@@ -1110,6 +1124,7 @@ textarea {
 .tchart-cursor {
   stroke: var(--muted);
   stroke-dasharray: 3 3;
+}
 
 /* ---------- sources, batches, files ---------- */
 .source {
@@ -1146,4 +1161,16 @@ textarea {
 .downloads {
   line-height: 1.8;
   font-size: 14px;
+}
+
+/* ---------- update ---------- */
+.update {
+  margin: 0;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  text-align: center;
+}
+.update .ghost {
+  margin-left: 8px;
 }
