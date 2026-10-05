@@ -49,6 +49,7 @@ export interface RemoteGame {
   black_rating: number | null
   end_time: number
   reviewed: boolean
+  summary: { accuracy: { white: number; black: number }; spark: number[] } | null
 }
 
 export interface GamesResponse {

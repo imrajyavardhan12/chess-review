@@ -2,14 +2,14 @@ import type { Eval, Label } from './types'
 
 export const ORDER: Label[] = ['Best', 'Excellent', 'Good', 'Inaccuracy', 'Mistake', 'Blunder']
 
-// color: fills (bars, badges, graph markers); text: same hue darkened to read on paper
+// color: fills (bars, badges, graph markers); text: CSS variable, darkened on light and lightened on dark so it stays readable
 export const META: Record<Label, { color: string; text: string; fg: string; glyph: string }> = {
-  Best: { color: '#2E8B62', text: '#1F6B49', fg: '#fff', glyph: '!' },
-  Excellent: { color: '#5BA77D', text: '#2F7A52', fg: '#fff', glyph: '' },
-  Good: { color: '#A3B57A', text: '#5E6F3A', fg: '#16222B', glyph: '' },
-  Inaccuracy: { color: '#E2B53A', text: '#85630A', fg: '#16222B', glyph: '?!' },
-  Mistake: { color: '#D56E24', text: '#A8501A', fg: '#fff', glyph: '?' },
-  Blunder: { color: '#C8403C', text: '#A82F2B', fg: '#fff', glyph: '??' },
+  Best: { color: '#2E8B62', text: 'var(--t-best)', fg: '#fff', glyph: '!' },
+  Excellent: { color: '#5BA77D', text: 'var(--t-excellent)', fg: '#fff', glyph: '' },
+  Good: { color: '#A3B57A', text: 'var(--t-good)', fg: '#16222B', glyph: '' },
+  Inaccuracy: { color: '#E2B53A', text: 'var(--t-inaccuracy)', fg: '#16222B', glyph: '?!' },
+  Mistake: { color: '#D56E24', text: 'var(--t-mistake)', fg: '#fff', glyph: '?' },
+  Blunder: { color: '#C8403C', text: 'var(--t-blunder)', fg: '#fff', glyph: '??' },
 }
 
 export const isNotable = (l: Label) => l === 'Inaccuracy' || l === 'Mistake' || l === 'Blunder'

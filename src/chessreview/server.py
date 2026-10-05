@@ -42,6 +42,20 @@ def cache_path(rid: str) -> Path:
     return CACHE / f"{rid}.json"
 
 
+def summary_of(rid: str) -> dict | None:
+    """Accuracy and a downsampled win% trace for a cached review, for the game list."""
+    path = cache_path(rid)
+    if not path.exists():
+        return None
+    r = json.loads(path.read_text())
+    ws = r["win_series"]
+    step = max(1, len(ws) // 40)
+    spark = ws[::step]
+    if (len(ws) - 1) % step:
+        spark.append(ws[-1])
+    return {"accuracy": r["accuracy"], "spark": spark}
+
+
 class ReviewRequest(BaseModel):
     pgn: str
 
@@ -102,7 +116,8 @@ def chesscom_games(user: str, month: str | None = None) -> dict:
     out = []
     for g in games[:100]:
         rid = review_id(g.pgn)
-        out.append({**asdict(g), "id": rid, "reviewed": cache_path(rid).exists()})
+        summary = summary_of(rid)
+        out.append({**asdict(g), "id": rid, "reviewed": summary is not None, "summary": summary})
     return {"month": month, "months": months, "games": out}
 
 

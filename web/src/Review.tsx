@@ -3,6 +3,8 @@ import { Chessboard } from 'react-chessboard'
 import { getReview } from './api'
 import { EvalGraph } from './EvalGraph'
 import { META, ORDER, evalText, isKeyMoment, isNotable, moveLabel } from './labels'
+import { BOARDS, usePrefs } from './prefs'
+import { Settings } from './Settings'
 import type { Counts, Label, Move, Review } from './types'
 
 type View =
@@ -72,7 +74,6 @@ export function ReviewPage({ id, me }: { id: string; me: string | null }) {
 }
 
 const isLight = (sq: string) => (sq.charCodeAt(0) - 97 + Number(sq[1]) - 1) % 2 === 1
-const HIGHLIGHT = { light: '#EBDD9B', dark: '#C7B25A' }
 
 function ReviewView({ review, me }: { review: Review; me: string | null }) {
   const mySide = !me
@@ -86,6 +87,7 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
   const [ply, setPly] = useState(0)
   const [flipped, setFlipped] = useState(mySide === 'black')
   const [showBest, setShowBest] = useState(false)
+  const sq = BOARDS[usePrefs().board]
   const orientation = flipped ? 'black' : 'white'
   const n = review.fens.length - 1
 
@@ -166,6 +168,7 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
               .join(', ')}
           </p>
         </div>
+        <Settings />
       </header>
 
       <div className="stage">
@@ -182,8 +185,8 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
                   allowDrawingArrows: false,
                   clearArrowsOnPositionChange: false,
                   animationDurationInMs: 160,
-                  lightSquareStyle: { backgroundColor: '#DCE4E8' },
-                  darkSquareStyle: { backgroundColor: '#6F8A9C' },
+                  lightSquareStyle: { backgroundColor: sq.light },
+                  darkSquareStyle: { backgroundColor: sq.dark },
                   arrows,
                   squareRenderer: ({ square, children }) => {
                     const hl = lastSquares.includes(square)
@@ -194,7 +197,7 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
                           width: '100%',
                           height: '100%',
                           position: 'relative',
-                          backgroundColor: hl ? HIGHLIGHT[isLight(square) ? 'light' : 'dark'] : undefined,
+                          backgroundColor: hl ? (isLight(square) ? sq.hlLight : sq.hlDark) : undefined,
                         }}
                       >
                         {children}
@@ -223,6 +226,9 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
               Flip board
             </button>
           </div>
+          <p className="hint">
+            Arrow keys step through the game. F flips the board, B shows the best move.
+          </p>
         </section>
 
         <aside className="panel">
@@ -364,6 +370,7 @@ function Commentary({
               ? 'The engine’s top choice.'
               : `It cost ${side} ${cost} of win chance. The best move was ${move.best_san}.`}
           </p>
+          <Swing move={move} />
           <p className="muted nums">
             {side} win chance {Math.round(move.win_before)}% → {Math.round(move.win_after)}%. Eval{' '}
             {evalText(review.evals[ply - 1])} → {evalText(review.evals[ply])}.
@@ -419,6 +426,22 @@ function MoveList({ review, ply, onSelect }: { review: Review; ply: number; onSe
           ))}
         </div>
       ))}
+    </div>
+  )
+}
+
+// How much of the mover's win chance survived the move; the lost part is drawn in the label's color.
+function Swing({ move }: { move: Move }) {
+  const kept = Math.min(move.win_before, move.win_after)
+  return (
+    <div className="swing" role="img" aria-label={`Win chance ${Math.round(move.win_before)}% to ${Math.round(move.win_after)}%`}>
+      <span className="swing-kept" style={{ width: `${kept}%` }} />
+      {move.loss > 0.5 && (
+        <span
+          className="swing-lost"
+          style={{ left: `${kept}%`, width: `${move.loss}%`, background: META[move.label].color }}
+        />
+      )}
     </div>
   )
 }

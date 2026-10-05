@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { META, evalText, isKeyMoment, isNotable, moveLabel } from './labels'
 import type { Review } from './types'
 
-const H = 150
+const H = 120
 const PAD = 8
 
 // The game's trace: white's win chance over time. White fills the area under the line,
