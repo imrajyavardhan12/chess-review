@@ -1,5 +1,5 @@
 // Builds packages/core/src/data/openings.json from data/openings.tsv (Lichess chess-openings, CC0).
-// Run with `npm run data`; the output is committed and a test checks it is up to date.
+// Run with `pnpm data`; the output is committed and a test checks it is up to date.
 import { readFileSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { Chess } from 'chess.js'

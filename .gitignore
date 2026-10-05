@@ -7,7 +7,7 @@ cache/
 .DS_Store
 # engine binaries are copied from the stockfish package at install time
 apps/web/public/engine/
-# generated from data/openings.tsv by `npm run data`
+# generated from data/openings.tsv by `pnpm data`
 packages/core/src/book-data.ts
 test-results/
 playwright-report/

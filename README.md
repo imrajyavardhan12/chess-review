@@ -8,13 +8,16 @@ Import games from a chess.com username or paste any PGN.
 
 ## Develop
 
-    npm install
-    npm run dev          # http://localhost:5173
-    npm run check        # types, lint, formatting, unit + integration tests
-    npm run e2e          # builds, then runs the browser tests against the production build
+    pnpm install
+    pnpm dev             # http://localhost:5173
+    pnpm check           # types, lint, formatting, unit + integration tests
+    pnpm e2e             # builds, then runs the browser tests against the production build
 
-Requires Node 22+. `npm install` fetches the Stockfish WASM build; `predev` and `prebuild` copy it into
-`apps/web/public/engine`.
+Requires Node 22+ and pnpm 10 (`corepack enable` picks up the version pinned in `package.json`).
+`pnpm install` fetches the Stockfish WASM build (the `stockfish` package's postinstall, the only
+dependency build script allowed in `pnpm-workspace.yaml`); `predev` and `prebuild` copy it into
+`apps/web/public/engine`. The first time you run the browser tests, install Chromium with
+`pnpm --filter @chessreview/web exec playwright install --with-deps chromium`.
 
 ## How it is organised
 

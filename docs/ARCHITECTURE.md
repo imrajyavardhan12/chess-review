@@ -106,7 +106,7 @@ revisited as more games are reviewed.
 1. Change `reference/python/src/chessreview/analysis.py` and its tests.
 2. Bump `ANALYSIS_VERSION` in `packages/core/src/rules.ts`.
 3. Regenerate fixtures (`reference/python/README.md`) and make `packages/core` match.
-4. `npm run check` and `npm run e2e`.
+4. `pnpm check` and `pnpm e2e`.
 
 Adding a label means: the `LABELS` list and `GLYPH` in core, the rule in `buildReview`, a colour in
 `apps/web/src/labels.ts` and `styles.css`, and a test for each.

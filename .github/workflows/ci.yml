@@ -11,20 +11,22 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+      # Installs the pnpm version pinned in package.json's packageManager field.
+      - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm run typecheck
-      - run: npm run lint
-      - run: npm run format:check
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm format:check
       # Unit tests plus the real-engine integration tests (Stockfish WASM in Node, checked against Python fixtures).
-      - run: npm test
-      - run: npm run build
-      - run: npx playwright install --with-deps chromium
+      - run: pnpm test
+      - run: pnpm build
+      - run: pnpm exec playwright install --with-deps chromium
         working-directory: apps/web
-      - run: npm run e2e -w @chessreview/web
+      - run: pnpm --filter @chessreview/web e2e
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

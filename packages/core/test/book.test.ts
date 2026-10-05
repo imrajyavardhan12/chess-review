@@ -10,7 +10,7 @@ import openings from '../src/data/openings.json'
 const tsv = readFileSync(fileURLToPath(new URL('../../../data/openings.tsv', import.meta.url)), 'utf8')
 
 describe('opening book', () => {
-  it('the committed openings.json is up to date with data/openings.tsv (run `npm run data` if not)', () => {
+  it('the committed openings.json is up to date with data/openings.tsv (run `pnpm data` if not)', () => {
     expect(buildBook(tsv)).toEqual(openings)
   })
 

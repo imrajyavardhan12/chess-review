@@ -15,7 +15,7 @@ mkdirSync(out, { recursive: true })
 const flavor = `stockfish-${buildVersion}-lite-single`
 for (const ext of ['js', 'wasm']) {
   const from = join(pkg, 'bin', `${flavor}.${ext}`)
-  if (!existsSync(from)) throw new Error(`missing ${from}; run npm install`)
+  if (!existsSync(from)) throw new Error(`missing ${from}; run pnpm install`)
   copyFileSync(from, join(out, `${flavor}.${ext}`))
 }
 copyFileSync(join(pkg, 'Copying.txt'), join(out, 'COPYING.txt'))

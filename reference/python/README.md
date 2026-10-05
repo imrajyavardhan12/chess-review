@@ -21,5 +21,5 @@ searches every position of ten games single-threaded and deterministically.
 
     .venv/bin/python scripts/make_fixtures.py [fixture-name ...]
 
-Then run `npm test` from the repository root. Change the Python first, regenerate, and make the
+Then run `pnpm test` from the repository root. Change the Python first, regenerate, and make the
 TypeScript match; never edit a fixture by hand.

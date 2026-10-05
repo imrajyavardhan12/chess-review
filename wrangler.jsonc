@@ -1,4 +1,4 @@
-// Cloudflare Pages project config. Deploy with: npm run build && npx wrangler pages deploy
+// Cloudflare Pages project config. Deploy with: pnpm build && pnpm dlx wrangler pages deploy
 {
   "name": "chessreview",
   "compatibility_date": "2026-10-01",

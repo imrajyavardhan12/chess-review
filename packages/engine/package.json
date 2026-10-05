@@ -13,7 +13,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@chessreview/core": "*"
+    "@chessreview/core": "workspace:*"
   },
   "devDependencies": {
     "stockfish": "^19.0.0"
