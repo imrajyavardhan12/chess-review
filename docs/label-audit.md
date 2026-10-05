@@ -31,7 +31,7 @@ Accuracy correlates with rating (r = 0.32 over 480 player-games; single games ar
 was the more accurate player in 89.7% of the 224 decisive games, with a mean accuracy of 74.9
 against 64.1.
 
-### 2. Half of all Great moves are recaptures (rule change proposed)
+### 2. Half of all Great moves are recaptures (rule changed)
 
 Great means the engine's choice, the runner-up at least 20 points of win chance worse, in a position
 between 25% and 75%. Of the 732 Great moves:
@@ -44,7 +44,7 @@ between 25% and 75%. Of the 732 Great moves:
 
 Taking back a piece is forced, but it is not a find: 178 of the 240 games had at least one "Great"
 recapture, so the label was mostly praising the obvious (bxc6, gxf3, Qxe8 after a capture on that
-square). **Proposed rule change** (its own pull request): a recapture is no longer Great (it stays Best). Great falls from 3.7% to
+square). **Rule change** (`ANALYSIS_VERSION` 5): a recapture is no longer Great (it stays Best). Great falls from 3.7% to
 1.9% of moves. The change follows the rule-change procedure in its own pull request: Python first,
 `ANALYSIS_VERSION` 4 → 5, fixtures regenerated from their recorded engine output, TypeScript to match.
 
