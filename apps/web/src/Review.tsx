@@ -1,7 +1,9 @@
 import {
   coachLine,
+  explainReviewMove,
   moveName,
   type Counts,
+  type Explanation,
   type MoveReview as Move,
   type Phase,
   type Review,
@@ -14,6 +16,7 @@ import { cancelReview, useReviewState } from './hooks'
 import { ERRORS, META, ORDER, evalText, isKeyMoment, isNotable } from './labels'
 import { BOARDS, usePrefs } from './prefs'
 import { Settings } from './Settings'
+import { overlayFor, sanLine } from './tactics'
 
 export function ReviewPage({ id, me }: { id: string; me: string | null }) {
   const state = useReviewState(id)
@@ -97,6 +100,9 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
   const bestShown = showBest && !!move && !!move.bestUci && move.bestUci !== move.uci
   const fen = bestShown ? review.fens[ply - 1] : review.fens[ply]
 
+  const tactic = useMemo(() => (ply > 0 ? explainReviewMove(review, ply - 1) : null), [review, ply])
+  const overlay = overlayFor(tactic, fen!)
+
   const keyPlies = useMemo(() => review.moves.filter((m) => isKeyMoment(m.label)).map((m) => m.ply), [review])
   const prevKey = [...keyPlies].reverse().find((p) => p < ply)
   const nextKey = keyPlies.find((p) => p > ply)
@@ -128,7 +134,7 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
     return () => removeEventListener('keydown', on)
   })
 
-  const arrows =
+  const moveArrows =
     bestShown && move
       ? [
           {
@@ -139,6 +145,14 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
           { startSquare: move.bestUci.slice(0, 2), endSquare: move.bestUci.slice(2, 4), color: '#2E8B62' },
         ]
       : []
+  // The tactic's own arrow, unless it repeats one already drawn.
+  const arrows = [
+    ...moveArrows,
+    ...overlay.arrows.filter(
+      (a) => !moveArrows.some((m) => m.startSquare === a.startSquare && m.endSquare === a.endSquare),
+    ),
+  ]
+  const ringColor = move ? META[move.label].color : 'transparent'
 
   const lastSquares = move && !bestShown ? [move.uci.slice(0, 2), move.uci.slice(2, 4)] : []
   const badge = move && !bestShown && (isNotable(move.label) || move.label === 'Best') ? move : null
@@ -195,13 +209,16 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
                   squareRenderer: ({ square, children }) => {
                     const hl = lastSquares.includes(square)
                     const showBadge = badge && square === badge.uci.slice(2, 4)
+                    const ring = overlay.rings.includes(square)
                     return (
                       <div
+                        data-ring={ring || undefined}
                         style={{
                           width: '100%',
                           height: '100%',
                           position: 'relative',
                           backgroundColor: hl ? (isLight(square) ? sq.hlLight : sq.hlDark) : undefined,
+                          boxShadow: ring ? `inset 0 0 0 3px ${ringColor}` : undefined,
                         }}
                       >
                         {children}
@@ -271,6 +288,7 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
             <>
               <Commentary
                 move={move}
+                tactic={tactic}
                 review={review}
                 mySide={mySide}
                 ply={ply}
@@ -405,29 +423,36 @@ function Coach({ review, mySide, goto }: { review: Review; mySide: Side | null; 
   )
 }
 
-function explain(m: Move, side: string, opening: string): string {
+/** Commentary for a move: the tactic behind it when one was found, then what it cost or saved. */
+function explain(m: Move, side: string, opening: string, tactic: Explanation | null): string {
   const cost = m.loss < 1 ? 'less than 1%' : `${Math.round(m.loss)}%`
   const best = m.bestSan && m.bestUci !== m.uci ? ` The best move was ${m.bestSan}.` : ''
+  const why = tactic ? `${tactic.text} ` : ''
   switch (m.label) {
     case 'Brilliant':
-      return 'A sacrifice that works out. The engine rates it among the best moves in the position.'
-    case 'Great':
-      return m.gap
-        ? `The only move that held the position. The next best would have cost ${side} ${Math.round(m.gap)}% of win chance.`
-        : 'The only move that held the position.'
+      return tactic
+        ? tactic.text
+        : 'A sacrifice that works out. The engine rates it among the best moves in the position.'
+    case 'Great': {
+      const gap = m.gap ? ` The next best would have cost ${side} ${Math.round(m.gap)}% of win chance.` : ''
+      return tactic ? `${tactic.text}${gap}` : `The only move that held the position.${gap}`
+    }
     case 'Book':
       return `A known opening move${opening ? `: ${opening}` : ''}.`
     case 'Best':
       return 'The engine’s top choice.'
     case 'Miss':
-      return `The last move gave ${side} a chance and this one let it go, costing ${cost} of win chance.${best}`
+      return tactic
+        ? `${why}It cost ${side} ${cost} of win chance.`
+        : `The last move gave ${side} a chance and this one let it go, costing ${cost} of win chance.${best}`
     default:
-      return `It cost ${side} ${cost} of win chance.${best}`
+      return `${why}It cost ${side} ${cost} of win chance.${tactic ? '' : best}`
   }
 }
 
 function Commentary({
   move,
+  tactic,
   review,
   mySide,
   ply,
@@ -438,6 +463,7 @@ function Commentary({
   goto,
 }: {
   move: Move | null
+  tactic: Explanation | null
   review: Review
   mySide: Side | null
   ply: number
@@ -460,13 +486,19 @@ function Commentary({
           </h2>
           <p>
             <b style={{ color: META[move.label].text }}>{move.label}.</b>{' '}
-            {explain(move, side, review.opening)}
+            {explain(move, side, review.opening, tactic)}
           </p>
           {move.loss > 0.5 && <Swing move={move} />}
           <p className="muted nums">
             {side} win chance {Math.round(move.winBefore)}% → {Math.round(move.winAfter)}%. Eval{' '}
             {evalText(review.evals[ply - 1]!)} → {evalText(review.evals[ply]!)}.
           </p>
+          {move.bestUci && move.bestUci !== move.uci && (review.lines[ply - 1]?.length ?? 0) > 0 && (
+            <p className="bestline">
+              <span className="muted">Best line</span>{' '}
+              {sanLine(review.fens[ply - 1]!, review.lines[ply - 1]!)}
+            </p>
+          )}
           {move.bestUci && move.bestUci !== move.uci && (
             <button className="secondary" onClick={onToggleBest}>
               {bestShown ? 'Back to the game' : `Show ${move.bestSan} instead`}
