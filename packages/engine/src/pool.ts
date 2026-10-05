@@ -26,6 +26,7 @@ export class EnginePool implements Engine {
   private all = new Set<PoolEngine>()
   private disposed = false
   private failures = 0
+  private limit: number
 
   constructor(
     private create: () => Promise<PoolEngine>,
@@ -33,6 +34,12 @@ export class EnginePool implements Engine {
     private maxFailures = 3,
   ) {
     if (size < 1) throw new RangeError('pool size must be at least 1')
+    this.limit = size
+  }
+
+  /** How many engines the pool may run now: its size, less one for every engine that crashed. */
+  get workers(): number {
+    return this.limit
   }
 
   analyse(req: AnalyseRequest, signal?: AbortSignal): Promise<AnalyseResult> {
@@ -61,7 +68,7 @@ export class EnginePool implements Engine {
       const engine = this.idle.pop()
       if (engine) {
         this.run(engine, this.queue.shift()!)
-      } else if (this.all.size + this.creating < this.size && this.queue.length > this.creating) {
+      } else if (this.all.size + this.creating < this.limit && this.queue.length > this.creating) {
         // Only start a new engine if more tasks are waiting than engines already on their way.
         this.creating++
         this.create().then(
@@ -104,6 +111,8 @@ export class EnginePool implements Engine {
           this.all.delete(engine)
           engine.dispose()
           this.failures++
+          // A crash is most often the browser running out of memory, so carry on with fewer workers.
+          this.limit = Math.max(1, this.limit - 1)
           if (task.retries > 0 && this.failures < this.maxFailures) {
             task.retries--
             this.queue.unshift(task)
@@ -131,7 +140,16 @@ export class EnginePool implements Engine {
   }
 }
 
-/** A sensible worker count: leave a core for the UI, cap memory use, never below one. */
-export function defaultConcurrency(hardwareConcurrency: number | undefined): number {
-  return Math.max(1, Math.min(6, (hardwareConcurrency ?? 4) - 1))
+/** Memory a lite engine worker holds, measured: wasm heap plus the 16 MB hash. */
+const WORKER_MB = 130
+
+/**
+ * A sensible worker count: leave a core for the UI, never below one, and keep the engines within
+ * a quarter of the memory the device reports (`navigator.deviceMemory`, in GB, where available).
+ */
+export function defaultConcurrency(hardwareConcurrency: number | undefined, deviceMemoryGb?: number): number {
+  const byCores = Math.min(6, (hardwareConcurrency ?? 4) - 1)
+  const byMemory =
+    deviceMemoryGb === undefined ? Infinity : Math.floor((deviceMemoryGb * 1024) / 4 / WORKER_MB)
+  return Math.max(1, Math.min(byCores, byMemory))
 }

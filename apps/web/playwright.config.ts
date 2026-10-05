@@ -13,6 +13,8 @@ export default defineConfig({
   use: {
     baseURL: 'http://127.0.0.1:4173',
     trace: 'retain-on-failure',
+    // Requests answered by the offline service worker bypass page.route mocks; e2e/offline.spec.ts opts in.
+    serviceWorkers: 'block',
     // Some sandboxes route localhost through a system proxy, which stalls the first request.
     launchOptions: { args: ['--no-proxy-server'] },
   },

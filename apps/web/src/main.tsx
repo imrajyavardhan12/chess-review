@@ -5,9 +5,12 @@ import '@fontsource-variable/geist'
 import './prefs'
 import './styles.css'
 import { App } from './App'
+import { registerServiceWorker } from './offline'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
   </StrictMode>,
 )
+
+registerServiceWorker()

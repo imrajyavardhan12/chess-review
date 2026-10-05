@@ -12,10 +12,12 @@ import {
 } from '@chessreview/core'
 import { EngineError } from '@chessreview/engine'
 import type { EngineHost } from './engine-host'
+import { remainingMs } from './eta'
 import { summarize, type ReviewStore } from './storage'
 
 export type JobState =
-  | { status: 'running'; done: number; total: number }
+  /** `etaMs` is the estimated time left, or null until there is enough progress to estimate it. */
+  | { status: 'running'; done: number; total: number; etaMs: number | null }
   | { status: 'done'; review: Review }
   | { status: 'error'; message: string }
   /** Nothing stored and nothing to resume: e.g. a link opened on another device. */
@@ -116,7 +118,9 @@ export class ReviewService {
   }
 
   private launch(id: string, pgn: string, preset: PresetName): void {
-    const job = this.track(id, { status: 'running', done: 0, total: 0 })
+    const job = this.track(id, { status: 'running', done: 0, total: 0, etaMs: null })
+    const now = this.deps.now ?? Date.now
+    let firstStepAt: number | null = null
     const run = async () => {
       if (job.controller.signal.aborted) throw new AnalysisAborted()
       const settings = settingsFor(preset, this.deps.engineId)
@@ -125,7 +129,15 @@ export class ReviewService {
       const records = await this.deps.host.use((engine) =>
         evaluatePositions(game, engine, settings, {
           signal: job.controller.signal,
-          onProgress: (done, total) => this.set(id, { status: 'running', done, total }),
+          onProgress: (done, total) => {
+            if (done === 1) firstStepAt = now()
+            this.set(id, {
+              status: 'running',
+              done,
+              total,
+              etaMs: remainingMs(firstStepAt, now(), done, total),
+            })
+          },
         }),
       )
       // An engine may finish a search that was already running when the user cancelled.

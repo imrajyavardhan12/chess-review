@@ -13,6 +13,8 @@ import { EvalGraph } from './EvalGraph'
 import { cancelReview, useReviewState } from './hooks'
 import { ERRORS, META, ORDER, evalText, isKeyMoment, isNotable } from './labels'
 import { BOARDS, usePrefs } from './prefs'
+import { describePosition } from './describe'
+import { formatRemaining } from './services/eta'
 import { Settings } from './Settings'
 
 export function ReviewPage({ id, me }: { id: string; me: string | null }) {
@@ -40,9 +42,9 @@ export function ReviewPage({ id, me }: { id: string; me: string | null }) {
         <div className="progress" role="status">
           <h1>Analysing</h1>
           <p className="muted">
-            {state?.status === 'running' && state.total > 0
-              ? `Step ${state.done} of ${state.total}. The engine runs on your device, so speed depends on it.`
-              : 'Starting the engine.'}
+            {state?.status !== 'running' || state.total === 0
+              ? 'Starting the engine.'
+              : `${state.etaMs === null ? 'Estimating the time left' : formatRemaining(state.etaMs)}. Step ${state.done} of ${state.total}; the engine runs on your device, so speed depends on it.`}
           </p>
           <div className="bar">
             <div
@@ -67,6 +69,9 @@ export function ReviewPage({ id, me }: { id: string; me: string | null }) {
     </div>
   )
 }
+
+/** Pieces slide between moves unless the user asked the system for less motion. */
+const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const isLight = (sq: string) => (sq.charCodeAt(0) - 97 + Number(sq[1]) - 1) % 2 === 1
 
@@ -180,44 +185,48 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
           <PlayerTag name={review[top]} rating={rating(top)} side={top} />
           <div className="board-row">
             <EvalBar win={win} evalLabel={evalText(review.evals[evalPly]!)} orientation={orientation} />
-            <div className="board">
-              <Chessboard
-                options={{
-                  position: fen,
-                  boardOrientation: orientation,
-                  allowDragging: false,
-                  allowDrawingArrows: false,
-                  clearArrowsOnPositionChange: false,
-                  animationDurationInMs: 160,
-                  lightSquareStyle: { backgroundColor: sq.light },
-                  darkSquareStyle: { backgroundColor: sq.dark },
-                  arrows,
-                  squareRenderer: ({ square, children }) => {
-                    const hl = lastSquares.includes(square)
-                    const showBadge = badge && square === badge.uci.slice(2, 4)
-                    return (
-                      <div
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          position: 'relative',
-                          backgroundColor: hl ? (isLight(square) ? sq.hlLight : sq.hlDark) : undefined,
-                        }}
-                      >
-                        {children}
-                        {showBadge && (
-                          <span
-                            className="badge"
-                            style={{ background: META[badge.label].color, color: META[badge.label].fg }}
-                          >
-                            {META[badge.label].glyph}
-                          </span>
-                        )}
-                      </div>
-                    )
-                  },
-                }}
-              />
+            {/* The drawn board is for the eye: its pieces are inert, and screen readers get the
+                position in words. Keyboard users move through the game with the move list and arrows. */}
+            <div className="board" role="img" aria-label={`Board. ${describePosition(fen!)}`}>
+              <div inert>
+                <Chessboard
+                  options={{
+                    position: fen,
+                    boardOrientation: orientation,
+                    allowDragging: false,
+                    allowDrawingArrows: false,
+                    clearArrowsOnPositionChange: false,
+                    animationDurationInMs: reducedMotion() ? 0 : 160,
+                    lightSquareStyle: { backgroundColor: sq.light },
+                    darkSquareStyle: { backgroundColor: sq.dark },
+                    arrows,
+                    squareRenderer: ({ square, children }) => {
+                      const hl = lastSquares.includes(square)
+                      const showBadge = badge && square === badge.uci.slice(2, 4)
+                      return (
+                        <div
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            position: 'relative',
+                            backgroundColor: hl ? (isLight(square) ? sq.hlLight : sq.hlDark) : undefined,
+                          }}
+                        >
+                          {children}
+                          {showBadge && (
+                            <span
+                              className="badge"
+                              style={{ background: META[badge.label].color, color: META[badge.label].fg }}
+                            >
+                              {META[badge.label].glyph}
+                            </span>
+                          )}
+                        </div>
+                      )
+                    },
+                  }}
+                />
+              </div>
             </div>
           </div>
           <PlayerTag name={review[bottom]} rating={rating(bottom)} side={bottom} />
@@ -260,31 +269,50 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
               />
             ))}
           </div>
-          <div className="tabs" role="tablist">
+          <div className="tabs" role="tablist" aria-label="Review">
             {(['moves', 'report'] as const).map((t) => (
-              <button key={t} role="tab" aria-selected={tab === t} className="tab" onClick={() => setTab(t)}>
+              <button
+                key={t}
+                id={`tab-${t}`}
+                role="tab"
+                aria-selected={tab === t}
+                aria-controls="tabpanel"
+                tabIndex={tab === t ? 0 : -1}
+                className="tab"
+                onClick={() => setTab(t)}
+                onKeyDown={(e) => {
+                  // The tab pattern: arrows move between tabs (and don't step through the game).
+                  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
+                  e.stopPropagation()
+                  const next = t === 'moves' ? 'report' : 'moves'
+                  setTab(next)
+                  document.getElementById(`tab-${next}`)?.focus()
+                }}
+              >
                 {t === 'moves' ? 'Moves' : 'Report'}
               </button>
             ))}
           </div>
-          {tab === 'moves' ? (
-            <>
-              <Commentary
-                move={move}
-                review={review}
-                mySide={mySide}
-                ply={ply}
-                bestShown={bestShown}
-                onToggleBest={() => setShowBest((v) => !v)}
-                prevKey={prevKey}
-                nextKey={nextKey}
-                goto={goto}
-              />
-              <MoveList review={review} ply={ply} onSelect={goto} />
-            </>
-          ) : (
-            <Report review={review} mySide={mySide} goto={goto} />
-          )}
+          <div id="tabpanel" className="tabpanel" role="tabpanel" aria-labelledby={`tab-${tab}`}>
+            {tab === 'moves' ? (
+              <>
+                <Commentary
+                  move={move}
+                  review={review}
+                  mySide={mySide}
+                  ply={ply}
+                  bestShown={bestShown}
+                  onToggleBest={() => setShowBest((v) => !v)}
+                  prevKey={prevKey}
+                  nextKey={nextKey}
+                  goto={goto}
+                />
+                <MoveList review={review} ply={ply} onSelect={goto} />
+              </>
+            ) : (
+              <Report review={review} mySide={mySide} goto={goto} />
+            )}
+          </div>
         </aside>
       </div>
 
@@ -296,7 +324,7 @@ function ReviewView({ review, me }: { review: Review; me: string | null }) {
 function PlayerTag({ name, rating, side }: { name: string; rating?: string; side: Side }) {
   return (
     <div className="ptag">
-      <i className={`dot ${side}`} aria-label={side} />
+      <i className={`dot ${side}`} role="img" aria-label={side} />
       <strong>{name}</strong>
       {rating && <span className="muted">{rating}</span>}
     </div>

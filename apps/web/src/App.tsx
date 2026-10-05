@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Home } from './Home'
+import { applyUpdate, useUpdateReady } from './offline'
 import { ReviewPage } from './Review'
 
 // Routes live in the hash so a reload keeps you on the same review:
@@ -18,8 +19,21 @@ export function App() {
     return () => removeEventListener('hashchange', on)
   }, [])
 
+  const updateReady = useUpdateReady()
   const route = parse(hash)
-  return route ? <ReviewPage id={route.id} me={route.me} /> : <Home />
+  return (
+    <>
+      {updateReady && (
+        <p className="update" role="status">
+          A new version of chessreview is ready.{' '}
+          <button className="ghost" onClick={applyUpdate}>
+            Reload
+          </button>
+        </p>
+      )}
+      {route ? <ReviewPage id={route.id} me={route.me} /> : <Home />}
+    </>
+  )
 }
 
 export function openReview(id: string, me: string | null) {
