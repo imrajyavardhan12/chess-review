@@ -8,6 +8,7 @@
 | `review-games.ts`    | Reviews a PGN file with the shipped engine in Node and writes the reviews as JSON lines.   |
 | `explain-corpus.ts`  | Runs the tactic explanations over those reviews and reports coverage; `--print` to audit.  |
 | `tactics-eval.ts`    | Measures the tactic detectors against the theme tags of the Lichess puzzle database.       |
+| `label-audit.ts`     | Audits the move labels over a set of reviews; see `docs/label-audit.md`.                   |
 
 The `.ts` scripts run the workspace's TypeScript sources directly with Node's type stripping
 (`--experimental-transform-types`, plus `ts-hooks.mjs` to resolve extensionless imports), so they
