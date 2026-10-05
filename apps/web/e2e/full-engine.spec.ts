@@ -78,10 +78,15 @@ test('the standard build offers no engine choice and keeps its CSP', async ({ pa
   await page.goto('http://127.0.0.1:4173/')
   await expect(page.getByLabel('Theme')).toBeVisible()
   await expect(page.getByLabel('Engine')).toHaveCount(0)
-  const res = await request.get('http://127.0.0.1:4173/')
-  expect(res.headers()['content-security-policy']).toContain("connect-src 'self' https://api.chess.com;")
-  const full = await request.get('/')
-  expect(full.headers()['content-security-policy']).toContain(
-    "connect-src 'self' https://api.chess.com http://127.0.0.1:4174 blob:;",
-  )
+  // Compare the sources connect-src allows, so other origins the app talks to don't matter here.
+  const connectSrc = async (url: string) => {
+    const csp = (await request.get(url)).headers()['content-security-policy'] ?? ''
+    return csp.match(/connect-src ([^;]*)/)?.[1]?.split(' ') ?? []
+  }
+  const standard = await connectSrc('http://127.0.0.1:4173/')
+  expect(standard).toContain("'self'")
+  expect(standard).not.toContain('http://127.0.0.1:4174')
+  expect(standard).not.toContain('blob:')
+  // The full build allows exactly two more: the engine's origin and the blob: it is handed over as.
+  expect((await connectSrc('/')).sort()).toEqual([...standard, 'http://127.0.0.1:4174', 'blob:'].sort())
 })
