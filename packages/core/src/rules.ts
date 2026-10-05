@@ -1,7 +1,7 @@
 import type { Label } from './types'
 
 /** Bump whenever classification rules or the Review shape change. Part of the cache key. */
-export const ANALYSIS_VERSION = 4
+export const ANALYSIS_VERSION = 5
 
 export const MATE_CP = 10_000
 /** Plies of the engine's principal variation kept per position: enough to show and explain a tactic. */
@@ -19,7 +19,7 @@ export const LOSS_THRESHOLDS: ReadonlyArray<readonly [number, Label]> = [
 
 /** Win-chance points the runner-up must trail by for the best move to count as "Great". */
 export const GREAT_GAP = 20
-/** ...and only in a contested position: forced lines in decided games are not great. */
+/** ...and only in a contested position: forced lines in decided games are not great. Recaptures never are. */
 export const GREAT_RANGE = [25, 75] as const
 /** Net material (in pawns) given up on the destination square for a move to count as a sacrifice. */
 export const BRILLIANT_SEE = -2

@@ -1372,7 +1372,7 @@
     "loss": 0.0,
     "cp_loss": 0,
     "accuracy": 100.0,
-    "label": "Great",
+    "label": "Best",
     "phase": "opening",
     "gap": 48.7
    },
@@ -2574,12 +2574,12 @@
   "counts": {
    "white": {
     "Book": 4,
-    "Best": 18,
+    "Best": 19,
     "Inaccuracy": 1,
     "Excellent": 7,
-    "Great": 6,
     "Good": 3,
-    "Brilliant": 5
+    "Brilliant": 5,
+    "Great": 5
    },
    "black": {
     "Book": 3,

@@ -5,7 +5,8 @@ comparable to Lichess (and close to, but not identical to, chess.com's).
 
 Move labels, in the order shown to the user:
   Brilliant   near-best move that sacrifices material, in a position that is not already decided
-  Great       the best move when the runner-up is 20%+ worse, in a contested position (an "only move")
+  Great       the best move when the runner-up is 20%+ worse, in a contested position (an "only move"),
+              unless it simply takes back a piece the opponent just captured
   Book        a known opening position (Lichess chess-openings, CC0)
   Best / Excellent / Good / Inaccuracy / Mistake / Blunder
               by win-chance lost: 0 (engine's choice), <=2, <=5, <=10, <=20, more
@@ -120,6 +121,17 @@ def see(board: chess.Board, move: chess.Move) -> int:
     for d in range(len(gain) - 1, 0, -1):
         gain[d - 1] = -max(-gain[d - 1], gain[d])
     return gain[0]
+
+
+def is_recapture(before_prev: chess.Board, prev: chess.Move | None, board: chess.Board, move: chess.Move) -> bool:
+    """True when `move` captures on the square where the opponent's last move just captured.
+    Taking back is almost always the only sensible move, so it is not "great" however forced it is."""
+    return (
+        prev is not None
+        and before_prev.is_capture(prev)
+        and board.is_capture(move)
+        and move.to_square == prev.to_square
+    )
 
 
 def game_phase(board: chess.Board) -> str:
@@ -395,7 +407,13 @@ def build_review(
             label, acc = "Book", 100.0
         elif loss <= 2 and see(pos, mv) <= BRILLIANT_SEE and w_before < 90 and w_after >= 45 and not mv.promotion:
             label = "Brilliant"
-        elif is_best and gap is not None and gap >= GREAT_GAP and GREAT_RANGE[0] <= w_before <= GREAT_RANGE[1]:
+        elif (
+            is_best
+            and gap is not None
+            and gap >= GREAT_GAP
+            and GREAT_RANGE[0] <= w_before <= GREAT_RANGE[1]
+            and not (i > 0 and is_recapture(positions[i - 1], played[i - 1], pos, mv))
+        ):
             label = "Great"
         elif label in ("Mistake", "Blunder") and prev_loss >= 10 and w_before >= 50:
             label = "Miss"
