@@ -51,13 +51,13 @@ puzzle database; each puzzle's first move is the mistake and the rest the punish
 
 | Detector            | Fired | Agrees with Lichess tag | Recall of the tag |
 | ------------------- | ----: | ----------------------: | ----------------: |
-| fork                |  6141 |                   85.1% |             67.1% |
-| skewer              |  1158 |                   85.3% |             86.4% |
-| discovered attack   |  1925 |                   86.0% |             50.2% |
-| trapped piece       |   810 |                   89.8% |             87.5% |
-| pin                 |   655 |                   69.8% |             13.9% |
+| fork                |  6122 |                   85.2% |             66.9% |
+| skewer              |  1153 |                   85.6% |             86.3% |
+| discovered attack   |  1924 |                   86.0% |             50.2% |
+| trapped piece       |   806 |                   90.1% |             87.4% |
+| pin                 |   644 |                   70.0% |             13.7% |
 | hanging piece       |  7222 |                   31.0% |             99.8% |
-| overloaded defender |   464 |                   41.2% |              7.7% |
+| overloaded defender |   635 |                   40.9% |             10.4% |
 | back-rank mate      |  3449 |                   44.9% |             98.4% |
 
 Agreement understates precision: Lichess tags a puzzle with only some of its motifs (it tags
