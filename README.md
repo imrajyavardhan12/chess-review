@@ -37,7 +37,7 @@ it gave up:
 | Label                          | Rule                                                                                          |
 | ------------------------------ | --------------------------------------------------------------------------------------------- |
 | Brilliant                      | within 2% of best, gives up 2+ pawns by exchange, game not already decided (45–90%)           |
-| Great                          | the best move, runner-up 20%+ worse, in a contested position (25–75% win chance)              |
+| Great                          | the best move, runner-up 20%+ worse, in a contested position (25–75%), and not a recapture    |
 | Book                           | the position is on a known opening line                                                       |
 | Best / Excellent / Good        | engine's choice / gave up up to 2% / up to 5%                                                 |
 | Inaccuracy / Mistake / Blunder | gave up up to 10% / 20% / more                                                                |

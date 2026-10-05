@@ -86,6 +86,19 @@ describe('buildReview rules', () => {
     expect(r.moves[1]!.label).not.toBe('Miss')
   })
 
+  it('does not call taking back a piece Great, however forced', () => {
+    // 4... Qxd5 takes back on d5; 4... Qd6 is a quiet move. The engine says both are the only move.
+    const lastLabel = (pgn: string) => {
+      const g = parseGame(pgn)
+      const records = g.moves.map((m) => rec(0, m.uci))
+      records.push(rec(0, null))
+      records[records.length - 2] = rec(0, g.moves.at(-1)!.uci, 300) // Black to move: +300 is bad for Black
+      return buildReview(g, records, emptyBook, settings).moves.at(-1)!.label
+    }
+    expect(lastLabel('1. e4 d5 2. exd5 Nf6 3. Nc3 Nxd5 4. Nxd5 Qxd5 *')).toBe('Best')
+    expect(lastLabel('1. e4 d5 2. exd5 Nf6 3. Nc3 Nxd5 4. Nxd5 Qd6 *')).toBe('Great')
+  })
+
   it('gives Great only for an only-move in a contested position', () => {
     const contested = buildReview(
       game,
