@@ -2,7 +2,13 @@ import { describe, expect, it } from 'vitest'
 import { AnalysisAborted, type AnalyseRequest } from '@chessreview/core'
 import { EnginePool, EngineError, defaultConcurrency, type PoolEngine } from '../src'
 
-const result = (n: number) => ({ eval: { cp: n, mate: null }, best: 'e2e4', depth: 1, nodes: n })
+const result = (n: number) => ({
+  eval: { cp: n, mate: null },
+  best: 'e2e4',
+  pv: ['e2e4'],
+  depth: 1,
+  nodes: n,
+})
 const req = (nodes: number): AnalyseRequest => ({ fen: 'x', depth: 1, nodes })
 const tick = (ms = 1) => new Promise((r) => setTimeout(r, ms))
 

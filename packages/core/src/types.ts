@@ -37,6 +37,8 @@ export interface EngineRecord extends Eval {
   best: string | null
   /** Eval of the best alternative to the played move; only searched when the played move was the engine's choice. */
   secondCp: number | null
+  /** The engine's principal variation (UCI), starting with `best`, at most `PV_PLIES` long. */
+  pv: string[]
 }
 
 export type Counts = Partial<Record<Label, number>>
@@ -85,6 +87,8 @@ export interface Review {
   eco: string
   fens: string[]
   evals: Eval[]
+  /** The engine's principal variation (UCI) from each position, parallel to `fens`. Empty where the game is over. */
+  lines: string[][]
   winSeries: number[]
   moves: MoveReview[]
   accuracy: Sides<number>

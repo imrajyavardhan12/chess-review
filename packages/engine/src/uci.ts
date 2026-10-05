@@ -159,12 +159,14 @@ export class UciEngine implements Engine {
       )
       if (aborted) throw new AnalysisAborted()
       const token = bestLine.split(/\s+/)[1]
-      const best = token && token !== '(none)' ? token : null
       const info = last as Info | null
       if (!info) throw new EngineError(`engine returned no score for ${req.fen}`)
+      const best = (token && token !== '(none)' ? token : null) ?? info.pv[0] ?? null
       return {
         eval: toWhitePov(info.score, turn),
-        best: best ?? info.pv[0] ?? null,
+        best,
+        // The line must start with the move the engine chose; if the last info line disagrees, keep only that move.
+        pv: best === null ? [] : info.pv[0] === best ? info.pv : [best],
         depth: info.depth,
         nodes: info.nodes,
       }

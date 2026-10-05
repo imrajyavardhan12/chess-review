@@ -1,6 +1,6 @@
 import { legalUci, terminal, turnOf } from './chess-util'
 import { AnalysisAborted, type Engine } from './engine'
-import { GREAT_RANGE, MATE_CP } from './rules'
+import { GREAT_RANGE, MATE_CP, PV_PLIES } from './rules'
 import type { ParsedGame } from './pgn'
 import type { EngineRecord, ReviewSettings } from './types'
 import { winPercent } from './winchance'
@@ -36,10 +36,10 @@ export async function evaluatePositions(
     if (end) {
       // The engine can't search a finished game: score it directly.
       const cp = end.winner === 'w' ? MATE_CP : end.winner === 'b' ? -MATE_CP : 0
-      record = { cp, mate: end.winner ? 0 : null, best: null, secondCp: null }
+      record = { cp, mate: end.winner ? 0 : null, best: null, secondCp: null, pv: [] }
     } else {
       const r = await engine.analyse({ fen, depth, nodes }, signal)
-      record = { cp: r.eval.cp, mate: r.eval.mate, best: r.best, secondCp: null }
+      record = { cp: r.eval.cp, mate: r.eval.mate, best: r.best, secondCp: null, pv: r.pv.slice(0, PV_PLIES) }
     }
     tick()
 

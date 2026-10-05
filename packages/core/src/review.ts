@@ -147,6 +147,7 @@ export function buildReview(
     eco: opening?.eco ?? game.headers.ECO ?? '',
     fens: [...game.fens],
     evals: records.map((r) => ({ cp: r.cp, mate: r.mate })),
+    lines: records.map((r) => r.pv),
     winSeries,
     moves,
     accuracy: both((s) => gameAccuracy(winSeries, mine(s), moves.length)),

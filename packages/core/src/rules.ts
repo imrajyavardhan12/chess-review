@@ -1,9 +1,11 @@
 import type { Label } from './types'
 
 /** Bump whenever classification rules or the Review shape change. Part of the cache key. */
-export const ANALYSIS_VERSION = 3
+export const ANALYSIS_VERSION = 4
 
 export const MATE_CP = 10_000
+/** Plies of the engine's principal variation kept per position: enough to show and explain a tactic. */
+export const PV_PLIES = 12
 /** Centipawn losses are clamped so one mate score can't dominate an average. */
 export const CP_CLAMP = 1_000
 

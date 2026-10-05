@@ -1,7 +1,13 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import { evaluatePositions, parseGame, type EngineRecord, type ReviewSettings } from '@chessreview/core'
+import {
+  evaluatePositions,
+  parseGame,
+  replay,
+  type EngineRecord,
+  type ReviewSettings,
+} from '@chessreview/core'
 import { EnginePool, UciEngine } from '../src'
 import { wasmNodeTransport } from '../src/node'
 
@@ -32,6 +38,16 @@ describe('real engine (Stockfish 19 lite, WASM in Node)', () => {
     expect(white).toMatchObject({ best: 'a1a8', eval: { cp: 9999, mate: 1 } })
     const black = await e.analyse({ fen: 'r5k1/8/8/8/8/8/5PPP/6K1 b - - 0 1', depth: 6, nodes: 20_000 })
     expect(black).toMatchObject({ best: 'a8a1', eval: { cp: -9999, mate: -1 } })
+    e.dispose()
+  })
+
+  it('reports a legal principal variation that starts with the best move', async () => {
+    const e = await start()
+    const fen = 'r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4'
+    const r = await e.analyse({ fen, depth: 12, nodes: 80_000 })
+    expect(r.pv[0]).toBe(r.best)
+    expect(r.pv.length).toBeGreaterThan(3)
+    expect(replay(fen, r.pv)).toHaveLength(r.pv.length) // every move legal in turn
     e.dispose()
   })
 
@@ -91,7 +107,8 @@ describe('parity with the Python reference (full-strength WASM engine, native-id
       )
       try {
         const records = await evaluatePositions(parseGame(fx.pgn), pool, settings)
-        const expected: EngineRecord[] = fx.infos.map((i) => ({
+        // The Python reference records no lines, so the comparison covers everything else.
+        const expected: Array<Omit<EngineRecord, 'pv'>> = fx.infos.map((i) => ({
           cp: i.cp,
           mate: i.mate,
           best: i.best,

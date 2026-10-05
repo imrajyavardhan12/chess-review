@@ -16,6 +16,7 @@ const rec = (cp: number, best: string | null, secondCp: number | null = null): E
   mate: null,
   best,
   secondCp,
+  pv: best ? [best] : [],
 })
 
 describe('classifyByLoss', () => {
@@ -178,6 +179,17 @@ describe('buildReview rules', () => {
     const g = parseGame('1. e4 {[%clk 0:03:00]} e5 {[%clk 0:02:50]} *')
     const r = buildReview(g, [rec(0, 'e2e4'), rec(0, 'e7e5'), rec(0, null)], emptyBook, settings)
     expect(r.moves.map((m) => m.clockMs)).toEqual([180_000, 170_000])
+  })
+
+  it('keeps the engine line of every position, parallel to the positions', () => {
+    const g = parseGame('1. e4 e5 *')
+    const r = buildReview(
+      g,
+      [{ ...rec(30, 'e2e4'), pv: ['e2e4', 'e7e5', 'g1f3'] }, rec(30, 'c7c5'), rec(30, null)],
+      emptyBook,
+      settings,
+    )
+    expect(r.lines).toEqual([['e2e4', 'e7e5', 'g1f3'], ['c7c5'], []])
   })
 })
 

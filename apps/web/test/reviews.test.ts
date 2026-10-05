@@ -15,9 +15,11 @@ function setup(opts: { gate?: Promise<void>; fail?: string; engineFailure?: bool
       calls.push(req)
       await opts.gate
       if (opts.fail) throw opts.engineFailure ? new EngineError(opts.fail) : new Error(opts.fail)
+      const best = legalUci(req.fen)[0] ?? null
       return {
         eval: { cp: 0, mate: null },
-        best: legalUci(req.fen)[0] ?? null,
+        best,
+        pv: best ? [best] : [],
         depth: req.depth,
         nodes: req.nodes,
       }

@@ -99,7 +99,13 @@ describe('UciEngine', () => {
   it('reports the last info line, from White’s point of view', async () => {
     const e = await UciEngine.start(new FakeTransport())
     const r = await e.analyse({ fen: START, depth: 10, nodes: 1000 })
-    expect(r).toEqual({ eval: { cp: 25, mate: null }, best: 'e2e4', depth: 10, nodes: 1000 })
+    expect(r).toEqual({
+      eval: { cp: 25, mate: null },
+      best: 'e2e4',
+      pv: ['e2e4', 'e7e5'],
+      depth: 10,
+      nodes: 1000,
+    })
 
     const b = await e.analyse({ fen: BLACK_TO_MOVE, depth: 10, nodes: 1000 })
     expect(b.eval.cp).toBe(-25) // +25 for Black is -25 for White
@@ -117,7 +123,15 @@ describe('UciEngine', () => {
       }
     })
     const r = await (await UciEngine.start(t)).analyse({ fen: START, depth: 7, nodes: 300 })
-    expect(r).toMatchObject({ eval: { cp: 45 }, best: 'd2d4', depth: 7, nodes: 300 })
+    expect(r).toMatchObject({ eval: { cp: 45 }, best: 'd2d4', pv: ['d2d4'], depth: 7, nodes: 300 })
+  })
+
+  it('keeps only the chosen move when the last line starts with a different one', async () => {
+    const t = new FakeTransport(
+      FakeTransport.polite('info depth 9 score cp 30 nodes 900 pv g1f3 g8f6 c2c4', 'bestmove e2e4'),
+    )
+    const r = await (await UciEngine.start(t)).analyse({ fen: START, depth: 9, nodes: 900 })
+    expect(r).toMatchObject({ best: 'e2e4', pv: ['e2e4'] })
   })
 
   it('falls back to the pv when the engine answers "(none)"', async () => {
