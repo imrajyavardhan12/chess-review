@@ -1,5 +1,7 @@
 import { useEffect, useEffectEvent, useState } from 'react'
-import { getReviewService, type JobState } from './services'
+import { PRESETS } from '@chessreview/core'
+import { usePrefs } from './prefs'
+import { getLiveAnalysis, getReviewService, type JobState, type LiveEval } from './services'
 
 /** Live state of one review: null until the service has answered for this id. */
 export function useReviewState(id: string): JobState | null {
@@ -33,10 +35,11 @@ export interface Async<T> {
 }
 
 /**
- * Runs `load` whenever `key` changes (null means "don't"), ignoring answers for superseded keys.
+ * Runs `load` whenever `key` changes (null means "don't"), ignoring answers for superseded keys and
+ * aborting their signal, so work nobody wants any more can stop.
  * Loading and error are derived from the key rather than stored, so there is no reset to forget.
  */
-export function useAsync<T>(key: string | null, load: () => Promise<T>): Async<T> {
+export function useAsync<T>(key: string | null, load: (signal: AbortSignal) => Promise<T>): Async<T> {
   const [settled, setSettled] = useState<{ key: string; value?: T; error?: unknown } | null>(null)
   const [last, setLast] = useState<T | undefined>(undefined)
   const run = useEffectEvent(load)
@@ -44,7 +47,8 @@ export function useAsync<T>(key: string | null, load: () => Promise<T>): Async<T
   useEffect(() => {
     if (key === null) return
     let stale = false
-    run().then(
+    const controller = new AbortController()
+    run(controller.signal).then(
       (value) => {
         if (stale) return
         setSettled({ key, value })
@@ -56,9 +60,28 @@ export function useAsync<T>(key: string | null, load: () => Promise<T>): Async<T
     )
     return () => {
       stale = true
+      controller.abort()
     }
   }, [key])
 
   const current = settled?.key === key ? settled : null
   return { value: last, loading: key !== null && current === null, error: current?.error }
+}
+
+/**
+ * The engine's live view of a position being explored, at the user's analysis setting. Moving on
+ * cancels the search for the position left behind. Undefined until the answer for this position arrives.
+ */
+export function useLiveEval(fen: string | null): {
+  live: LiveEval | undefined
+  /** The previous answer, for display while the next one is on its way. */
+  last: LiveEval | undefined
+  thinking: boolean
+  error: unknown
+} {
+  const { preset } = usePrefs()
+  const r = useAsync(fen === null ? null : `${fen}|${preset}`, (signal) =>
+    getLiveAnalysis().analyse(fen!, PRESETS[preset], signal),
+  )
+  return { live: r.loading ? undefined : r.value, last: r.value, thinking: r.loading, error: r.error }
 }
