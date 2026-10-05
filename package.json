@@ -15,7 +15,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test",
-    "e2e": "pnpm build && pnpm --filter @chessreview/web e2e"
+    "e2e": "pnpm build && pnpm --filter @chessreview/web e2e",
+    "budget": "node scripts/check-bundle.mjs"
   },
   "engines": {
     "node": ">=20"

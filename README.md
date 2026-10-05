@@ -6,12 +6,18 @@ Workers on your own CPU, so there is no server, no account, and your games never
 
 Import games from a chess.com username or paste any PGN.
 
+<p>
+  <img src="docs/screenshots/review-desktop.png" alt="A review of Morphy's Opera Game: the board at 13. Rxd7, each player's accuracy, the move list and the win-chance graph" width="640">
+  <img src="docs/screenshots/review-mobile.png" alt="The same review on a phone, in the dark theme" width="180">
+</p>
+
 ## Develop
 
     pnpm install
     pnpm dev             # http://localhost:5173
     pnpm check           # types, lint, formatting, unit + integration tests
     pnpm e2e             # builds, then runs the browser tests against the production build
+    pnpm budget          # after a build: checks the download stays within its size budget
 
 Requires Node 22+ and pnpm 10 (`corepack enable` picks up the version pinned in `package.json`).
 `pnpm install` fetches the Stockfish WASM build (the `stockfish` package's postinstall, the only
@@ -21,13 +27,13 @@ dependency build script allowed in `pnpm-workspace.yaml`); `predev` and `prebuil
 
 ## How it is organised
 
-| Path               | What                                                                                 |
-| ------------------ | ------------------------------------------------------------------------------------ |
-| `packages/core`    | Pure review logic: rules, accuracy, phases, opening book. Runs anywhere.             |
-| `packages/engine`  | UCI client, Web Worker and Node transports, parallel engine pool.                    |
-| `apps/web`         | React app, services layer (chess.com, storage, review queue), e2e tests.             |
-| `reference/python` | Original implementation, kept as the test oracle for `core`.                         |
-| `docs/`            | [Architecture and decisions](docs/ARCHITECTURE.md) and [deployment](docs/DEPLOY.md). |
+| Path               | What                                                                                                                                    |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/core`    | Pure review logic: rules, accuracy, phases, opening book. Runs anywhere.                                                                |
+| `packages/engine`  | UCI client, Web Worker and Node transports, parallel engine pool.                                                                       |
+| `apps/web`         | React app, services layer (chess.com, storage, review queue), e2e tests.                                                                |
+| `reference/python` | Original implementation, kept as the test oracle for `core`.                                                                            |
+| `docs/`            | [Architecture](docs/ARCHITECTURE.md), [decision records](docs/adr/README.md), [deployment](docs/DEPLOY.md), [roadmap](docs/ROADMAP.md). |
 
 ## How moves are labelled
 
@@ -45,6 +51,12 @@ it gave up:
 
 These are heuristics, not chess.com's proprietary rules, so labels differ from theirs. The rating shown in the
 Report tab is a rough estimate from average centipawn loss, not a calibrated rating.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the checks to run, where code goes, and the procedure for
+changing a review rule. Changes are listed in [CHANGELOG.md](CHANGELOG.md); to report a vulnerability,
+see [SECURITY.md](SECURITY.md).
 
 ## Licence
 

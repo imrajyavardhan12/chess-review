@@ -1,0 +1,29 @@
+name: Bug report
+description: Something is wrong or broken.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: pgn
+    attributes:
+      label: PGN
+      description: If it is about a review, paste the game. Reviews are reproducible, so the PGN lets us see exactly what you saw.
+      render: text
+  - type: input
+    id: move
+    attributes:
+      label: Move
+      description: For a wrong label or explanation, which move (for example "14... Qe6").
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: Firefox 131 on Windows 11, 8 GB RAM
+    validations:
+      required: true
