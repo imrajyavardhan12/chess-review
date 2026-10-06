@@ -1,7 +1,7 @@
 import { insights, playersIn, type Insights as Stats, type Phase, type Tally } from '@chessreview/core'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useAsync } from './hooks'
-import { factsFor, tacticName } from './insights'
+import { factsFor, tacticName } from './insight-facts'
 import { ERRORS, META } from './labels'
 import { getReviewService } from './services'
 import { Settings } from './Settings'
