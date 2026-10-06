@@ -198,3 +198,36 @@ test('a review link opened where it was never made explains itself', async ({ pa
   await page.goto('/#/review/0123456789abcdef')
   await expect(page.getByRole('alert')).toContainText('isn’t on this device')
 })
+
+test('pressing Load again fetches the latest games for the same username', async ({ page }) => {
+  const game = (pgn: string, endTime: number) => ({
+    url: `https://www.chess.com/game/live/${endTime}`,
+    pgn,
+    rules: 'chess',
+    time_class: 'rapid',
+    time_control: '600',
+    end_time: endTime,
+    white: { username: 'Morphy', rating: 2500, result: 'win' },
+    black: { username: 'Duke', rating: 1200, result: 'resigned' },
+  })
+  let games = [game(OPERA, 1_790_000_000)]
+  let requests = 0
+  await page.route('https://api.chess.com/**', (route) => {
+    requests++
+    if (route.request().url().endsWith('/games/archives'))
+      return json(route, { archives: ['https://api.chess.com/pub/player/morphy/games/2026/09'] })
+    return json(route, { games })
+  })
+
+  await page.goto('/')
+  await page.getByLabel('chess.com username').fill('morphy')
+  await page.getByRole('button', { name: 'Load games' }).click()
+  await expect(page.locator('.gamerow')).toHaveCount(1)
+
+  // A game is played after the list was loaded; pressing Load again must pick it up without a page reload.
+  games = [game('1. d4 d5 *', 1_790_000_500), ...games]
+  const before = requests
+  await page.getByRole('button', { name: 'Load games' }).click()
+  await expect(page.locator('.gamerow')).toHaveCount(2)
+  expect(requests).toBeGreaterThan(before)
+})

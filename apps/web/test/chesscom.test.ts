@@ -25,7 +25,9 @@ describe('listMonths', () => {
       }),
     )
     expect(await listMonths('Ann', f)).toEqual(['2026/09', '2026/08'])
-    expect(f).toHaveBeenCalledWith('https://api.chess.com/pub/player/ann/games/archives')
+    expect(f).toHaveBeenCalledWith('https://api.chess.com/pub/player/ann/games/archives', {
+      cache: 'no-cache',
+    })
   })
 
   it('lowercases and encodes the username', async () => {
