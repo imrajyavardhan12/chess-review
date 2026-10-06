@@ -2,7 +2,13 @@ import { describe, expect, it } from 'vitest'
 import { AnalysisAborted, type AnalyseRequest } from '@chessreview/core'
 import { EnginePool, EngineError, defaultConcurrency, type PoolEngine } from '../src'
 
-const result = (n: number) => ({ eval: { cp: n, mate: null }, best: 'e2e4', depth: 1, nodes: n })
+const result = (n: number) => ({
+  eval: { cp: n, mate: null },
+  best: 'e2e4',
+  pv: ['e2e4'],
+  depth: 1,
+  nodes: n,
+})
 const req = (nodes: number): AnalyseRequest => ({ fen: 'x', depth: 1, nodes })
 const tick = (ms = 1) => new Promise((r) => setTimeout(r, ms))
 
@@ -70,6 +76,50 @@ describe('EnginePool', () => {
     const pool = new EnginePool(create, 2)
     await expect(pool.analyse(req(7))).resolves.toMatchObject({ nodes: 7 })
     expect(calls).toBe(2)
+  })
+
+  it('runs on fewer engines after one crashes, since a crash usually means memory ran out', async () => {
+    const { state, create } = tracker()
+    let first = true
+    const flaky = async (): Promise<PoolEngine> => {
+      const base = await create()
+      const crashes = first
+      first = false
+      return {
+        analyse: async (r, s) => {
+          if (crashes) throw new EngineError('out of memory')
+          return base.analyse(r, s)
+        },
+        dispose: () => base.dispose(),
+      }
+    }
+    const pool = new EnginePool(flaky, 3)
+    expect(pool.workers).toBe(3)
+    await pool.analyse(req(0))
+    expect(pool.workers).toBe(2)
+    state.peak = 0
+    const out = await Promise.all(Array.from({ length: 12 }, (_, i) => pool.analyse(req(i))))
+    expect(out).toHaveLength(12)
+    expect(state.peak).toBe(2)
+  })
+
+  it('never shrinks below one engine', async () => {
+    let calls = 0
+    const create = async (): Promise<PoolEngine> => {
+      const crashing = calls++ < 2
+      return {
+        analyse: async (r) => {
+          if (crashing) throw new EngineError('worker died')
+          return result(r.nodes)
+        },
+        dispose: () => undefined,
+      }
+    }
+    const pool = new EnginePool(create, 2, 5)
+    await expect(pool.analyse(req(1))).rejects.toThrow('worker died') // one retry, then it gives up
+    expect(pool.workers).toBe(1)
+    await expect(pool.analyse(req(2))).resolves.toMatchObject({ nodes: 2 })
+    expect(pool.workers).toBe(1)
   })
 
   it('gives up and rejects everything when engines keep failing', async () => {
@@ -142,5 +192,15 @@ describe('defaultConcurrency', () => {
     [64, 6],
   ])('%s cores -> %s workers', (cores, expected) => {
     expect(defaultConcurrency(cores)).toBe(expected)
+  })
+
+  it.each([
+    [0.5, 1],
+    [1, 1],
+    [2, 3],
+    [4, 6],
+    [8, 6],
+  ])('keeps engines within a quarter of %s GB of memory: %s workers on 8 cores', (gb, expected) => {
+    expect(defaultConcurrency(8, gb)).toBe(expected)
   })
 })

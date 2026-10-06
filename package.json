@@ -4,22 +4,23 @@
   "version": "0.2.0",
   "type": "module",
   "license": "GPL-3.0-or-later",
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
   "scripts": {
-    "dev": "npm run dev -w @chessreview/web",
-    "build": "npm run build -w @chessreview/web",
-    "typecheck": "npm run typecheck --workspaces --if-present",
+    "dev": "pnpm --filter @chessreview/web dev",
+    "build": "pnpm --filter @chessreview/web build",
+    "typecheck": "pnpm -r --if-present typecheck && tsc -p scripts",
     "test": "vitest run",
     "test:watch": "vitest",
     "data": "node scripts/build-openings.mjs",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "npm run typecheck && npm run lint && npm run format:check && npm test",
-    "e2e": "npm run build && npm run e2e -w @chessreview/web"
+    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test",
+    "e2e": "pnpm build && pnpm --filter @chessreview/web e2e",
+    "review-games": "node --experimental-transform-types --no-warnings --import ./scripts/ts-hooks.mjs scripts/review-games.ts",
+    "explain-corpus": "node --experimental-transform-types --no-warnings --import ./scripts/ts-hooks.mjs scripts/explain-corpus.ts",
+    "tactics-eval": "node --experimental-transform-types --no-warnings --import ./scripts/ts-hooks.mjs scripts/tactics-eval.ts",
+    "budget": "node scripts/check-bundle.mjs",
+    "label-audit": "node --experimental-transform-types --no-warnings --import ./scripts/ts-hooks.mjs scripts/label-audit.ts"
   },
   "engines": {
     "node": ">=20"
@@ -27,6 +28,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/node": "^26.6.4",
+    "chess.js": "^1.4.0",
     "eslint": "^10.12.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.13.0",
@@ -34,5 +36,6 @@
     "typescript": "~6.0",
     "typescript-eslint": "^8.71.1",
     "vitest": "^5.0.3"
-  }
+  },
+  "packageManager": "pnpm@10.34.6"
 }

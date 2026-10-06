@@ -11,11 +11,14 @@ import {
   type Review,
 } from '@chessreview/core'
 import { EngineError } from '@chessreview/engine'
+import { EngineNotInstalled } from './full-engine'
 import type { EngineHost } from './engine-host'
+import { remainingMs } from './eta'
 import { summarize, type ReviewStore } from './storage'
 
 export type JobState =
-  | { status: 'running'; done: number; total: number }
+  /** `etaMs` is the estimated time left, or null until there is enough progress to estimate it. */
+  | { status: 'running'; done: number; total: number; etaMs: number | null }
   | { status: 'done'; review: Review }
   | { status: 'error'; message: string }
   /** Nothing stored and nothing to resume: e.g. a link opened on another device. */
@@ -29,9 +32,10 @@ interface Job {
 
 export interface ReviewServiceDeps {
   store: ReviewStore
-  host: EngineHost
+  /** The engine pool for an engine build. May refuse, e.g. for an engine that is not downloaded. */
+  engine: (engineId: string) => Promise<EngineHost>
   loadBook: () => Promise<OpeningBook>
-  /** Identifies the engine build; part of every review's id. */
+  /** The engine build used unless another is asked for; part of every review's id. */
   engineId: string
   now?: () => number
 }
@@ -44,28 +48,97 @@ export interface ReviewServiceDeps {
 export class ReviewService {
   private jobs = new Map<string, Job>()
   private queue: Promise<unknown> = Promise.resolve()
+  private watchers = new Set<() => void>()
+  /** How many reviews have finished in this session; lets lists know when to refresh. */
+  completed = 0
 
   constructor(private deps: ReviewServiceDeps) {}
 
-  /** The id a game would have under the given preset. Stable across sessions and devices. */
-  idFor(pgn: string, preset: PresetName): Promise<string> {
-    return reviewKey(pgn, settingsFor(preset, this.deps.engineId))
+  /** The id a game would have under the given preset and engine. Stable across sessions and devices. */
+  idFor(pgn: string, preset: PresetName, engineId = this.deps.engineId): Promise<string> {
+    return reviewKey(pgn, settingsFor(preset, engineId))
   }
 
   /** Starts a review (or finds the finished one) and returns its id. */
-  async start(pgn: string, preset: PresetName): Promise<string> {
-    const id = await this.idFor(pgn, preset)
+  async start(pgn: string, preset: PresetName, engineId = this.deps.engineId): Promise<string> {
+    const id = await this.idFor(pgn, preset, engineId)
     if (this.jobs.get(id)?.state.status === 'running') return id
     if (await this.deps.store.getReview(id)) return id
     parseGame(pgn) // reject bad input before queueing anything
-    await this.deps.store.putRequest({ id, pgn, preset, createdAt: (this.deps.now ?? Date.now)() })
-    this.launch(id, pgn, preset)
+    await this.deps.store.putRequest({
+      id,
+      pgn,
+      preset,
+      engine: engineId,
+      createdAt: (this.deps.now ?? Date.now)(),
+    })
+    this.launch(id, pgn, preset, engineId)
     return id
+  }
+
+  /**
+   * Starts reviews for several games, queued in the order given (each start is awaited, so the
+   * queue order is the list's order). Returns their ids.
+   */
+  async startMany(
+    pgns: readonly string[],
+    preset: PresetName,
+    engineId = this.deps.engineId,
+  ): Promise<string[]> {
+    const ids: string[] = []
+    for (const pgn of pgns) ids.push(await this.start(pgn, preset, engineId))
+    return ids
+  }
+
+  /** The stored review with its PGN, for exporting. */
+  stored(id: string) {
+    return this.deps.store.getReview(id)
+  }
+
+  /** Keeps a review read from a file, checked by `importJson`, as if it had been made here. */
+  async importReview(id: string, pgn: string, review: Review): Promise<void> {
+    await this.deps.store.putReview({
+      id,
+      pgn,
+      review,
+      summary: summarize(review),
+      createdAt: (this.deps.now ?? Date.now)(),
+    })
+    this.track(id, { status: 'done', review })
+  }
+
+  /** Reviews that are running or waiting their turn, in queue order. */
+  active(): Array<{ id: string; state: Extract<JobState, { status: 'running' }> }> {
+    return [...this.jobs].flatMap(([id, job]) =>
+      job.state.status === 'running' ? [{ id, state: job.state }] : [],
+    )
+  }
+
+  /** Called whenever any review's state changes. Returns an unsubscribe function. */
+  onChange(listener: () => void): () => void {
+    this.watchers.add(listener)
+    return () => this.watchers.delete(listener)
+  }
+
+  /** Cancels every running and waiting review. */
+  cancelAll(): void {
+    for (const { id } of this.active()) this.cancel(id)
+  }
+
+  /** Picks up requests left unfinished in an earlier session (a closed tab, a reload), oldest first. */
+  async resumePending(): Promise<void> {
+    const pending = (await this.deps.store.allRequests()).sort((a, b) => a.createdAt - b.createdAt)
+    for (const r of pending) await this.open(r.id)
   }
 
   /** Accuracy and trace for already-reviewed games, keyed by id. Used by the game list. */
   summaries(ids: readonly string[]) {
     return this.deps.store.summaries(ids)
+  }
+
+  /** Every review stored on this device. */
+  allReviews() {
+    return this.deps.store.allReviews()
   }
 
   /** Makes sure the review for `id` is running, finished or known to be missing, and returns its state. */
@@ -76,7 +149,8 @@ export class ReviewService {
     if (stored) return this.track(id, { status: 'done', review: stored.review }).state
     const request = await this.deps.store.getRequest(id)
     if (request) {
-      this.launch(id, request.pgn, request.preset)
+      // Requests from before engines were selectable used the default build.
+      this.launch(id, request.pgn, request.preset, request.engine ?? this.deps.engineId)
       return this.jobs.get(id)!.state
     }
     return { status: 'missing' }
@@ -105,6 +179,7 @@ export class ReviewService {
   private track(id: string, state: JobState): Job {
     const job: Job = { state, listeners: new Set(), controller: new AbortController() }
     this.jobs.set(id, job)
+    for (const w of [...this.watchers]) w()
     return job
   }
 
@@ -112,20 +187,33 @@ export class ReviewService {
     const job = this.jobs.get(id)
     if (!job) return
     job.state = state
+    if (state.status === 'done') this.completed++
     for (const l of [...job.listeners]) l(state)
+    for (const w of [...this.watchers]) w()
   }
 
-  private launch(id: string, pgn: string, preset: PresetName): void {
-    const job = this.track(id, { status: 'running', done: 0, total: 0 })
+  private launch(id: string, pgn: string, preset: PresetName, engineId: string): void {
+    const job = this.track(id, { status: 'running', done: 0, total: 0, etaMs: null })
+    const now = this.deps.now ?? Date.now
+    let firstStepAt: number | null = null
     const run = async () => {
       if (job.controller.signal.aborted) throw new AnalysisAborted()
-      const settings = settingsFor(preset, this.deps.engineId)
+      const settings = settingsFor(preset, engineId)
       const game = parseGame(pgn)
       const book = await this.deps.loadBook()
-      const records = await this.deps.host.use((engine) =>
+      const host = await this.deps.engine(engineId)
+      const records = await host.use((engine) =>
         evaluatePositions(game, engine, settings, {
           signal: job.controller.signal,
-          onProgress: (done, total) => this.set(id, { status: 'running', done, total }),
+          onProgress: (done, total) => {
+            if (done === 1) firstStepAt = now()
+            this.set(id, {
+              status: 'running',
+              done,
+              total,
+              etaMs: remainingMs(firstStepAt, now(), done, total),
+            })
+          },
         }),
       )
       // An engine may finish a search that was already running when the user cancelled.
@@ -146,6 +234,7 @@ export class ReviewService {
         await this.deps.store.deleteRequest(id)
         this.set(id, { status: 'missing' }) // tell listeners before forgetting the job
         this.jobs.delete(id)
+        for (const w of [...this.watchers]) w()
         return
       }
       console.error('review failed', e)
@@ -158,6 +247,7 @@ export class ReviewService {
 
 function friendly(e: unknown): string {
   if (e instanceof InvalidPgnError) return `That PGN couldn’t be read: ${e.message}`
+  if (e instanceof EngineNotInstalled) return e.message
   if (e instanceof EngineError) {
     return `The chess engine couldn’t run in this browser (${e.message.replace(/\.$/, '')}). Try a current Chrome, Firefox or Safari, and check that no extension is blocking WebAssembly or web workers.`
   }

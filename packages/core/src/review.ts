@@ -1,6 +1,6 @@
 import { positionKey, sanOf, turnOf } from './chess-util'
 import type { OpeningBook } from './book'
-import type { ParsedGame } from './pgn'
+import type { ParsedGame, ParsedMove } from './pgn'
 import { gamePhase, phaseIndex } from './phase'
 import {
   ANALYSIS_VERSION,
@@ -48,6 +48,16 @@ export function openingFromHeaders(h: Record<string, string>): string {
 
 const moverPov = (cp: number, color: Color) => (color === 'w' ? cp : -cp)
 const sideOf = (c: Color): Side => (c === 'w' ? 'white' : 'black')
+
+/**
+ * True when `mv` captures on the square where the opponent's last move just captured. Taking back
+ * is almost always the only sensible move, so it is not "great" however forced it is.
+ */
+export function isRecapture(prev: ParsedMove | undefined, mv: ParsedMove): boolean {
+  return (
+    !!prev && prev.san.includes('x') && mv.san.includes('x') && prev.uci.slice(2, 4) === mv.uci.slice(2, 4)
+  )
+}
 
 /**
  * Builds a review from a parsed game and the engine's records. Pure: no engine, no clock, no I/O,
@@ -101,7 +111,8 @@ export function buildReview(
       gap !== null &&
       gap >= GREAT_GAP &&
       wBefore >= GREAT_RANGE[0] &&
-      wBefore <= GREAT_RANGE[1]
+      wBefore <= GREAT_RANGE[1] &&
+      !isRecapture(game.moves[i - 1], mv)
     ) {
       label = 'Great'
     } else if ((label === 'Mistake' || label === 'Blunder') && prevLoss >= 10 && wBefore >= 50) {
@@ -147,6 +158,7 @@ export function buildReview(
     eco: opening?.eco ?? game.headers.ECO ?? '',
     fens: [...game.fens],
     evals: records.map((r) => ({ cp: r.cp, mate: r.mate })),
+    lines: records.map((r) => r.pv),
     winSeries,
     moves,
     accuracy: both((s) => gameAccuracy(winSeries, mine(s), moves.length)),

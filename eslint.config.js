@@ -7,6 +7,7 @@ export default tseslint.config(
   {
     ignores: [
       '**/dist/**',
+      '**/dist-full-engine/**', // e2e build with a full engine configured
       '**/node_modules/**',
       'reference/**', // Python reference implementation
       'apps/web/public/**', // third-party engine build
@@ -60,5 +61,14 @@ export default tseslint.config(
     ...tseslint.configs.disableTypeChecked,
     files: ['*.js', '*.ts', 'scripts/**'],
     languageOptions: { ...tseslint.configs.disableTypeChecked.languageOptions, globals: globals.node },
+  },
+  {
+    // The service worker is plain JS that runs in its own global scope.
+    ...tseslint.configs.disableTypeChecked,
+    files: ['apps/web/sw/**'],
+    languageOptions: {
+      ...tseslint.configs.disableTypeChecked.languageOptions,
+      globals: globals.serviceworker,
+    },
   },
 )

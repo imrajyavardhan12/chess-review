@@ -26,7 +26,7 @@ export const META: Record<Label, { color: string; text: string; fg: string; glyp
     text: 'var(--t-great)',
     fg: '#fff',
     glyph: GLYPH.Great,
-    help: 'The only move that held the position: the next best was 20% or more worse',
+    help: 'The only move that held the position: the next best was 20% or more worse (taking back a piece doesn’t count)',
   },
   Book: {
     color: '#9c7b5a',

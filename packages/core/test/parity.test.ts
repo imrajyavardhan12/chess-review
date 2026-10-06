@@ -73,6 +73,7 @@ describe.each(names)('parity with the Python reference: %s', (name) => {
     mate: i.mate,
     best: i.best,
     secondCp: i.second_cp,
+    pv: [], // the Python reference does not record lines; they are not part of the compared fields
   }))
   const review = buildReview(game, records, realBook(), settings)
   const py = fx.expected

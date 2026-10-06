@@ -11,5 +11,11 @@ export { see } from './see'
 export { evaluatePositions, type EvaluateOptions } from './evaluate'
 export { buildReview, classifyByLoss, openingFromHeaders } from './review'
 export { reviewGame } from './pipeline'
-export { legalUci, positionKey, sanOf } from './chess-util'
+export { legalUci, positionKey, sanOf, terminal } from './chess-util'
 export { coachLine, moveName, type Coaching } from './narrate'
+export * from './tactics'
+export * from './insights'
+
+export * from './clock'
+
+export * from './exchange'

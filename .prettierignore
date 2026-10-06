@@ -1,7 +1,8 @@
 dist
+dist-full-engine
 node_modules
 reference
 apps/web/public
 packages/core/src/data
 packages/core/test/fixtures
-package-lock.json
+pnpm-lock.yaml

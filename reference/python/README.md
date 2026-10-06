@@ -21,5 +21,11 @@ searches every position of ten games single-threaded and deterministically.
 
     .venv/bin/python scripts/make_fixtures.py [fixture-name ...]
 
-Then run `npm test` from the repository root. Change the Python first, regenerate, and make the
+When only the classification rules changed (labels, accuracy, phases) and not what the engine is
+asked, the recorded engine output is still valid: rebuild just the expected reviews, with no engine
+and no network. `--check` reports whether any fixture would change.
+
+    .venv/bin/python scripts/reclassify_fixtures.py [--check]
+
+Then run `pnpm test` from the repository root. Change the Python first, regenerate, and make the
 TypeScript match; never edit a fixture by hand.

@@ -75,7 +75,13 @@ Reviews and in-flight requests live in IndexedDB (`services/storage.ts`), with a
 where it is unavailable. A request is written before analysis starts and removed when it finishes, so a
 reload mid-analysis resumes instead of losing work. Analyses queue and run one at a time; cancelling
 rejects queued searches and tells the engine to `stop`. Engine failures are reported in terms a user
-can act on, and a crashed worker is replaced and its task retried once.
+can act on, and a crashed worker is replaced and its task retried once. Because a crash usually means
+memory ran short, the pool then runs with one worker fewer, and its starting size respects
+`navigator.deviceMemory`.
+
+A service worker (`apps/web/sw/`, generated per build by `scripts/precache.mjs`) caches the whole build,
+so a pasted PGN can be reviewed offline. A new version waits until the user chooses to reload into it.
+See `docs/adr/0007-offline-and-low-end-devices.md`.
 
 ### 8. The lite engine, and the path to the full one
 
@@ -92,8 +98,14 @@ positions:
 
 Lite has a floor of roughly 1.5% error that more search barely lowers, so label boundaries (2%, 5%,
 10%) are fuzzy by about that much. The real quality lever is the full net, whose WASM build is
-bit-identical to native Stockfish. Offering it means hosting the file outside Pages (for example R2) and
-loading it on demand; `ENGINE_ID` is part of every review's id, so adding it is a configuration change.
+bit-identical to native Stockfish. It is offered as an opt-in "Accurate engine" when the deployment
+configures where the file is hosted (`docs/DEPLOY.md`): the app downloads it with progress, checks its
+size and SHA-256 against the build's manifest, keeps it in Cache Storage, and hands it to the workers as
+a `blob:` URL. Its id (`stockfish-19-single`) is part of every review's id, so the two engines' reviews
+never mix, and a pending request remembers which engine it asked for. Measured in Node, it searches at
+about half the lite engine's speed (255 vs 479 thousand nodes per second) and needs about 500 MB per
+worker (lite: 130 MB), so it runs on at most two workers, one on devices reporting 4 GB or less.
+`docs/adr/0003-full-engine.md` has the details.
 
 ### 9. Labels are heuristics, not chess.com's rules
 
@@ -101,12 +113,76 @@ The rules are documented in `packages/core/src/rules.ts` and the README. `GREAT_
 tuned against real games (Kasparov–Topalov for brilliancies); they are judgement calls and will be
 revisited as more games are reviewed.
 
+### 10. Tactic explanations are computed when a review is read
+
+A mistake says _why_ ("Allows a fork: Nc7+ attacks the king and the rook on a8"), not just what it
+cost. The review stores the engine's principal variation for every position (`Review.lines`, up to
+`PV_PLIES` = 12 plies); `explainReviewMove` in `packages/core/src/tactics` reads the position, the
+move and the two lines either side of it and returns a typed `Explanation` with its sentence, the
+line that shows it and the squares to highlight.
+
+- **At read time, not stored.** The detectors are pure functions of data the review already holds,
+  so they can improve without bumping `ANALYSIS_VERSION` or re-analysing anything, and only the move
+  on screen is explained (a median of 13 ms, 47 ms at worst, on the corpus in Node). Storing the
+  lines is the only change to the `Review` (version 4).
+- **Their own exchange evaluator.** The detectors judge captures with a geometric static exchange
+  (`staticExchange`, with x-rays, without pins) rather than `see`, which searches legal moves and
+  cost up to half a second per explanation. They agree on 99.8% of the corpus's captures; `see`
+  still decides the Brilliant rule, unchanged.
+- **Confirmed by the engine, or not said.** A motif (hanging piece, fork, pin, skewer, discovered
+  attack, trapped piece, overloaded defender, mate, back-rank mate) is named only if the engine's own
+  line plays it and then wins material with it, and the material matches the difference between the
+  best line and the played one. A plain "loses material" claim quotes only the captures in the first
+  six plies. When nothing qualifies, the commentary keeps its plain wording.
+- **Measured.** On the Lichess puzzle database the detectors agree with Lichess's theme tags at the
+  rates in `docs/adr/0001-tactic-explanations.md`, and a hand audit of every explanation given in the
+  40-game corpus (`data/corpus`) found no false statement. `scripts/README.md` has the commands.
+- **Python parity is unchanged.** The reference implementation does not record lines; the parity
+  tests compare every field it produces.
+
+### 11. Free analysis is separate from the review
+
+Stepping through an engine line or trying moves on the board (`apps/web/src/explore.ts`) is page
+state only: it is never written to storage and never changes a `Review`. Positions are evaluated by
+`LiveAnalysis` (`services/analysis.ts`) on the same engine pool as reviews, at the user's preset
+(depth- and node-limited, so it ends on its own). Moving on aborts the search for the position left
+behind (the engine gets `stop`), and answers are remembered per position, so stepping back is free.
+
+### 12. Insights are computed from stored reviews, in the browser
+
+`packages/core/src/insights.ts` turns reviews into one player's statistics (`gameFacts` per game,
+then `insights` across them): pure functions, tested with seeded reviews. The web app reads every
+stored review from IndexedDB and tags each of the player's errors with `explainReviewMove`, yielding
+to the page every 20 ms (about 2.5 s for 40 games in Chromium) and caching per game for the session.
+Nothing is stored or sent; `docs/adr/0004-insights.md` has the choices.
+
+### 13. Time analysis is read from the clocks already in the review
+
+`packages/core/src/clock.ts` derives think time per move (the clock difference plus the increment,
+the first move timed from the starting clock), time trouble (less than a tenth of the base time,
+capped at two minutes) and per-side counts of errors with and without time trouble, from
+`MoveReview.clockMs` and the `TimeControl` header. It needs no change to stored reviews or to
+`ANALYSIS_VERSION`. Games without clocks, or daily games without a base time, are handled: no
+graph, or no time-trouble figures. `docs/adr/0005-time-analysis.md` has the details.
+
+### 14. Two game sources, batches, and portable reviews
+
+Games come from chess.com's public archive API or Lichess's public games export (ndjson, last 30
+games, more on request); both are plain CORS GETs with no account. "Review all new games" starts
+every unreviewed game through `ReviewService.startMany`, in list order; the existing request store
+makes the queue durable, and `resumePending` restarts unfinished requests at start-up. Reviews
+export as annotated PGN (`exportPgn`) and as JSON (`exportJson`); `importJson` treats a file as
+untrusted, checks every field against the PGN it carries, and recomputes the id from the review's own
+settings before storing it. `docs/adr/0006-import-export.md` has the details.
+
 ## Changing the rules
 
 1. Change `reference/python/src/chessreview/analysis.py` and its tests.
 2. Bump `ANALYSIS_VERSION` in `packages/core/src/rules.ts`.
-3. Regenerate fixtures (`reference/python/README.md`) and make `packages/core` match.
-4. `npm run check` and `npm run e2e`.
+3. Regenerate fixtures (`reference/python/README.md`) and make `packages/core` match. When only the
+   classification changed (not what the engine is asked), `scripts/reclassify_fixtures.py` rebuilds
+   the expected reviews from the recorded engine output, with no engine or network.
+4. `pnpm check` and `pnpm e2e`.
 
 Adding a label means: the `LABELS` list and `GLYPH` in core, the rule in `buildReview`, a colour in
 `apps/web/src/labels.ts` and `styles.css`, and a test for each.
@@ -115,14 +191,13 @@ Adding a label means: the `LABELS` list and `GLYPH` in core, the rule in `buildR
 
 No backend and no accounts. The deployed site sets a strict Content-Security-Policy
 (`apps/web/public/_headers`): scripts and workers from the same origin only, `wasm-unsafe-eval` for the
-engine, and `connect-src` limited to `api.chess.com`. The end-to-end tests run under that policy and fail on
+engine, and `connect-src` limited to `api.chess.com` and `lichess.org`. The end-to-end tests run under that policy and fail on
 any violation. The engine is GPL-3.0 software, so the project is GPL-3.0-or-later and ships the licence and
 source pointers with the engine files.
 
 ## Known limits and next steps
 
-- Tactic explanations (fork, pin, hanging piece), written once in `core`.
-- Time-trouble analysis: `MoveReview.clockMs` already carries the clock from the PGN.
-- The full-strength engine as an optional download.
 - Share links for a review (today a review lives on the device that made it).
-- Offline use (a service worker for the app shell and engine).
+- The browser tests run in Chromium only; Firefox and WebKit are next.
+
+The longer list is in [ROADMAP.md](ROADMAP.md).

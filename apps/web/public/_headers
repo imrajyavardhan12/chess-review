@@ -1,6 +1,6 @@
 # Cloudflare Pages headers (also applied by scripts/serve-dist.mjs for local and CI runs).
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; worker-src 'self'; connect-src 'self' https://api.chess.com; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; worker-src 'self'; connect-src 'self' https://api.chess.com https://lichess.org; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
@@ -16,4 +16,8 @@
 
 # The shell must be revalidated so a new deploy is picked up.
 /index.html
+  Cache-Control: no-cache
+
+# The service worker must be revalidated too, so browsers see a new version promptly.
+/sw.js
   Cache-Control: no-cache

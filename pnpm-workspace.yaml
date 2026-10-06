@@ -1,0 +1,8 @@
+packages:
+  - packages/*
+  - apps/*
+
+# pnpm does not run dependency lifecycle scripts unless they are listed here.
+# stockfish: its postinstall assembles the WASM engine builds the app ships and the tests run.
+onlyBuiltDependencies:
+  - stockfish

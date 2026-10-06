@@ -198,7 +198,8 @@ textarea {
 }
 .settings {
   display: flex;
-  gap: 14px;
+  flex-wrap: wrap;
+  gap: 8px 14px;
   align-items: center;
   font-size: 13px;
   color: var(--muted);
@@ -222,6 +223,7 @@ textarea {
 }
 .homebar {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
@@ -545,6 +547,11 @@ textarea {
   display: flex;
   flex-direction: column;
 }
+.tabpanel {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+}
 .summary {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -758,6 +765,10 @@ textarea {
   .comment {
     min-height: 0;
   }
+  .tabpanel,
+  .panel .report {
+    flex: none;
+  }
   .moves {
     flex: none;
     max-height: 260px;
@@ -893,4 +904,272 @@ textarea {
 .note {
   margin-top: 10px;
   font-size: 12.5px;
+}
+.bestline {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.bestline .muted {
+  margin-right: 4px;
+}
+
+.chips {
+  display: inline;
+}
+.chips > span {
+  display: inline;
+}
+.chip {
+  padding: 1px 4px;
+  margin: 0 1px;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.chip:hover {
+  background: var(--line);
+}
+.chip[aria-current='true'] {
+  background: var(--ink);
+  color: var(--paper);
+}
+.explore-eval {
+  margin: 10px 0 4px;
+  font-size: 20px;
+}
+.dot-target {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 26%;
+  height: 26%;
+  border-radius: 50%;
+  background: rgba(22, 34, 43, 0.35);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* ---------- insights ---------- */
+.navlink {
+  margin-right: auto;
+  font-size: 14px;
+  color: var(--muted);
+  text-underline-offset: 3px;
+}
+.insights h2 {
+  margin: 28px 0 8px;
+  font-size: 18px;
+}
+.insights .lead {
+  margin-top: 10px;
+  font-size: 17px;
+}
+.insights .player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.insights .rtable {
+  width: 100%;
+  font-size: 14px;
+}
+/* Numbers take what they need; names get the rest of the row. */
+.insights .rtable td,
+.insights .rtable thead th {
+  width: 1%;
+  max-width: none;
+  padding-left: 14px;
+  white-space: nowrap;
+}
+.insights .rtable thead th:first-child {
+  text-align: left;
+  padding-left: 0;
+}
+.insights .rtable .sw {
+  margin-right: 5px;
+}
+.insights .short {
+  display: none;
+}
+@media (max-width: 560px) {
+  /* Narrow screens show the labels' glyphs; the names stay for screen readers. */
+  .insights .long {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .insights .short {
+    display: inline;
+  }
+}
+.insights details {
+  margin-top: 8px;
+  font-size: 14px;
+}
+.insights .empty {
+  margin-top: 16px;
+  max-width: 560px;
+}
+.insights .empty p + p,
+.insights .empty a {
+  display: block;
+  margin-top: 8px;
+}
+.achart {
+  position: relative;
+  cursor: pointer;
+}
+.achart svg {
+  display: block;
+}
+.achart-grid {
+  stroke: var(--line);
+}
+.achart-axis {
+  fill: var(--muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.achart-line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.achart-dot {
+  fill: var(--ink);
+  stroke: var(--panel);
+  stroke-width: 2;
+}
+.achart-cursor {
+  stroke: var(--muted);
+  stroke-dasharray: 3 3;
+}
+.insights .tally .barcell {
+  width: 45%;
+}
+.tally .barcell span {
+  display: block;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--ink);
+  opacity: 0.55;
+}
+
+.engine-dialog {
+  max-width: min(520px, calc(100vw - 32px));
+  padding: 20px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--ink);
+}
+.engine-dialog::backdrop {
+  background: rgba(14, 21, 26, 0.45);
+}
+.engine-dialog h2 {
+  margin-bottom: 8px;
+}
+.engine-dialog p + p,
+.engine-dialog .download {
+  margin-top: 10px;
+}
+.dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+/* ---------- time ---------- */
+.tchart {
+  position: relative;
+  margin: 4px 0 8px;
+  cursor: pointer;
+}
+.tchart svg {
+  display: block;
+}
+.tchart-trouble {
+  fill: var(--t-mistake);
+  opacity: 0.12;
+}
+.tchart-line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.tchart-line.dashed {
+  stroke-dasharray: 5 3;
+  opacity: 0.7;
+}
+.tchart-grid {
+  stroke: var(--line);
+}
+.tchart-axis {
+  fill: var(--muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.tchart-cursor {
+  stroke: var(--muted);
+  stroke-dasharray: 3 3;
+}
+
+/* ---------- sources, batches, files ---------- */
+.source {
+  display: flex;
+  gap: 16px;
+  margin: 0 0 10px;
+  padding: 0;
+  border: 0;
+  font-size: 14px;
+}
+.source legend {
+  float: left;
+  margin-right: 4px;
+  color: var(--muted);
+}
+.source label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.reviewall {
+  margin: 4px 0 10px;
+}
+.queuebar {
+  margin: 16px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+.queuebar .bar {
+  margin: 8px 0;
+}
+.downloads {
+  line-height: 1.8;
+  font-size: 14px;
+}
+
+/* ---------- update ---------- */
+.update {
+  margin: 0;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  text-align: center;
+}
+.update .ghost {
+  margin-left: 8px;
 }

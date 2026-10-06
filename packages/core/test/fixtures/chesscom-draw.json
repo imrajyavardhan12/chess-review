@@ -1976,7 +1976,7 @@
     "loss": 0.0,
     "cp_loss": 0,
     "accuracy": 100.0,
-    "label": "Great",
+    "label": "Best",
     "phase": "opening",
     "gap": 44.3
    },
@@ -2180,7 +2180,7 @@
     "loss": 0.0,
     "cp_loss": 0,
     "accuracy": 100.0,
-    "label": "Great",
+    "label": "Best",
     "phase": "middlegame",
     "gap": 37.0
    },
@@ -2860,7 +2860,7 @@
     "loss": 0.0,
     "cp_loss": 0,
     "accuracy": 100.0,
-    "label": "Great",
+    "label": "Best",
     "phase": "middlegame",
     "gap": 42.1
    },
@@ -2894,7 +2894,7 @@
     "loss": 0.0,
     "cp_loss": 0,
     "accuracy": 100.0,
-    "label": "Great",
+    "label": "Best",
     "phase": "endgame",
     "gap": 48.4
    },
@@ -4098,9 +4098,9 @@
     "Book": 3,
     "Good": 11,
     "Excellent": 18,
-    "Great": 5,
-    "Best": 31,
-    "Inaccuracy": 2
+    "Best": 35,
+    "Inaccuracy": 2,
+    "Great": 1
    },
    "black": {
     "Book": 3,

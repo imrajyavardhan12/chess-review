@@ -2,22 +2,27 @@ import { describe, expect, it } from 'vitest'
 import { InvalidPgnError, emptyBook, legalUci, parseGame, type AnalyseRequest } from '@chessreview/core'
 import { EngineError, type PoolEngine } from '@chessreview/engine'
 import { EngineHost } from '../src/services/engine-host'
+import { EngineNotInstalled } from '../src/services/full-engine'
 import { ReviewService, type JobState } from '../src/services/reviews'
 import { memoryStore, type ReviewStore } from '../src/services/storage'
 
 const PGN = '[White "Ann"]\n[Black "Bob"]\n[Result "1-0"]\n\n1. e4 e5 2. Nf3 Nc6 1-0'
 
 /** Deterministic fake: "best" is the first legal move, score zero. `gate` lets a test hold searches open. */
-function setup(opts: { gate?: Promise<void>; fail?: string; engineFailure?: boolean } = {}) {
+function setup(
+  opts: { gate?: Promise<void>; fail?: string; engineFailure?: boolean; now?: () => number } = {},
+) {
   const calls: AnalyseRequest[] = []
   const create = async (): Promise<PoolEngine> => ({
     async analyse(req) {
       calls.push(req)
       await opts.gate
       if (opts.fail) throw opts.engineFailure ? new EngineError(opts.fail) : new Error(opts.fail)
+      const best = legalUci(req.fen)[0] ?? null
       return {
         eval: { cp: 0, mate: null },
-        best: legalUci(req.fen)[0] ?? null,
+        best,
+        pv: best ? [best] : [],
         depth: req.depth,
         nodes: req.nodes,
       }
@@ -25,13 +30,14 @@ function setup(opts: { gate?: Promise<void>; fail?: string; engineFailure?: bool
     dispose() {},
   })
   const store = memoryStore()
+  const host = new EngineHost(create, 2, 60_000)
   const make = (s: ReviewStore = store) =>
     new ReviewService({
       store: s,
-      host: new EngineHost(create, 2, 60_000),
+      engine: async () => host,
       loadBook: async () => emptyBook,
       engineId: 'fake',
-      now: () => 1,
+      now: opts.now ?? (() => 1),
     })
   return { calls, store, service: make(), make }
 }
@@ -89,6 +95,20 @@ describe('ReviewService', () => {
     expect(last).toBeDefined()
     expect(last!.done).toBeLessThanOrEqual(last!.total)
     expect(seen.at(-1)?.status).toBe('done')
+  })
+
+  it('estimates the time left once it has seen enough steps, reaching zero at the end', async () => {
+    let t = 0
+    const { service } = setup({ now: () => (t += 400) })
+    const id = await service.start(PGN, 'quick')
+    const seen: JobState[] = []
+    const off = service.subscribe(id, (s) => seen.push(s))
+    await finish(service, id)
+    off()
+    const etas = seen.flatMap((s) => (s.status === 'running' ? [s.etaMs] : []))
+    expect(etas[0]).toBeNull() // no guess before there is a rate
+    expect(etas.some((e) => e !== null && e > 0)).toBe(true)
+    expect(etas.at(-1)).toBe(0)
   })
 
   it('rejects a PGN it cannot read and leaves nothing behind', async () => {
@@ -173,6 +193,79 @@ describe('ReviewService', () => {
     const at = count
     await finish(service, id)
     expect(count).toBe(at)
+  })
+
+  it('keys a review by its engine, and resumes a request with the engine it asked for', async () => {
+    const gate = new Promise<void>(() => undefined)
+    const first = setup({ gate })
+    expect(await first.service.idFor(PGN, 'quick', 'full')).not.toBe(await first.service.idFor(PGN, 'quick'))
+    const id = await first.service.start(PGN, 'quick', 'full')
+    expect(await first.store.getRequest(id)).toMatchObject({ engine: 'full' })
+
+    const second = setup()
+    await second.store.putRequest((await first.store.getRequest(id))!)
+    const state = await finish(second.service, id)
+    expect(state.status === 'done' && state.review.settings.engine).toBe('full')
+  })
+
+  it('reports an engine that is not available on this device in words the user can act on', async () => {
+    const { store } = setup()
+    const service = new ReviewService({
+      store,
+      engine: async () => {
+        throw new EngineNotInstalled()
+      },
+      loadBook: async () => emptyBook,
+      engineId: 'fake',
+    })
+    const state = await finish(service, await service.start(PGN, 'quick'))
+    expect(state).toMatchObject({ status: 'error', message: expect.stringContaining('isn’t downloaded') })
+  })
+
+  it('queues a batch in order, reports it while it runs, and notifies on every change', async () => {
+    let release!: () => void
+    const gate = new Promise<void>((r) => (release = r)) // holds the engine so the queue can be seen
+    const { service } = setup({ gate })
+    const other = '1. d4 d5 2. c4 e6 *'
+    let changes = 0
+    service.onChange(() => changes++)
+    const ids = await service.startMany([PGN, other], 'quick')
+    expect(service.active().map((a) => a.id)).toEqual(ids)
+    release()
+    const states = await Promise.all(ids.map((id) => finish(service, id)))
+    expect(states.map((s) => s.status)).toEqual(['done', 'done'])
+    expect(service.active()).toEqual([])
+    expect(service.completed).toBe(2)
+    expect(changes).toBeGreaterThan(2)
+  })
+
+  it('cancels a whole batch', async () => {
+    let release!: () => void
+    const gate = new Promise<void>((r) => (release = r))
+    const { service, store } = setup({ gate })
+    const ids = await service.startMany([PGN, '1. d4 d5 *'], 'quick')
+    const outcomes = Promise.all(ids.map((id) => finish(service, id)))
+    service.cancelAll()
+    release()
+    expect((await outcomes).map((s) => s.status)).toEqual(['missing', 'missing'])
+    expect(await store.allRequests()).toEqual([])
+  })
+
+  it('resumes every unfinished request from an earlier session, oldest first', async () => {
+    const gate = new Promise<void>(() => undefined) // the first session never finishes
+    const first = setup({ gate })
+    const ids = await first.service.startMany([PGN, '1. d4 d5 *'], 'quick')
+    const second = setup()
+    for (const r of await first.store.allRequests()) await second.store.putRequest(r)
+    await second.service.resumePending()
+    expect(
+      second.service
+        .active()
+        .map((a) => a.id)
+        .sort(),
+    ).toEqual([...ids].sort())
+    const states = await Promise.all(ids.map((id) => finish(second.service, id)))
+    expect(states.map((s) => s.status)).toEqual(['done', 'done'])
   })
 
   it('parses fixtures the same way the service does', () => {

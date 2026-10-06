@@ -5,27 +5,39 @@ on:
     branches: [main]
   pull_request:
 
+# A newer push to the same branch makes an older run pointless.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
 jobs:
   web:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      # Installs the pnpm version pinned in package.json's packageManager field.
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm run typecheck
-      - run: npm run lint
-      - run: npm run format:check
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm format:check
       # Unit tests plus the real-engine integration tests (Stockfish WASM in Node, checked against Python fixtures).
-      - run: npm test
-      - run: npm run build
-      - run: npx playwright install --with-deps chromium
+      - run: pnpm test
+      - run: pnpm build
+      # Fails if the download a visitor pays for grows past its budget (scripts/check-bundle.mjs).
+      - run: pnpm budget
+      - run: pnpm exec playwright install --with-deps chromium
         working-directory: apps/web
-      - run: npm run e2e -w @chessreview/web
-      - uses: actions/upload-artifact@v4
+      - run: pnpm --filter @chessreview/web e2e
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-traces
@@ -33,10 +45,11 @@ jobs:
 
   reference:
     # The Python implementation is the oracle for the TypeScript port; keep it green.
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - run: pip install -e "reference/python[dev]"

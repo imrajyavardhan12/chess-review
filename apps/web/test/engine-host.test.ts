@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { PoolEngine } from '@chessreview/engine'
 import { EngineHost } from '../src/services/engine-host'
 
-const result = { eval: { cp: 0, mate: null }, best: 'e2e4', depth: 1, nodes: 1 }
+const result = { eval: { cp: 0, mate: null }, best: 'e2e4', pv: ['e2e4'], depth: 1, nodes: 1 }
 
 describe('EngineHost', () => {
   let created = 0

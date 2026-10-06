@@ -6,7 +6,7 @@ import { createServer } from 'node:http'
 import { extname, join, normalize } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const dist = fileURLToPath(new URL('../apps/web/dist/', import.meta.url))
+const dist = fileURLToPath(new URL(`../apps/web/${process.env.DIST ?? 'dist'}/`, import.meta.url))
 const port = Number(process.env.PORT ?? 4173)
 const host = process.env.HOST ?? '127.0.0.1'
 

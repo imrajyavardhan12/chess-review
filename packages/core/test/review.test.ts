@@ -16,6 +16,7 @@ const rec = (cp: number, best: string | null, secondCp: number | null = null): E
   mate: null,
   best,
   secondCp,
+  pv: best ? [best] : [],
 })
 
 describe('classifyByLoss', () => {
@@ -83,6 +84,19 @@ describe('buildReview rules', () => {
       settings,
     )
     expect(r.moves[1]!.label).not.toBe('Miss')
+  })
+
+  it('does not call taking back a piece Great, however forced', () => {
+    // 4... Qxd5 takes back on d5; 4... Qd6 is a quiet move. The engine says both are the only move.
+    const lastLabel = (pgn: string) => {
+      const g = parseGame(pgn)
+      const records = g.moves.map((m) => rec(0, m.uci))
+      records.push(rec(0, null))
+      records[records.length - 2] = rec(0, g.moves.at(-1)!.uci, 300) // Black to move: +300 is bad for Black
+      return buildReview(g, records, emptyBook, settings).moves.at(-1)!.label
+    }
+    expect(lastLabel('1. e4 d5 2. exd5 Nf6 3. Nc3 Nxd5 4. Nxd5 Qxd5 *')).toBe('Best')
+    expect(lastLabel('1. e4 d5 2. exd5 Nf6 3. Nc3 Nxd5 4. Nxd5 Qd6 *')).toBe('Great')
   })
 
   it('gives Great only for an only-move in a contested position', () => {
@@ -178,6 +192,17 @@ describe('buildReview rules', () => {
     const g = parseGame('1. e4 {[%clk 0:03:00]} e5 {[%clk 0:02:50]} *')
     const r = buildReview(g, [rec(0, 'e2e4'), rec(0, 'e7e5'), rec(0, null)], emptyBook, settings)
     expect(r.moves.map((m) => m.clockMs)).toEqual([180_000, 170_000])
+  })
+
+  it('keeps the engine line of every position, parallel to the positions', () => {
+    const g = parseGame('1. e4 e5 *')
+    const r = buildReview(
+      g,
+      [{ ...rec(30, 'e2e4'), pv: ['e2e4', 'e7e5', 'g1f3'] }, rec(30, 'c7c5'), rec(30, null)],
+      emptyBook,
+      settings,
+    )
+    expect(r.lines).toEqual([['e2e4', 'e7e5', 'g1f3'], ['c7c5'], []])
   })
 })
 

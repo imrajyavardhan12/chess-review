@@ -12,6 +12,8 @@ export interface AnalyseResult {
   /** Score from White's point of view, whoever is to move. */
   eval: Eval
   best: string | null
+  /** Principal variation in UCI, starting with `best`; empty when there is no legal move. */
+  pv: string[]
   depth: number
   nodes: number
 }

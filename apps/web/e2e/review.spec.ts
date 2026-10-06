@@ -6,6 +6,13 @@ const OPERA = `[White "Morphy"]
 
 1.e4 e5 2.Nf3 d6 3.d4 Bg4 4.dxe5 Bxf3 5.Qxf3 dxe5 6.Bc4 Nf6 7.Qb3 Qe7 8.Nc3 c6 9.Bg5 b5 10.Nxb5 cxb5 11.Bxb5+ Nbd7 12.O-O-O Rd8 13.Rxd7 Rxd7 14.Rd1 Qe6 15.Bxd7+ Nxd7 16.Qb8+ Nxb8 17.Rd8# 1-0`
 
+// Légal's mate: 5…Bxd1?? allows mate in two.
+const LEGAL = `[White "Legal"]
+[Black "Saint Brie"]
+[Result "1-0"]
+
+1. e4 e5 2. Nf3 d6 3. Bc4 Bg4 4. Nc3 g6 5. Nxe5 Bxd1 6. Bxf7+ Ke7 7. Nd5# 1-0`
+
 /** Fails a test on any console error or Content-Security-Policy violation. */
 function watchForProblems(page: Page) {
   const problems: string[] = []
@@ -77,6 +84,61 @@ test('reviews a pasted PGN entirely in the browser, under the production CSP', a
   await expect(page.getByText('Move quality')).toBeVisible()
   await expect(page.locator('.rtable').first().locator('tbody tr')).toHaveCount(10)
 
+  expect(problems).toEqual([])
+})
+
+test('explains a blunder with the tactic behind it, the best line, and the squares on the board', async ({
+  page,
+}) => {
+  const problems = watchForProblems(page)
+  await page.goto('/')
+  await page.getByText('Paste a PGN instead').click()
+  await page.getByLabel('PGN').fill(LEGAL)
+  await page.getByRole('button', { name: 'Review PGN' }).click()
+  await expect(page.locator('.review')).toBeVisible()
+
+  // 5…Bxd1?? takes the queen and walks into Légal's mate.
+  await page.getByRole('button', { name: /^Bxd1/ }).click()
+  const comment = page.locator('.comment')
+  await expect(comment).toContainText('Blunder. Allows a forced mate in 2, starting with Bxf7+.')
+  await expect(comment.locator('.bestline')).toContainText('5… dxe5')
+  // The mating move is drawn on the position it starts from, with the squares involved ringed.
+  await expect(page.locator('[data-ring]')).not.toHaveCount(0)
+
+  expect(problems).toEqual([])
+})
+
+test('explores a line and free moves with a live engine, apart from the review', async ({ page }) => {
+  const problems = watchForProblems(page)
+  await page.goto('/')
+  await page.getByText('Paste a PGN instead').click()
+  await page.getByLabel('PGN').fill(LEGAL)
+  await page.getByRole('button', { name: 'Review PGN' }).click()
+  await expect(page.locator('.review')).toBeVisible()
+
+  // Step through the mate the blunder allowed.
+  await page.getByRole('button', { name: /^Bxd1/ }).click()
+  await page.getByRole('button', { name: 'Step through it' }).click()
+  await expect(page.getByRole('heading', { name: 'Exploring' })).toBeVisible()
+  const mine = page.getByRole('list', { name: 'Your moves' })
+  await expect(mine).toContainText('6. Bxf7+')
+  await expect(mine.locator('[aria-current="true"]')).toHaveText('6. Bxf7+')
+  await page.keyboard.press('ArrowRight')
+  await expect(mine.locator('[aria-current="true"]')).toHaveText('Ke7')
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('heading', { name: 'Exploring' })).toHaveCount(0)
+
+  // From the start position, click a pawn and its square: the engine evaluates the new position.
+  await page.keyboard.press('Home')
+  await page.locator('[data-square="d2"]').click()
+  await page.locator('[data-square="d4"]').click()
+  await expect(mine).toHaveText('1. d4')
+  await expect(page.locator('.explore-eval b')).not.toHaveText('Thinking…')
+  await expect(page.locator('.explore-eval b')).toHaveText(/^[+−]\d+\.\d$/)
+
+  // Leaving puts the game back exactly as it was.
+  await page.getByRole('button', { name: 'Back to the game' }).click()
+  await expect(page.locator('.comment h2')).toHaveText('Start of the game')
   expect(problems).toEqual([])
 })
 
