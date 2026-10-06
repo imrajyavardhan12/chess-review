@@ -40,7 +40,8 @@ interface RawGame {
 async function getJson<T>(url: string, user: string, fetchImpl: typeof fetch): Promise<T> {
   let res: Response
   try {
-    res = await fetchImpl(url)
+    // chess.com allows caching for a minute; a refresh must see games played since the last load.
+    res = await fetchImpl(url, { cache: 'no-cache' })
   } catch {
     throw new ChessComError('network', 'Couldn’t reach chess.com. Check your connection.')
   }

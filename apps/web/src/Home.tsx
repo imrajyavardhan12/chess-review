@@ -92,6 +92,8 @@ interface Query {
   month?: string
   /** Lichess: how many of the most recent games to list. */
   count?: number
+  /** Changes on every explicit search, so pressing Load again refetches even for the same user and month. */
+  refresh?: number
 }
 
 interface GamesData {
@@ -172,7 +174,7 @@ export function Home() {
   // games count as reviewed), and when a review finishes, so finished games show as reviewed.
   const games = useAsync(
     query
-      ? `${query.source}|${query.user}|${query.month ?? ''}|${query.count ?? ''}|${preset}|${engineId}|${queue.completed}`
+      ? `${query.source}|${query.user}|${query.month ?? ''}|${query.count ?? ''}|${query.refresh ?? ''}|${preset}|${engineId}|${queue.completed}`
       : null,
     () => loadGames(query!, preset, engineId),
   )
@@ -187,7 +189,7 @@ export function Home() {
   function search(user: string, wanted?: string) {
     setOpenError('')
     setShowAll(false)
-    setQuery({ source, user, month: wanted })
+    setQuery({ source, user, month: wanted, refresh: Date.now() })
     write(STORE, user)
     write(SOURCE, source)
   }

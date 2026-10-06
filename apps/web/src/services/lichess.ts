@@ -53,7 +53,7 @@ export async function fetchLichessGames(
   const url = `${API}/${who}?max=${max}&pgnInJson=true&clocks=true&opening=true`
   let res: Response
   try {
-    res = await fetchImpl(url, { headers: { Accept: 'application/x-ndjson' } })
+    res = await fetchImpl(url, { headers: { Accept: 'application/x-ndjson' }, cache: 'no-cache' })
   } catch {
     throw new LichessError('network', 'Couldn’t reach Lichess. Check your connection.')
   }

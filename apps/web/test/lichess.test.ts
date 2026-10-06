@@ -23,7 +23,7 @@ describe('fetchLichessGames', () => {
     await fetchLichessGames(' Some User ', 30, f)
     expect(f).toHaveBeenCalledWith(
       'https://lichess.org/api/games/user/Some%20User?max=30&pgnInJson=true&clocks=true&opening=true',
-      { headers: { Accept: 'application/x-ndjson' } },
+      { headers: { Accept: 'application/x-ndjson' }, cache: 'no-cache' },
     )
   })
 
