@@ -8,6 +8,24 @@ versions are the root `package.json` version. A change to the review rules also 
 
 Proposed in open pull requests; each entry moves here when it is merged.
 
+### Changed
+
+- A redesigned interface ([ADR 0008](docs/adr/0008-visual-design-system.md)): a home page led by a real
+  win-chance trace, a shared header, one settings panel (theme, analysis depth, engine, board colours) in place
+  of three selects, a game list grouped by day with result pills and accuracy bars, a review panel where the
+  explanation comes first and the move you are on is highlighted in yellow, clocks on the player tags, an
+  insights dashboard with headline figures and stacked error bars, and a dark theme defined once with
+  `light-dark()`.
+- The move list scrolls itself instead of scrolling the whole page.
+- `pnpm screenshots` regenerates the README pictures from the real app.
+
+### Fixed
+
+- A name clash between `Insights.tsx` and `insights.ts` that broke the build on macOS and Windows; CI now
+  fails on any two files that differ only by case.
+- Pressing Load games again now fetches the latest games (it used to do nothing for the same user, and the
+  browser could serve a minute-old list).
+
 ### Added
 
 - Tactic explanations: each mistake, miss, great and brilliant move says why, from the engine's own

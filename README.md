@@ -10,9 +10,22 @@ reload. A review can be downloaded as an annotated PGN (labels as NAGs, `[%eval]
 comments) or as a review file, which opens on another device.
 
 <p>
-  <img src="docs/screenshots/review-desktop.png" alt="A review of Morphy's Opera Game: the board at 13. Rxd7, each player's accuracy, the move list and the win-chance graph" width="640">
-  <img src="docs/screenshots/review-mobile.png" alt="The same review on a phone, in the dark theme" width="180">
+  <img src="docs/screenshots/home.png" alt="The home page: a headline, a sample win-chance trace with three blunders flagged, and a username box" width="800">
 </p>
+<p>
+  <img src="docs/screenshots/review.png" alt="A review: the board at a mistake with the tactic explained, clocks on each player, the move list and each player's accuracy" width="800">
+</p>
+<p>
+  <img src="docs/screenshots/games.png" alt="The game list, grouped by day, with result, accuracy and a small trace for each reviewed game" width="390">
+  <img src="docs/screenshots/insights.png" alt="Insights: accuracy, record and errors per 100 moves, accuracy over time, errors by phase and openings" width="390">
+</p>
+<p>
+  <img src="docs/screenshots/review-dark.png" alt="The same review in the dark theme" width="390">
+  <img src="docs/screenshots/review-mobile.png" alt="The review on a phone" width="150">
+  <img src="docs/screenshots/settings.png" alt="The settings panel: theme, analysis depth and board colours" width="190">
+</p>
+
+Regenerate these with `pnpm build && pnpm screenshots`; they are real output of the app, not mock-ups.
 
 ## Develop
 
@@ -21,6 +34,7 @@ comments) or as a review file, which opens on another device.
     pnpm check           # types, lint, formatting, unit + integration tests
     pnpm e2e             # builds, then runs the browser tests against the production build
     pnpm budget          # after a build: checks the download stays within its size budget
+    pnpm screenshots     # after a build: regenerates the pictures in docs/screenshots
 
 Requires Node 22+ and pnpm 10 (`corepack enable` picks up the version pinned in `package.json`).
 `pnpm install` fetches the Stockfish WASM build (the `stockfish` package's postinstall, the only
