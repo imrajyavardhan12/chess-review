@@ -46,6 +46,13 @@ for (const theme of ['light', 'dark'] as const) {
       await expectAccessible(page, 'report')
     })
 
+    test('the settings panel has no WCAG A/AA violations', async ({ page }) => {
+      await page.goto('/')
+      await page.getByRole('button', { name: 'Settings' }).click()
+      await expect(page.getByRole('dialog', { name: 'Settings' })).toBeVisible()
+      await expectAccessible(page, 'settings panel')
+    })
+
     test('the error and progress screens have no WCAG A/AA violations', async ({ page }) => {
       // Hold every engine search until the progress screen has been checked.
       await page.addInitScript(() => {
@@ -112,6 +119,27 @@ for (const theme of ['light', 'dark'] as const) {
   })
 }
 
+test('the settings panel opens from the keyboard, changes things, and Escape closes it and returns focus', async ({
+  page,
+}) => {
+  await page.goto('/')
+  const gear = page.getByRole('button', { name: 'Settings' })
+  await gear.focus()
+  await page.keyboard.press('Enter')
+  await expect(gear).toHaveAttribute('aria-expanded', 'true')
+
+  // The choices are real radios: arrow keys move between them and apply immediately.
+  const theme = page.getByRole('radiogroup', { name: 'Theme' })
+  await theme.getByRole('radio', { name: 'Dark' }).focus()
+  await page.keyboard.press('Space')
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('dialog', { name: 'Settings' })).toHaveCount(0)
+  await expect(gear).toBeFocused()
+  await expect(gear).toHaveAttribute('aria-expanded', 'false')
+})
+
 test('a game can be reviewed with the keyboard alone, with focus always visible', async ({ page }) => {
   const focusVisible = () =>
     page.evaluate(() => {
@@ -120,7 +148,7 @@ test('a game can be reviewed with the keyboard alone, with focus always visible'
     })
 
   await page.goto('/')
-  await page.getByText('Paste a PGN instead').focus()
+  await page.locator('summary', { hasText: 'Paste a PGN instead' }).focus()
   await page.keyboard.press('Enter')
   await page.keyboard.press('Tab')
   await expect(page.getByLabel('PGN')).toBeFocused()
