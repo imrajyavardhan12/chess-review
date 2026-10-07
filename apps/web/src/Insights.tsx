@@ -1,10 +1,10 @@
 import { insights, playersIn, type Insights as Stats, type Phase, type Tally } from '@chessreview/core'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { AppHeader } from './AppHeader'
 import { useAsync } from './hooks'
 import { factsFor, tacticName } from './insight-facts'
 import { ERRORS, META } from './labels'
 import { getReviewService } from './services'
-import { Settings } from './Settings'
 
 const REMEMBERED = 'chessreview.user'
 const remembered = () => {
@@ -55,54 +55,68 @@ export function InsightsPage() {
   }, [])
 
   return (
-    <div className="home insights">
-      <header className="homebar">
-        <span className="wordmark">
-          <a href="#/">chessreview</a>
-        </span>
-        <Settings />
-      </header>
-      <h1>Insights</h1>
-      {stored.loading ? (
-        <p className="muted">Reading your reviews…</p>
-      ) : players.length === 0 ? (
-        <div className="empty">
-          <p>No reviewed games on this device yet.</p>
-          <p className="muted">
-            Review a few games and this page shows how your accuracy moves over time, where in the game your
-            errors happen, which tactics catch you out, and how your openings and time controls go. It is
-            worked out in your browser from your reviews; nothing is sent anywhere.
-          </p>
-          <a href="#/">Review a game</a>
-        </div>
-      ) : (
-        <>
-          <label className="player">
-            Player
-            <select value={player ?? ''} onChange={(e) => setChosen(e.target.value)}>
-              {players.map((p) => (
-                <option key={p.name} value={p.name}>
-                  {p.name} ({p.games} game{p.games === 1 ? '' : 's'})
-                </option>
-              ))}
-            </select>
-          </label>
-          {!stats ? (
-            <p className="muted" role="status">
-              Working through your games
-              {progress?.key === key ? ` (${progress.done} of ${progress.total})` : ''}…
-            </p>
-          ) : (
-            <Report stats={stats} />
+    <>
+      <AppHeader active="insights" />
+      <main className="page insights">
+        <div className="insights-head">
+          <h1>Insights</h1>
+          {players.length > 0 && (
+            <label className="player">
+              Player
+              <select value={player ?? ''} onChange={(e) => setChosen(e.target.value)}>
+                {players.map((p) => (
+                  <option key={p.name} value={p.name}>
+                    {p.name} ({p.games} game{p.games === 1 ? '' : 's'})
+                  </option>
+                ))}
+              </select>
+            </label>
           )}
-        </>
-      )}
-    </div>
+        </div>
+        {stored.loading ? (
+          <p className="muted">Reading your reviews…</p>
+        ) : players.length === 0 ? (
+          <div className="empty">
+            <p>No reviewed games on this device yet.</p>
+            <p className="muted">
+              Review a few games and this page shows how your accuracy moves over time, where in the game your
+              errors happen, which tactics catch you out, and how your openings and time controls go. It is
+              worked out in your browser from your reviews; nothing is sent anywhere.
+            </p>
+            <a className="primary" href="#/">
+              Review a game
+            </a>
+          </div>
+        ) : !stats ? (
+          <p className="muted" role="status">
+            Working through your games
+            {progress?.key === key ? ` (${progress.done} of ${progress.total})` : ''}…
+          </p>
+        ) : (
+          <Report stats={stats} />
+        )}
+      </main>
+    </>
   )
 }
 
+const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0)
+
 function Report({ stats }: { stats: Stats }) {
   const best = stats.openings.filter((o) => o.games >= 2)
+  const phases = Object.keys(PHASE_NAMES) as Phase[]
+  const record = {
+    won: sum(stats.timeClasses.map((t) => t.wins)),
+    drawn: sum(stats.timeClasses.map((t) => t.draws)),
+    lost: sum(stats.timeClasses.map((t) => t.losses)),
+  }
+  const moves = sum(phases.map((p) => stats.phases[p].moves))
+  const errors = sum(
+    phases.map((p) => (stats.phases[p].moves * sum(ERRORS.map((l) => stats.phases[p].per100[l] ?? 0))) / 100),
+  )
+  const per100 = moves ? (errors / moves) * 100 : 0
+  const worst = Math.max(1, ...phases.map((p) => sum(ERRORS.map((l) => stats.phases[p].per100[l] ?? 0))))
+
   return (
     <>
       <p className="lead">
@@ -111,7 +125,38 @@ function Report({ stats }: { stats: Stats }) {
         {stats.games > 10 ? `, ${stats.recentAccuracy.toFixed(1)}% over the last ten` : ''}.
       </p>
 
-      <section aria-labelledby="trend">
+      <div className="tiles">
+        <div className="tile">
+          <span className="tile-label">Accuracy</span>
+          <b className="tile-num">
+            {stats.accuracy.toFixed(1)}
+            <small>%</small>
+          </b>
+          <span className="tile-sub">
+            {stats.games > 10
+              ? `${stats.recentAccuracy.toFixed(1)}% over the last ten`
+              : `across ${stats.games} game${stats.games === 1 ? '' : 's'}`}
+          </span>
+        </div>
+        <div className="tile">
+          <span className="tile-label">Record</span>
+          <b className="tile-num">
+            <span className="won">{record.won}</span>
+            <i>–</i>
+            {record.drawn}
+            <i>–</i>
+            <span className="lost">{record.lost}</span>
+          </b>
+          <span className="tile-sub">wins, draws and losses</span>
+        </div>
+        <div className="tile">
+          <span className="tile-label">Errors</span>
+          <b className="tile-num">{per100.toFixed(1)}</b>
+          <span className="tile-sub">per 100 of your moves, inaccuracies included</span>
+        </div>
+      </div>
+
+      <section className="card" aria-labelledby="trend">
         <h2 id="trend">Accuracy over time</h2>
         <AccuracyChart trend={stats.trend} />
         <details>
@@ -139,84 +184,127 @@ function Report({ stats }: { stats: Stats }) {
         </details>
       </section>
 
-      <section aria-labelledby="phases">
-        <h2 id="phases">Errors by phase</h2>
-        <p className="muted">Per 100 of your moves in each phase of the game.</p>
-        <table className="rtable">
-          <thead>
-            <tr>
-              <td />
-              {ERRORS.map((l) => (
-                <th key={l} scope="col" title={META[l].help}>
-                  <i className="sw" style={{ background: META[l].color }} />
-                  <span className="long">{l}</span>
-                  <span className="short" aria-hidden="true">
-                    {META[l].glyph}
-                  </span>
-                </th>
-              ))}
-              <th scope="col">Moves</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(Object.keys(PHASE_NAMES) as Phase[]).map((p) => (
-              <tr key={p}>
-                <th scope="row">{PHASE_NAMES[p]}</th>
-                {ERRORS.map((l) => (
-                  <td key={l}>{stats.phases[p].moves ? (stats.phases[p].per100[l] ?? 0).toFixed(1) : '–'}</td>
-                ))}
-                <td>{stats.phases[p].moves}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
-
-      <section aria-labelledby="tactics">
-        <h2 id="tactics">What your errors had in common</h2>
-        {stats.tactics.length === 0 ? (
-          <p className="muted">No tactic stood out in your mistakes and blunders yet.</p>
-        ) : (
-          <>
-            <p className="muted">
-              {stats.tagged.withTactic} of your {stats.tagged.errors} mistakes, misses and blunders had a
-              tactic the engine’s lines confirm.
-            </p>
-            <table className="rtable tally">
+      <div className="pair">
+        <section className="card" aria-labelledby="phases">
+          <h2 id="phases">Errors by phase</h2>
+          <p className="muted">Per 100 of your moves in each phase of the game.</p>
+          <div className="phasebars">
+            {phases.map((p) => {
+              const per = stats.phases[p].per100
+              const total = sum(ERRORS.map((l) => per[l] ?? 0))
+              const has = stats.phases[p].moves > 0
+              return (
+                <div key={p} className="phasebar">
+                  <div className="phasebar-head">
+                    <span>{PHASE_NAMES[p]}</span>
+                    <b>{has ? total.toFixed(1) : '–'}</b>
+                  </div>
+                  <div
+                    className="stack"
+                    role="img"
+                    aria-label={ERRORS.map((l) => `${(per[l] ?? 0).toFixed(1)} ${l}`).join(', ')}
+                    style={{ width: `${has ? Math.max(4, (total / worst) * 100) : 0}%` }}
+                  >
+                    {ERRORS.filter((l) => per[l]).map((l) => (
+                      <i key={l} style={{ flexGrow: per[l], background: META[l].color }} />
+                    ))}
+                  </div>
+                  <small className="muted">{stats.phases[p].moves} moves</small>
+                </div>
+              )
+            })}
+          </div>
+          <details>
+            <summary>As a table</summary>
+            <table className="rtable">
+              <thead>
+                <tr>
+                  <td />
+                  {ERRORS.map((l) => (
+                    <th key={l} scope="col" title={META[l].help}>
+                      <i className="sw" style={{ background: META[l].color }} />
+                      <span className="long">{l}</span>
+                      <span className="short" aria-hidden="true">
+                        {META[l].glyph}
+                      </span>
+                    </th>
+                  ))}
+                  <th scope="col">Moves</th>
+                </tr>
+              </thead>
               <tbody>
-                {stats.tactics.slice(0, 8).map((t) => (
-                  <tr key={`${t.kind}/${t.perspective}`}>
-                    <th scope="row">{tacticName(t.kind, t.perspective)}</th>
-                    <td>{t.count}</td>
-                    <td className="barcell" aria-hidden="true">
-                      <span style={{ width: `${(t.count / stats.tactics[0]!.count) * 100}%` }} />
-                    </td>
+                {phases.map((p) => (
+                  <tr key={p}>
+                    <th scope="row">{PHASE_NAMES[p]}</th>
+                    {ERRORS.map((l) => (
+                      <td key={l}>
+                        {stats.phases[p].moves ? (stats.phases[p].per100[l] ?? 0).toFixed(1) : '–'}
+                      </td>
+                    ))}
+                    <td>{stats.phases[p].moves}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </>
-        )}
-      </section>
+          </details>
+          <ul className="legend">
+            {ERRORS.map((l) => (
+              <li key={l}>
+                <i className="sw" style={{ background: META[l].color }} />
+                {l}
+              </li>
+            ))}
+          </ul>
+        </section>
 
-      <section aria-labelledby="openings">
-        <h2 id="openings">Openings</h2>
-        <TallyTable
-          rows={(best.length ? best : stats.openings).slice(0, 8).map((o) => ({ name: o.opening, ...o }))}
-          label="Opening"
-        />
-        {best.length > 0 && best.length < stats.openings.length && (
-          <p className="note muted">Openings you have played at least twice.</p>
-        )}
-      </section>
+        <section className="card" aria-labelledby="tactics">
+          <h2 id="tactics">What your errors had in common</h2>
+          {stats.tactics.length === 0 ? (
+            <p className="muted">No tactic stood out in your mistakes and blunders yet.</p>
+          ) : (
+            <>
+              <p className="muted">
+                {stats.tagged.withTactic} of your {stats.tagged.errors} mistakes, misses and blunders had a
+                tactic the engine’s lines confirm.
+              </p>
+              <table className="rtable tally">
+                <tbody>
+                  {stats.tactics.slice(0, 8).map((t) => (
+                    <tr key={`${t.kind}/${t.perspective}`}>
+                      <th scope="row">{tacticName(t.kind, t.perspective)}</th>
+                      <td>{t.count}</td>
+                      <td className="barcell" aria-hidden="true">
+                        <span style={{ width: `${(t.count / stats.tactics[0]!.count) * 100}%` }} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
+        </section>
+      </div>
 
-      <section aria-labelledby="time">
-        <h2 id="time">Time controls</h2>
-        <TallyTable
-          rows={stats.timeClasses.map((t) => ({ name: TIME_NAMES[t.timeClass]!, ...t }))}
-          label="Time control"
-        />
-      </section>
+      <div className="pair">
+        <section className="card" aria-labelledby="openings">
+          <h2 id="openings">Openings</h2>
+          <TallyTable
+            rows={(best.length ? best : stats.openings).slice(0, 8).map((o) => ({ name: o.opening, ...o }))}
+            label="Opening"
+          />
+          {best.length > 0 && best.length < stats.openings.length && (
+            <p className="note muted">Openings you have played at least twice.</p>
+          )}
+        </section>
+
+        <section className="card" aria-labelledby="time">
+          <h2 id="time">Time controls</h2>
+          <TallyTable
+            rows={stats.timeClasses.map((t) => ({ name: TIME_NAMES[t.timeClass]!, ...t }))}
+            label="Time control"
+          />
+        </section>
+      </div>
     </>
   )
 }
@@ -307,6 +395,10 @@ function AccuracyChart({ trend }: { trend: Stats['trend'] }) {
             )}
           </g>
         ))}
+        <path
+          d={`${line}L${x(n - 1).toFixed(1)},${y(0)}L${x(0).toFixed(1)},${y(0)}Z`}
+          className="achart-area"
+        />
         <path d={line} className="achart-line" />
         {trend.map((t, i) => (
           <circle key={t.id} cx={x(i)} cy={y(t.accuracy)} r={n > 60 ? 2.5 : 4} className="achart-dot" />
