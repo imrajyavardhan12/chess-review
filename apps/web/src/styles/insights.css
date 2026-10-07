@@ -1,0 +1,239 @@
+/* ---------- insights: a dashboard of tiles and cards ---------- */
+.insights-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s-4);
+  margin: var(--s-4) 0 var(--s-2);
+}
+.insights-head h1 {
+  font-size: var(--fs-h1);
+}
+.player {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  color: var(--ink-2);
+  font-size: var(--fs-sm);
+  font-weight: 560;
+}
+.player select {
+  min-width: 220px;
+  color: var(--ink);
+}
+.insights .lead {
+  margin: 0 0 var(--s-5);
+  color: var(--ink-2);
+  font-size: 1rem;
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-4);
+  margin-bottom: var(--s-4);
+}
+.tile {
+  display: grid;
+  gap: var(--s-1);
+  padding: var(--s-5);
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  box-shadow:
+    0 0 0 1px var(--line),
+    var(--shadow-sm);
+}
+.tile-label {
+  color: var(--ink-2);
+  font-size: var(--fs-sm);
+  font-weight: 560;
+}
+.tile-num {
+  font: 700 clamp(2rem, 1.4rem + 1.6vw, 2.75rem) / 1.05 var(--font-display);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.tile-num small {
+  margin-left: 2px;
+  color: var(--ink-2);
+  font-size: 0.5em;
+  font-weight: 600;
+}
+.tile-num i {
+  margin: 0 0.18em;
+  color: var(--ink-2);
+  font-style: normal;
+  font-weight: 400;
+}
+.tile-num .won {
+  color: var(--won);
+}
+.tile-num .lost {
+  color: var(--lost);
+}
+.tile-sub {
+  color: var(--ink-2);
+  font-size: var(--fs-sm);
+}
+
+.card {
+  margin-bottom: var(--s-4);
+  padding: var(--s-5);
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  box-shadow:
+    0 0 0 1px var(--line),
+    var(--shadow-sm);
+}
+.card h2 {
+  margin-bottom: var(--s-1);
+  font-size: var(--fs-h2);
+}
+.card > .muted {
+  font-size: var(--fs-sm);
+}
+.card details {
+  margin-top: var(--s-4);
+  font-size: var(--fs-sm);
+}
+.card summary {
+  width: max-content;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-4);
+}
+.pair .card {
+  margin-bottom: 0;
+}
+.pair + .pair {
+  margin-top: var(--s-4);
+}
+
+/* the tables inside cards */
+.insights .rtable {
+  margin-top: var(--s-3);
+  font-size: var(--fs-sm);
+}
+.insights .rtable th,
+.insights .rtable td {
+  padding: 8px 0;
+}
+.insights .rtable thead th:first-child {
+  text-align: left;
+}
+.insights .rtable td,
+.insights .rtable thead td {
+  width: auto;
+}
+.insights .rtable .sw {
+  margin-right: 5px;
+}
+.insights .short {
+  display: none;
+}
+.insights .tally .barcell {
+  width: 45%;
+  padding-left: var(--s-3);
+}
+.tally .barcell span {
+  display: block;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--ink);
+  opacity: 0.55;
+}
+
+/* errors by phase: one stacked bar per phase, scaled to the worst */
+.phasebars {
+  display: grid;
+  gap: var(--s-4);
+  margin-top: var(--s-4);
+}
+.phasebar-head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-weight: 560;
+}
+.phasebar-head b {
+  font: 700 1.125rem var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+.stack {
+  display: flex;
+  gap: 2px;
+  height: 10px;
+  overflow: hidden;
+  border-radius: 5px;
+}
+.stack i {
+  flex-basis: 0;
+  min-width: 3px;
+}
+.phasebar small {
+  display: block;
+  margin-top: 4px;
+  font-size: var(--fs-xs);
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1) var(--s-4);
+  margin: var(--s-4) 0 0;
+  padding: 0;
+  color: var(--ink-2);
+  font-size: var(--fs-xs);
+  list-style: none;
+}
+.legend .sw {
+  margin-right: 5px;
+}
+
+.empty {
+  max-width: 56ch;
+  margin-top: var(--s-5);
+  padding: var(--s-6);
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  box-shadow: 0 0 0 1px var(--line);
+}
+.empty p:first-child {
+  font: 700 var(--fs-h2) var(--font-display);
+}
+.empty p + p {
+  margin-top: var(--s-2);
+  line-height: 1.55;
+}
+.empty .primary {
+  margin-top: var(--s-5);
+  text-decoration: none;
+}
+
+@media (max-width: 860px) {
+  .tiles {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pair .card + .card {
+    margin-top: var(--s-4);
+  }
+}
+@media (max-width: 560px) {
+  .insights .long {
+    display: none;
+  }
+  .insights .short {
+    display: inline;
+    font-family: var(--font-display);
+  }
+  .player select {
+    min-width: 0;
+  }
+}

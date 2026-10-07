@@ -13,6 +13,7 @@ reproducibility, Python as the oracle) are in [ARCHITECTURE.md](../ARCHITECTURE.
 | [0005](0005-time-analysis.md)               | Time analysis from the PGN's clock comments                         |
 | [0006](0006-import-export.md)               | Lichess as a source, batch reviews, and review files                |
 | [0007](0007-offline-and-low-end-devices.md) | Offline use, low-end devices and accessibility                      |
+| [0008](0008-visual-design-system.md)        | Visual design system: the trace as identity, tokens, one shell      |
 
 Each ADR arrives with the pull request that implements it, so a link here resolves once that pull
 request is merged.
