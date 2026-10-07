@@ -1,0 +1,55 @@
+/* ---------- charts drawn as SVG: accuracy over time, clock use ---------- */
+.achart,
+.tchart {
+  position: relative;
+  cursor: pointer;
+}
+.achart {
+  margin-top: var(--s-3);
+}
+.tchart {
+  margin: 4px 0 8px;
+}
+.achart svg,
+.tchart svg {
+  display: block;
+}
+.achart-grid,
+.tchart-grid {
+  stroke: var(--line);
+}
+.achart-axis,
+.tchart-axis {
+  fill: var(--ink-2);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.achart-area {
+  fill: var(--surface-3);
+  opacity: 0.7;
+}
+.achart-line,
+.tchart-line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.achart-dot {
+  fill: var(--ink);
+  stroke: var(--surface);
+  stroke-width: 2;
+}
+.achart-cursor,
+.tchart-cursor {
+  stroke: var(--ink-2);
+  stroke-dasharray: 3 3;
+}
+.tchart-trouble {
+  fill: var(--t-mistake);
+  opacity: 0.12;
+}
+.tchart-line.dashed {
+  stroke-dasharray: 5 3;
+  opacity: 0.7;
+}

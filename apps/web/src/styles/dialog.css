@@ -1,0 +1,29 @@
+/* ---------- modal dialogs ---------- */
+.engine-dialog {
+  max-width: min(520px, calc(100vw - 32px));
+  padding: var(--s-6);
+  background: var(--surface);
+  border: 0;
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-pop);
+  color: var(--ink);
+}
+.engine-dialog::backdrop {
+  background: rgb(8 16 22 / 0.55);
+  backdrop-filter: blur(2px);
+}
+.engine-dialog h2 {
+  margin-bottom: var(--s-2);
+  font-size: var(--fs-h2);
+}
+.engine-dialog p + p,
+.engine-dialog .download {
+  margin-top: var(--s-3);
+}
+.dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--s-2);
+  margin-top: var(--s-5);
+}

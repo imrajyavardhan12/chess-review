@@ -3,7 +3,9 @@ import { useState } from 'react'
 import { openReview } from './App'
 import { useAsync, useQueue } from './hooks'
 import { usePrefs } from './prefs'
-import { Settings } from './Settings'
+import { AppHeader } from './AppHeader'
+import { SampleTrace } from './SampleTrace'
+import { Segmented } from './Segmented'
 import {
   ChessComError,
   LichessError,
@@ -121,6 +123,23 @@ async function loadGames(q: Query, preset: PresetName, engineId: string): Promis
   return { user: q.user, months, month, rows }
 }
 
+const dayKey = (sec: number) => {
+  const d = new Date(sec * 1000)
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
+}
+
+function dayLabel(sec: number, now = new Date()): string {
+  const d = new Date(sec * 1000)
+  const days = Math.round(
+    (new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() -
+      new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()) /
+      86_400_000,
+  )
+  if (days === 0) return 'Today'
+  if (days === 1) return 'Yesterday'
+  return d.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })
+}
+
 /** What a game's row says while it waits in, or goes through, the review queue. */
 function actionFor(job: { done: number; total: number; place: number } | undefined): string {
   if (!job) return 'Review'
@@ -152,6 +171,81 @@ function QueueBar({
         Cancel all
       </button>
     </div>
+  )
+}
+
+function SearchForm({
+  source,
+  setSource,
+  name,
+  setName,
+  busy,
+  onSearch,
+  compact,
+}: {
+  source: Source
+  setSource: (s: Source) => void
+  name: string
+  setName: (n: string) => void
+  busy: boolean
+  onSearch: (user: string) => void
+  compact: boolean
+}) {
+  return (
+    <form
+      className={`search${compact ? ' compact' : ''}`}
+      onSubmit={(e) => {
+        e.preventDefault()
+        if (name.trim()) onSearch(name.trim())
+      }}
+    >
+      <Segmented<Source>
+        label="Games from"
+        value={source}
+        onChange={setSource}
+        options={[
+          { value: 'chesscom', label: SITE.chesscom },
+          { value: 'lichess', label: SITE.lichess },
+        ]}
+      />
+      <div className="search-row">
+        <label className="sr-only" htmlFor="user">
+          {SITE[source]} username
+        </label>
+        <input
+          id="user"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          autoComplete="off"
+          autoCapitalize="off"
+          spellCheck={false}
+          placeholder={
+            source === 'lichess'
+              ? 'Your Lichess username, e.g. DrNykterstein'
+              : 'Your chess.com username, e.g. hikaru'
+          }
+        />
+        <button className="primary" disabled={busy || !name.trim()}>
+          {busy ? 'Loading…' : 'Load games'}
+        </button>
+      </div>
+    </form>
+  )
+}
+
+function Hero(props: Parameters<typeof SearchForm>[0]) {
+  return (
+    <section className="hero">
+      <div className="hero-copy">
+        <h1>See where your games turned.</h1>
+        <p className="lede">
+          Chessreview finds the moments that decided your games, names the tactic behind each mistake, and
+          shows what you should have played. The engine runs on your device, so nothing is uploaded.
+        </p>
+        <SearchForm {...props} />
+      </div>
+      <SampleTrace />
+    </section>
   )
 }
 
@@ -230,187 +324,209 @@ export function Home() {
   const view = (rows ?? []).map((r) => ({ ...r, o: outcome(r.game, loaded) }))
   const fresh = view.filter((r) => !r.summary && !queued.has(r.id)).map((r) => r.game.pgn)
   const tally = (tone: string) => view.filter((r) => r.o.tone === tone).length
-  const record = view.some((r) => r.o.side)
-    ? `${tally('won')} won, ${tally('lost')} lost, ${tally('draw')} drawn`
-    : ''
+  const hasSide = view.some((r) => r.o.side)
+  const shown = view.slice(0, showAll ? undefined : PAGE)
+  const days: Array<{ key: string; label: string; rows: typeof shown }> = []
+  for (const r of shown) {
+    const key = dayKey(r.game.endTime)
+    const last = days[days.length - 1]
+    if (last?.key === key) last.rows.push(r)
+    else days.push({ key, label: dayLabel(r.game.endTime), rows: [r] })
+  }
+
+  const form = { source, setSource, name, setName, busy, onSearch: search }
 
   return (
-    <div className="home">
-      <header className="homebar">
-        <span className="wordmark">chessreview</span>
-        <a href="#/insights" className="navlink">
-          Insights
-        </a>
-        <Settings />
-      </header>
-      <h1>Review a game</h1>
+    <>
+      <AppHeader active="games" />
+      <main className="page home">
+        {query ? (
+          <>
+            <h1 className="sr-only">Your games</h1>
+            <SearchForm {...form} compact />
+          </>
+        ) : (
+          <Hero {...form} compact={false} />
+        )}
 
-      <form
-        className="userform"
-        onSubmit={(e) => {
-          e.preventDefault()
-          if (name.trim()) search(name.trim())
-        }}
-      >
-        <fieldset className="source">
-          <legend>Games from</legend>
-          {(['chesscom', 'lichess'] as const).map((s) => (
-            <label key={s}>
-              <input type="radio" name="source" checked={source === s} onChange={() => setSource(s)} />
-              {SITE[s]}
-            </label>
-          ))}
-        </fieldset>
-        <label htmlFor="user">{SITE[source]} username</label>
-        <div className="userform-row">
-          <input
-            id="user"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            autoComplete="off"
-            autoCapitalize="off"
-            spellCheck={false}
-            placeholder={source === 'lichess' ? 'e.g. DrNykterstein' : 'e.g. hikaru'}
-          />
-          <button className="primary" disabled={busy || !name.trim()}>
-            {busy ? 'Loading…' : 'Load games'}
-          </button>
-        </div>
-      </form>
+        {error && (
+          <p className="error" role="alert">
+            {error}
+          </p>
+        )}
 
-      {error && (
-        <p className="error" role="alert">
-          {error}
-        </p>
-      )}
+        <QueueBar active={queue.active} onCancel={() => void getReviewService().then((s) => s.cancelAll())} />
 
-      <QueueBar active={queue.active} onCancel={() => void getReviewService().then((s) => s.cancelAll())} />
-
-      {rows && (
-        <section className="games" aria-label="Games">
-          <div className="games-head">
-            <div>
-              <h2>{loaded}</h2>
-              {record && (
-                <p className="muted">
-                  {record} {query?.source === 'lichess' ? 'in these games' : 'this month'}
-                </p>
-              )}
-            </div>
-            {query?.source !== 'lichess' && (
-              <select
-                aria-label="Month"
-                value={month ?? ''}
-                onChange={(e) => search(loaded, e.target.value)}
-                disabled={busy}
-              >
-                {months.map((m) => (
-                  <option key={m} value={m}>
-                    {m.replace('/', '-')}
-                  </option>
-                ))}
-              </select>
-            )}
+        {query && !rows && !error && (
+          <div className="skeleton" aria-hidden="true">
+            {Array.from({ length: 6 }, (_, i) => (
+              <span key={i} />
+            ))}
           </div>
-          {fresh.length > 0 && (
-            <button className="secondary reviewall" disabled={busy} onClick={() => void reviewAll(fresh)}>
-              Review all {fresh.length} new game{fresh.length === 1 ? '' : 's'}
-            </button>
-          )}
-          {view.length === 0 && <p className="muted">No games this month. Try an earlier one.</p>}
-          <ul>
-            {view.slice(0, showAll ? undefined : PAGE).map(({ game: g, id, summary, o }) => {
-              const opp = o.side === 'black' ? g.white : g.black
-              const oppRating = o.side === 'black' ? g.whiteRating : g.blackRating
-              const acc = summary && o.side ? summary.accuracy[o.side] : null
-              const spark =
-                summary && summary.spark.length > 1
-                  ? o.side === 'black'
-                    ? summary.spark.map((v) => 100 - v)
-                    : summary.spark
-                  : null
-              return (
-                <li key={id}>
-                  <button className="gamerow" disabled={busy} onClick={() => void open(g.pgn, loaded)}>
-                    <span className="g-date">
-                      {new Date(g.endTime * 1000).toLocaleDateString(undefined, {
-                        month: 'short',
-                        day: 'numeric',
-                      })}
+        )}
+
+        {rows && (
+          <section className="games" aria-label="Games">
+            <div className="games-head">
+              <div>
+                <h2>{loaded}</h2>
+                {hasSide && (
+                  <p className="record">
+                    <span className="stat won">
+                      <b>{tally('won')}</b> won
                     </span>
-                    <span className="g-players">
-                      <i
-                        className={`dot ${o.side ?? 'none'}`}
-                        role="img"
-                        aria-label={o.side ? `You played ${o.side}` : 'Neither player is you'}
-                      />
-                      <span>
-                        {o.side ? opp : `${g.white} vs ${g.black}`}
-                        {o.side && oppRating ? <em> {oppRating}</em> : null}
-                      </span>
+                    <span className="stat lost">
+                      <b>{tally('lost')}</b> lost
                     </span>
-                    <span className={`g-result ${o.tone}`}>{o.word}</span>
-                    <span className="g-acc" title="Your accuracy">
-                      {acc !== null ? `${acc.toFixed(0)}%` : ''}
+                    <span className="stat">
+                      <b>{tally('draw')}</b> drawn
                     </span>
-                    <span className="g-spark">{spark && <Spark data={spark} />}</span>
-                    <span className="g-time">{timeControl(g.timeControl)}</span>
-                    <span className={`g-action${summary ? ' done' : ''}`}>
-                      {summary ? 'Open' : actionFor(queued.get(id))}
+                    <span className="muted">
+                      {query?.source === 'lichess' ? 'in these games' : 'this month'}
                     </span>
+                  </p>
+                )}
+              </div>
+              <div className="games-tools">
+                {fresh.length > 0 && (
+                  <button className="primary reviewall" disabled={busy} onClick={() => void reviewAll(fresh)}>
+                    Review all {fresh.length} new game{fresh.length === 1 ? '' : 's'}
                   </button>
-                </li>
-              )
-            })}
-          </ul>
-          {!showAll && view.length > PAGE && (
-            <button className="ghost more" onClick={() => setShowAll(true)}>
-              Show all {view.length} games
-            </button>
-          )}
-          {query?.source === 'lichess' && view.length >= (query.count ?? 30) && (
-            <button
-              className="ghost more"
-              disabled={busy}
-              onClick={() => setQuery({ ...query, count: (query.count ?? 30) + 30 })}
-            >
-              Load older games
-            </button>
-          )}
-        </section>
-      )}
+                )}
+                {query?.source !== 'lichess' && (
+                  <select
+                    aria-label="Month"
+                    value={month ?? ''}
+                    onChange={(e) => search(loaded, e.target.value)}
+                    disabled={busy}
+                  >
+                    {months.map((m) => (
+                      <option key={m} value={m}>
+                        {m.replace('/', '-')}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+            </div>
 
-      <details className="paste">
-        <summary>Paste a PGN instead</summary>
-        <textarea
-          value={pgn}
-          onChange={(e) => setPgn(e.target.value)}
-          rows={8}
-          spellCheck={false}
-          placeholder="1. e4 e5 2. Nf3 Nc6 …"
-          aria-label="PGN"
-        />
-        <button className="primary" disabled={busy || !pgn.trim()} onClick={() => void open(pgn, null)}>
-          Review PGN
-        </button>
-      </details>
+            {view.length === 0 && (
+              <p className="muted empty-note">No games this month. Try an earlier one.</p>
+            )}
 
-      <details className="paste">
-        <summary>Open a review file</summary>
-        <p className="muted">
-          A review downloaded from chessreview (the .json file from a review’s Report tab).
-        </p>
-        <input
-          type="file"
-          accept=".json,application/json"
-          aria-label="Review file"
-          onChange={(e) => {
-            const file = e.target.files?.[0]
-            if (file) void importFile(file)
-            e.target.value = ''
-          }}
-        />
-      </details>
-    </div>
+            {days.map((day) => (
+              <div key={day.key} className="day">
+                <h3 className="day-label">{day.label}</h3>
+                <ul>
+                  {day.rows.map(({ game: g, id, summary, o }) => {
+                    const opp = o.side === 'black' ? g.white : g.black
+                    const oppRating = o.side === 'black' ? g.whiteRating : g.blackRating
+                    const acc = summary && o.side ? summary.accuracy[o.side] : null
+                    const spark =
+                      summary && summary.spark.length > 1
+                        ? o.side === 'black'
+                          ? summary.spark.map((v) => 100 - v)
+                          : summary.spark
+                        : null
+                    return (
+                      <li key={id}>
+                        <button
+                          className={`gamerow${summary ? ' reviewed' : ''}`}
+                          disabled={busy}
+                          onClick={() => void open(g.pgn, loaded)}
+                        >
+                          <span className="g-result">
+                            <span className={`pill ${o.tone}`}>{o.word}</span>
+                          </span>
+                          <span className="g-players">
+                            <i
+                              className={`dot ${o.side ?? 'none'}`}
+                              role="img"
+                              aria-label={o.side ? `You played ${o.side}` : 'Neither player is you'}
+                            />
+                            <span className="g-opp">
+                              {o.side ? opp : `${g.white} vs ${g.black}`}
+                              {o.side && oppRating ? <em>{oppRating}</em> : null}
+                            </span>
+                          </span>
+                          <span className="g-acc" title="Your accuracy">
+                            {acc !== null && (
+                              <>
+                                {acc.toFixed(0)}%
+                                <i className="accbar" style={{ '--acc': `${acc}%` } as React.CSSProperties} />
+                              </>
+                            )}
+                          </span>
+                          <span className="g-spark">{spark && <Spark data={spark} />}</span>
+                          <span className="g-time">{timeControl(g.timeControl)}</span>
+                          <span className={`g-action${summary ? ' done' : ''}`}>
+                            {summary ? 'Open' : actionFor(queued.get(id))}
+                          </span>
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>
+            ))}
+
+            {!showAll && view.length > PAGE && (
+              <button className="ghost more" onClick={() => setShowAll(true)}>
+                Show all {view.length} games
+              </button>
+            )}
+            {query?.source === 'lichess' && view.length >= (query.count ?? 30) && (
+              <button
+                className="ghost more"
+                disabled={busy}
+                onClick={() => setQuery({ ...query, count: (query.count ?? 30) + 30 })}
+              >
+                Load older games
+              </button>
+            )}
+          </section>
+        )}
+
+        <div className="extras">
+          <details className="paste">
+            <summary>
+              <span>Paste a PGN instead</span>
+              <small>Any game, from any site.</small>
+            </summary>
+            <textarea
+              value={pgn}
+              onChange={(e) => setPgn(e.target.value)}
+              rows={8}
+              spellCheck={false}
+              placeholder="1. e4 e5 2. Nf3 Nc6 …"
+              aria-label="PGN"
+            />
+            <button className="primary" disabled={busy || !pgn.trim()} onClick={() => void open(pgn, null)}>
+              Review PGN
+            </button>
+          </details>
+
+          <details className="paste">
+            <summary>
+              <span>Open a review file</span>
+              <small>Continue a review you exported.</small>
+            </summary>
+            <p className="muted">
+              A review downloaded from chessreview (the .json file from a review’s Report tab).
+            </p>
+            <input
+              type="file"
+              accept=".json,application/json"
+              aria-label="Review file"
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) void importFile(file)
+                e.target.value = ''
+              }}
+            />
+          </details>
+        </div>
+      </main>
+    </>
   )
 }

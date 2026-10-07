@@ -21,7 +21,8 @@
     "explain-corpus": "node --experimental-transform-types --no-warnings --import ./scripts/ts-hooks.mjs scripts/explain-corpus.ts",
     "tactics-eval": "node --experimental-transform-types --no-warnings --import ./scripts/ts-hooks.mjs scripts/tactics-eval.ts",
     "budget": "node scripts/check-bundle.mjs",
-    "label-audit": "node --experimental-transform-types --no-warnings --import ./scripts/ts-hooks.mjs scripts/label-audit.ts"
+    "label-audit": "node --experimental-transform-types --no-warnings --import ./scripts/ts-hooks.mjs scripts/label-audit.ts",
+    "screenshots": "node scripts/screenshots.mjs"
   },
   "engines": {
     "node": ">=20"

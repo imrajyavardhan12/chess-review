@@ -22,7 +22,7 @@ import { TimeChart } from './TimeChart'
 import { ERRORS, META, ORDER, evalText, isKeyMoment, isNotable } from './labels'
 import { BOARDS, usePrefs } from './prefs'
 import type { LiveEval } from './services'
-import { Settings } from './Settings'
+import { AppHeader } from './AppHeader'
 import { overlayFor } from './tactics'
 import { describePosition } from './describe'
 import { formatRemaining } from './services/eta'
@@ -32,51 +32,48 @@ export function ReviewPage({ id, me }: { id: string; me: string | null }) {
   if (state?.status === 'done') return <ReviewView id={id} review={state.review} me={me} />
 
   return (
-    <div className="home">
-      <header className="homebar">
-        <span className="wordmark">
-          <a href="#/">chessreview</a>
-        </span>
-        <Settings />
-      </header>
-      {state?.status === 'error' || state?.status === 'missing' ? (
-        <>
-          <p className="error" role="alert">
-            {state.status === 'error'
-              ? state.message
-              : 'This review isn’t on this device. Reviews are stored in your browser, so open the game from your list again.'}
-          </p>
-          <a href="#/">Back to your games</a>
-        </>
-      ) : (
-        <div className="progress" role="status">
-          <h1>Analysing</h1>
-          <p className="muted">
-            {state?.status !== 'running' || state.total === 0
-              ? 'Starting the engine.'
-              : `${state.etaMs === null ? 'Estimating the time left' : formatRemaining(state.etaMs)}. Step ${state.done} of ${state.total}; the engine runs on your device, so speed depends on it.`}
-          </p>
-          <div className="bar">
-            <div
-              style={{
-                width: `${state?.status === 'running' && state.total ? (state.done / state.total) * 100 : 3}%`,
-              }}
-            />
+    <>
+      <AppHeader active="games" />
+      <main className="page narrow">
+        {state?.status === 'error' || state?.status === 'missing' ? (
+          <>
+            <p className="error" role="alert">
+              {state.status === 'error'
+                ? state.message
+                : 'This review isn’t on this device. Reviews are stored in your browser, so open the game from your list again.'}
+            </p>
+            <a href="#/">Back to your games</a>
+          </>
+        ) : (
+          <div className="progress" role="status">
+            <h1>Analysing</h1>
+            <p className="muted">
+              {state?.status !== 'running' || state.total === 0
+                ? 'Starting the engine.'
+                : `${state.etaMs === null ? 'Estimating the time left' : formatRemaining(state.etaMs)}. Step ${state.done} of ${state.total}; the engine runs on your device, so speed depends on it.`}
+            </p>
+            <div className="bar">
+              <div
+                style={{
+                  width: `${state?.status === 'running' && state.total ? (state.done / state.total) * 100 : 3}%`,
+                }}
+              />
+            </div>
+            <p>
+              <button
+                className="ghost"
+                onClick={() => {
+                  void cancelReview(id)
+                  location.hash = '#/'
+                }}
+              >
+                Cancel
+              </button>
+            </p>
           </div>
-          <p>
-            <button
-              className="ghost"
-              onClick={() => {
-                void cancelReview(id)
-                location.hash = '#/'
-              }}
-            >
-              Cancel
-            </button>
-          </p>
-        </div>
-      )}
-    </div>
+        )}
+      </main>
+    </>
   )
 }
 
@@ -257,221 +254,288 @@ function ReviewView({ id, review, me }: { id: string; review: Review; me: string
   const evalLabel = exploring && thinking ? '…' : shownEval ? evalText(shownEval) : '…'
   const opening = [review.eco, review.opening].filter(Boolean).join(' ')
 
+  const turn = fen.split(' ')[1]
+  // The clock after each player's latest move up to the position shown, when the PGN has clocks.
+  const clockOf = (side: Side): number | null => {
+    for (let i = Math.min(ply, review.moves.length) - 1; i >= 0; i--) {
+      const m = review.moves[i]!
+      if (m.color === (side === 'white' ? 'w' : 'b') && m.clockMs !== null) return m.clockMs
+    }
+    return null
+  }
+  const when = h.Date && !h.Date.includes('?') ? h.Date.replaceAll('.', '-') : ''
+
   return (
-    <div className="review">
-      <header className="topbar">
-        <a href="#/" className="back">
-          Games
-        </a>
+    <>
+      <AppHeader active="games" />
+      <main className="review page">
         <div className="title">
           <h1>
             {review.white} vs {review.black}
           </h1>
           <p className="muted">
-            {[
-              review.result.replace('-', '–'),
-              h.Termination,
-              opening,
-              h.Date && !h.Date.includes('?') ? h.Date.replaceAll('.', '-') : '',
-            ]
-              .filter(Boolean)
-              .join(', ')}
+            <span className="pill">{review.result.replace('-', '–')}</span>
+            {[h.Termination, opening, when].filter(Boolean).join(', ')}
           </p>
         </div>
-        <Settings />
-      </header>
 
-      <div className="stage">
-        <section className="boardcol" aria-label="Board">
-          <PlayerTag name={review[top]} rating={rating(top)} side={top} />
-          <div className="board-row">
-            <EvalBar win={win} evalLabel={evalLabel} orientation={orientation} />
-            {/* Screen readers get the position in words; the drawn board (which can be dragged on to
+        <div className="stage">
+          <section className="boardcol" aria-label="Board">
+            <PlayerTag
+              name={review[top]}
+              rating={rating(top)}
+              side={top}
+              clock={clockOf(top)}
+              active={turn === top[0]}
+            />
+            <div className="board-row">
+              <EvalBar win={win} evalLabel={evalLabel} orientation={orientation} />
+              {/* Screen readers get the position in words; the drawn board (which can be dragged on to
                 explore) is hidden from them. Keyboard users step through the game with the move list. */}
-            <div className="board" role="group" aria-label={`Board. ${describePosition(fen)}`}>
-              <div>
-                <Chessboard
-                  options={{
-                    position: fen,
-                    boardOrientation: orientation,
-                    pieces: NAMED_PIECES,
-                    allowDragging: true,
-                    onPieceDrop: ({ sourceSquare, targetSquare }) =>
-                      targetSquare !== null && tryMove(sourceSquare, targetSquare),
-                    onSquareClick: ({ piece, square }) => {
-                      if (picked && dots.includes(square) && tryMove(picked, square)) return
-                      const mine = piece && piece.pieceType[0] === fen.split(' ')[1]
-                      setPicked(mine && square !== picked ? square : null)
-                    },
-                    allowDrawingArrows: false,
-                    clearArrowsOnPositionChange: false,
-                    animationDurationInMs: reducedMotion() ? 0 : 160,
-                    lightSquareStyle: { backgroundColor: sq.light },
-                    darkSquareStyle: { backgroundColor: sq.dark },
-                    arrows,
-                    squareRenderer: ({ square, children }) => {
-                      const hl = lastSquares.includes(square)
-                      const showBadge = badge && square === badge.uci.slice(2, 4)
-                      const ring = overlay.rings.includes(square)
-                      const dot = dots.includes(square)
-                      return (
-                        <div
-                          data-ring={ring || undefined}
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            position: 'relative',
-                            backgroundColor:
-                              hl || square === picked
-                                ? isLight(square)
-                                  ? sq.hlLight
-                                  : sq.hlDark
-                                : undefined,
-                            boxShadow: ring ? `inset 0 0 0 3px ${ringColor}` : undefined,
-                          }}
-                        >
-                          {children}
-                          {dot && <span className="dot-target" aria-hidden="true" />}
-                          {showBadge && (
-                            <span
-                              className="badge"
-                              style={{ background: META[badge.label].color, color: META[badge.label].fg }}
-                            >
-                              {META[badge.label].glyph}
-                            </span>
-                          )}
-                        </div>
-                      )
-                    },
-                  }}
-                />
+              <div className="board" role="group" aria-label={`Board. ${describePosition(fen)}`}>
+                <div>
+                  <Chessboard
+                    options={{
+                      position: fen,
+                      boardOrientation: orientation,
+                      pieces: NAMED_PIECES,
+                      allowDragging: true,
+                      onPieceDrop: ({ sourceSquare, targetSquare }) =>
+                        targetSquare !== null && tryMove(sourceSquare, targetSquare),
+                      onSquareClick: ({ piece, square }) => {
+                        if (picked && dots.includes(square) && tryMove(picked, square)) return
+                        const mine = piece && piece.pieceType[0] === fen.split(' ')[1]
+                        setPicked(mine && square !== picked ? square : null)
+                      },
+                      allowDrawingArrows: false,
+                      clearArrowsOnPositionChange: false,
+                      animationDurationInMs: reducedMotion() ? 0 : 160,
+                      lightSquareStyle: { backgroundColor: sq.light },
+                      darkSquareStyle: { backgroundColor: sq.dark },
+                      arrows,
+                      squareRenderer: ({ square, children }) => {
+                        const hl = lastSquares.includes(square)
+                        const showBadge = badge && square === badge.uci.slice(2, 4)
+                        const ring = overlay.rings.includes(square)
+                        const dot = dots.includes(square)
+                        return (
+                          <div
+                            data-ring={ring || undefined}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              position: 'relative',
+                              backgroundColor:
+                                hl || square === picked
+                                  ? isLight(square)
+                                    ? sq.hlLight
+                                    : sq.hlDark
+                                  : undefined,
+                              boxShadow: ring ? `inset 0 0 0 3px ${ringColor}` : undefined,
+                            }}
+                          >
+                            {children}
+                            {dot && <span className="dot-target" aria-hidden="true" />}
+                            {showBadge && (
+                              <span
+                                className="badge"
+                                style={{ background: META[badge.label].color, color: META[badge.label].fg }}
+                              >
+                                {META[badge.label].glyph}
+                              </span>
+                            )}
+                          </div>
+                        )
+                      },
+                    }}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-          <PlayerTag name={review[bottom]} rating={rating(bottom)} side={bottom} />
-          <div className="controls">
-            <IconButton
-              label="Start"
-              onClick={() => walk(0)}
-              disabled={at === 0}
-              d="M6 5v14M18 5l-8 7 8 7z"
+            <PlayerTag
+              name={review[bottom]}
+              rating={rating(bottom)}
+              side={bottom}
+              clock={clockOf(bottom)}
+              active={turn === bottom[0]}
             />
-            <IconButton
-              label="Previous move"
-              onClick={() => walk(at - 1)}
-              disabled={at === 0}
-              d="M15 5l-8 7 8 7z"
-            />
-            <IconButton
-              label="Next move"
-              onClick={() => walk(at + 1)}
-              disabled={at === end}
-              d="M9 5l8 7-8 7z"
-            />
-            <IconButton
-              label="End"
-              onClick={() => walk(end)}
-              disabled={at === end}
-              d="M18 5v14M6 5l8 7-8 7z"
-            />
-            <button className="ghost" onClick={() => setFlipped((v) => !v)} title="Flip board (f)">
-              Flip board
-            </button>
-            {!exploring && (
-              <button className="ghost" onClick={() => startExploring(explore(fen))}>
-                Explore
-              </button>
-            )}
-          </div>
-          <p className="hint">
-            {exploring
-              ? 'Arrow keys step through your moves. Esc returns to the game.'
-              : 'Arrow keys step through the game. F flips the board, B shows the best move. Move a piece to explore.'}
-          </p>
-        </section>
-
-        <aside className={`panel${tab === 'report' ? ' compact' : ''}`}>
-          <div className="summary">
-            {(['white', 'black'] as const).map((s) => (
-              <PlayerSummary
-                key={s}
-                name={review[s]}
-                acc={review.accuracy[s]}
-                counts={review.counts[s]}
-                isMe={mySide === s}
-              />
-            ))}
-          </div>
-          <div className="tabs" role="tablist" aria-label="Review">
-            {(['moves', 'report'] as const).map((t) => (
-              <button
-                key={t}
-                id={`tab-${t}`}
-                role="tab"
-                aria-selected={tab === t}
-                aria-controls="tabpanel"
-                tabIndex={tab === t ? 0 : -1}
-                className="tab"
-                onClick={() => setTab(t)}
-                onKeyDown={(e) => {
-                  // The tab pattern: arrows move between tabs (and don't step through the game).
-                  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
-                  e.stopPropagation()
-                  const next = t === 'moves' ? 'report' : 'moves'
-                  setTab(next)
-                  document.getElementById(`tab-${next}`)?.focus()
-                }}
-              >
-                {t === 'moves' ? 'Moves' : 'Report'}
-              </button>
-            ))}
-          </div>
-          <div id="tabpanel" className="tabpanel" role="tabpanel" aria-labelledby={`tab-${tab}`}>
-            {tab === 'moves' ? (
-              <>
-                {exploring ? (
-                  <ExplorePanel
-                    x={exploring}
-                    live={live}
-                    thinking={thinking}
-                    onChange={setExploring}
-                    onExit={() => setExploring(null)}
-                  />
-                ) : (
-                  <Commentary
-                    move={move}
-                    tactic={tactic}
-                    review={review}
-                    mySide={mySide}
-                    ply={ply}
-                    bestShown={bestShown}
-                    onToggleBest={() => setShowBest((v) => !v)}
-                    onExplore={startExploring}
-                    prevKey={prevKey}
-                    nextKey={nextKey}
-                    goto={goto}
-                  />
+            <div className="controls">
+              <div className="navgroup" role="group" aria-label="Move through the game">
+                <IconButton
+                  label="Start"
+                  onClick={() => walk(0)}
+                  disabled={at === 0}
+                  d="M6 5v14M18 5l-8 7 8 7z"
+                />
+                <IconButton
+                  label="Previous move"
+                  onClick={() => walk(at - 1)}
+                  disabled={at === 0}
+                  d="M15 5l-8 7 8 7z"
+                />
+                <IconButton
+                  label="Next move"
+                  onClick={() => walk(at + 1)}
+                  disabled={at === end}
+                  d="M9 5l8 7-8 7z"
+                />
+                <IconButton
+                  label="End"
+                  onClick={() => walk(end)}
+                  disabled={at === end}
+                  d="M18 5v14M6 5l8 7-8 7z"
+                />
+              </div>
+              <div className="controls-end">
+                <IconButton
+                  label="Flip board"
+                  onClick={() => setFlipped((v) => !v)}
+                  disabled={false}
+                  outline
+                  d="M8 20V5M8 5L4.5 8.5M8 5l3.5 3.5M16 4v15M16 19l-3.5-3.5M16 19l3.5-3.5"
+                />
+                {!exploring && (
+                  <button className="secondary sm" onClick={() => startExploring(explore(fen))}>
+                    Explore
+                  </button>
                 )}
-                <MoveList review={review} ply={ply} onSelect={goto} />
-              </>
+              </div>
+            </div>
+            {exploring ? (
+              <p className="hint">Arrow keys step through your moves. Esc returns to the game.</p>
             ) : (
-              <Report review={review} mySide={mySide} goto={goto} id={id} />
+              <details className="shortcuts">
+                <summary>Keyboard shortcuts</summary>
+                <dl>
+                  <dt>
+                    <kbd>←</kbd> <kbd>→</kbd>
+                  </dt>
+                  <dd>Step through the game</dd>
+                  <dt>
+                    <kbd>Home</kbd> <kbd>End</kbd>
+                  </dt>
+                  <dd>Jump to the start or the end</dd>
+                  <dt>
+                    <kbd>F</kbd>
+                  </dt>
+                  <dd>Flip the board</dd>
+                  <dt>
+                    <kbd>B</kbd>
+                  </dt>
+                  <dd>Show the best move</dd>
+                  <dt>Drag a piece</dt>
+                  <dd>Try your own moves</dd>
+                </dl>
+              </details>
             )}
-          </div>
-        </aside>
-      </div>
+          </section>
 
-      <EvalGraph review={review} ply={ply} onSelect={goto} />
-    </div>
+          <aside className={`panel${tab === 'report' ? ' compact' : ''}`}>
+            <div className="summary">
+              {(['white', 'black'] as const).map((s) => (
+                <PlayerSummary
+                  key={s}
+                  name={review[s]}
+                  acc={review.accuracy[s]}
+                  counts={review.counts[s]}
+                  isMe={mySide === s}
+                />
+              ))}
+            </div>
+            <div className="tabs" role="tablist" aria-label="Review">
+              {(['moves', 'report'] as const).map((t) => (
+                <button
+                  key={t}
+                  id={`tab-${t}`}
+                  role="tab"
+                  aria-selected={tab === t}
+                  aria-controls="tabpanel"
+                  tabIndex={tab === t ? 0 : -1}
+                  className="tab"
+                  onClick={() => setTab(t)}
+                  onKeyDown={(e) => {
+                    // The tab pattern: arrows move between tabs (and don't step through the game).
+                    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
+                    e.stopPropagation()
+                    const next = t === 'moves' ? 'report' : 'moves'
+                    setTab(next)
+                    document.getElementById(`tab-${next}`)?.focus()
+                  }}
+                >
+                  {t === 'moves' ? 'Moves' : 'Report'}
+                </button>
+              ))}
+            </div>
+            <div id="tabpanel" className="tabpanel" role="tabpanel" aria-labelledby={`tab-${tab}`}>
+              {tab === 'moves' ? (
+                <>
+                  {exploring ? (
+                    <ExplorePanel
+                      x={exploring}
+                      live={live}
+                      thinking={thinking}
+                      onChange={setExploring}
+                      onExit={() => setExploring(null)}
+                    />
+                  ) : (
+                    <Commentary
+                      move={move}
+                      tactic={tactic}
+                      review={review}
+                      mySide={mySide}
+                      ply={ply}
+                      bestShown={bestShown}
+                      onToggleBest={() => setShowBest((v) => !v)}
+                      onExplore={startExploring}
+                      prevKey={prevKey}
+                      nextKey={nextKey}
+                      goto={goto}
+                    />
+                  )}
+                  <MoveList review={review} ply={ply} onSelect={goto} />
+                </>
+              ) : (
+                <Report review={review} mySide={mySide} goto={goto} id={id} />
+              )}
+            </div>
+          </aside>
+        </div>
+
+        <section className="tracecard" aria-label="Win chance over the game">
+          <header>
+            <h2>Win chance</h2>
+            <span className="muted">Click the graph to jump to a move.</span>
+          </header>
+          <EvalGraph review={review} ply={ply} onSelect={goto} />
+        </section>
+      </main>
+    </>
   )
 }
 
-function PlayerTag({ name, rating, side }: { name: string; rating?: string; side: Side }) {
+function PlayerTag({
+  name,
+  rating,
+  side,
+  clock,
+  active,
+}: {
+  name: string
+  rating?: string
+  side: Side
+  clock: number | null
+  active: boolean
+}) {
   return (
-    <div className="ptag">
+    <div className={`ptag${active ? ' on-move' : ''}`}>
       <i className={`dot ${side}`} role="img" aria-label={side} />
       <strong>{name}</strong>
       {rating && <span className="muted">{rating}</span>}
+      {clock !== null && (
+        <span className="clock" title="Time left on the clock">
+          {formatClock(clock)}
+        </span>
+      )}
     </div>
   )
 }
@@ -498,22 +562,35 @@ function IconButton({
   d,
   onClick,
   disabled,
+  outline = false,
+  small = false,
 }: {
   label: string
   d: string
   onClick: () => void
   disabled: boolean
+  /** Draw the path as a stroke instead of a filled shape. */
+  outline?: boolean
+  small?: boolean
 }) {
   return (
-    <button className="icon" aria-label={label} title={label} onClick={onClick} disabled={disabled}>
+    <button
+      className={`icon${small ? ' sm' : ''}`}
+      aria-label={label}
+      title={label}
+      onClick={onClick}
+      disabled={disabled}
+    >
       <svg
         viewBox="0 0 24 24"
-        width="20"
-        height="20"
-        fill="currentColor"
+        width={small ? 16 : 20}
+        height={small ? 16 : 20}
+        fill={outline ? 'none' : 'currentColor'}
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth={outline ? 1.8 : 2}
+        strokeLinecap="round"
         strokeLinejoin="round"
+        aria-hidden="true"
       >
         <path d={d} />
       </svg>
@@ -631,25 +708,63 @@ function Commentary({
   goto: (p: number) => void
 }) {
   const side = move?.color === 'w' ? 'White' : 'Black'
+  const nav = (
+    <span className="keynav" role="group" aria-label="Mistakes">
+      <span className="keynav-label" aria-hidden="true">
+        Mistakes
+      </span>
+      <IconButton
+        label="Previous mistake"
+        onClick={() => goto(prevKey!)}
+        disabled={prevKey === undefined}
+        d="M15 5l-8 7 8 7z"
+        small
+      />
+      <IconButton
+        label="Next mistake"
+        onClick={() => goto(nextKey!)}
+        disabled={nextKey === undefined}
+        d="M9 5l8 7-8 7z"
+        small
+      />
+    </span>
+  )
   return (
     <div className="comment" aria-live="polite">
       {move ? (
         <>
-          <h2>
-            {moveName(move)}
+          <div className="comment-head">
+            <h2>{moveName(move)}</h2>
             {META[move.label].glyph && (
-              <span style={{ color: META[move.label].text }}> {META[move.label].glyph}</span>
+              <span
+                className="glyph"
+                style={{ background: META[move.label].color, color: META[move.label].fg }}
+                aria-hidden="true"
+              >
+                {META[move.label].glyph}
+              </span>
             )}
-          </h2>
-          <p>
+            {nav}
+          </div>
+          <p className="why">
             <b style={{ color: META[move.label].text }}>{move.label}.</b>{' '}
             {explain(move, side, review.opening, tactic)}
           </p>
+          <div className="winrow nums">
+            <span>
+              {side} win chance{' '}
+              <b>
+                {Math.round(move.winBefore)}% → {Math.round(move.winAfter)}%
+              </b>
+            </span>
+            <span>
+              Eval{' '}
+              <b>
+                {evalText(review.evals[ply - 1]!)} → {evalText(review.evals[ply]!)}
+              </b>
+            </span>
+          </div>
           {move.loss > 0.5 && <Swing move={move} />}
-          <p className="muted nums">
-            {side} win chance {Math.round(move.winBefore)}% → {Math.round(move.winAfter)}%. Eval{' '}
-            {evalText(review.evals[ply - 1]!)} → {evalText(review.evals[ply]!)}.
-          </p>
           {move.bestUci && move.bestUci !== move.uci && (review.lines[ply - 1]?.length ?? 0) > 0 && (
             <div className="bestline">
               <span className="muted">Best line</span>
@@ -679,19 +794,14 @@ function Commentary({
         </>
       ) : (
         <>
-          <h2>Start of the game</h2>
+          <div className="comment-head">
+            <h2>Start of the game</h2>
+            {nav}
+          </div>
           <Coach review={review} mySide={mySide} goto={goto} />
           <p className="muted">Step with the arrow keys, click a move, or click the graph below.</p>
         </>
       )}
-      <div className="keynav">
-        <button className="ghost" disabled={prevKey === undefined} onClick={() => goto(prevKey!)}>
-          Previous mistake
-        </button>
-        <button className="ghost" disabled={nextKey === undefined} onClick={() => goto(nextKey!)}>
-          Next mistake
-        </button>
-      </div>
     </div>
   )
 }
@@ -1006,7 +1116,15 @@ function Report({
 function MoveList({ review, ply, onSelect }: { review: Review; ply: number; onSelect: (p: number) => void }) {
   const box = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    box.current?.querySelector('[aria-current="true"]')?.scrollIntoView({ block: 'nearest' })
+    // Scroll the list itself, never the page: scrollIntoView would also move the whole page when the list
+    // sits partly below the fold, jumping the user away from the board.
+    const list = box.current
+    const current = list?.querySelector('[aria-current="true"]')
+    if (!list || !current) return
+    const l = list.getBoundingClientRect()
+    const c = current.getBoundingClientRect()
+    if (c.top < l.top) list.scrollTop -= l.top - c.top
+    else if (c.bottom > l.bottom) list.scrollTop += c.bottom - l.bottom
   }, [ply])
 
   const rows: Move[][] = []

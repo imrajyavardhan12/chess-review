@@ -1,0 +1,92 @@
+/*
+ * Design tokens. Every colour is defined once with light-dark(); the colour-scheme on :root decides
+ * which side applies (the system setting by default, or the data-theme the user picked).
+ */
+:root {
+  color-scheme: light dark;
+
+  /* surfaces */
+  --bg: light-dark(#edf0f3, #0a1218);
+  --surface: light-dark(#ffffff, #111c25);
+  --surface-2: light-dark(#f4f6f8, #172430);
+  --surface-3: light-dark(#e6ebef, #1f2f3c);
+  --line: light-dark(#d9dfe5, #1f2d39);
+  --line-strong: light-dark(#aeb9c4, #3a4b59);
+
+  /* text */
+  --ink: light-dark(#0e1a24, #e9eff3);
+  --ink-2: light-dark(#475766, #a3b3c0);
+  --on-ink: light-dark(#ffffff, #0a1218);
+
+  /* brand: the signal yellow marks "where you are" (board last move, graph cursor, selected move) */
+  --signal: #f2c230;
+  --signal-soft: light-dark(#fbefc4, #3a3012);
+  --on-signal: #1b1500;
+  --focus: light-dark(#1f5fd1, #8db6ff);
+
+  /* feedback */
+  --danger: light-dark(#a02b26, #f2a09b);
+  --danger-bg: light-dark(#fbecea, #2b1816);
+  --won: light-dark(#1b6b47, #6bcb9b);
+  --lost: light-dark(#a02b26, #f2a09b);
+  --won-bg: light-dark(#e1f2e9, #123324);
+  --lost-bg: light-dark(#fbe6e4, #35191a);
+
+  /* the trace strip is dark in both themes: it is the one place the page gets contrast on purpose */
+  --trace-bg: light-dark(#15222c, #060b10);
+  --trace-fill: light-dark(#f5f8fa, #e6edf2);
+  --trace-line: light-dark(#8ca0af, #6c8091);
+  --evalbar-dark: #2b3a47;
+  --evalbar-white: #f4f7f9;
+
+  /* move-quality colours, as text on a surface */
+  --t-best: light-dark(#1b6b47, #5fc391);
+  --t-excellent: light-dark(#2b7650, #7cc49a);
+  --t-good: light-dark(#5a6b37, #b5c78e);
+  --t-inaccuracy: light-dark(#7d5d08, #e8c45a);
+  --t-mistake: light-dark(#a24b16, #f0a066);
+  --t-blunder: light-dark(#a02b26, #f08a85);
+  --t-brilliant: light-dark(#0b7268, #4fd1c5);
+  --t-great: light-dark(#2a5aae, #86aef0);
+  --t-book: light-dark(#76593c, #c9a57f);
+  --t-miss: light-dark(#a0305a, #f08fb0);
+
+  /* type */
+  --font-display: 'Bricolage Grotesque Variable', 'Geist Variable', system-ui, sans-serif;
+  --font-text: 'Geist Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --fs-display: clamp(2.5rem, 1.4rem + 3.6vw, 4rem);
+  --fs-h1: clamp(1.5rem, 1.2rem + 1vw, 1.875rem);
+  --fs-h2: 1.25rem;
+  --fs-h3: 1rem;
+  --fs-body: 0.9375rem;
+  --fs-sm: 0.8125rem;
+  --fs-xs: 0.75rem;
+
+  /* space (4px base), radii, elevation */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 72px;
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-pill: 999px;
+  --shadow-sm: 0 1px 2px rgb(10 24 36 / 0.07);
+  --shadow-pop: 0 20px 44px -14px rgb(10 24 36 / 0.38), 0 0 0 1px rgb(10 24 36 / 0.06);
+
+  /* layout */
+  --page: 1240px;
+  --gutter: clamp(16px, 4vw, 32px);
+
+  --dot-border: light-dark(#0e1a24, #a3b3c0);
+}
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}

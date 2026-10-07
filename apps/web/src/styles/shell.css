@@ -1,0 +1,181 @@
+/* ---------- app shell: header, navigation, settings popover ---------- */
+.appbar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-5);
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: var(--s-3) var(--gutter);
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  font: 700 1.125rem var(--font-display);
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+.brand svg {
+  display: block;
+}
+.mainnav {
+  display: flex;
+  gap: 2px;
+}
+.mainnav a {
+  padding: 7px 14px;
+  border-radius: var(--r-pill);
+  color: var(--ink-2);
+  font-size: var(--fs-sm);
+  font-weight: 560;
+  text-decoration: none;
+  transition:
+    background-color 0.12s,
+    color 0.12s;
+}
+.mainnav a:hover,
+.mainnav a[aria-current='page'] {
+  background: var(--surface-3);
+  color: var(--ink);
+}
+.appbar-end {
+  position: relative;
+  margin-left: auto;
+}
+.iconbtn {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  color: var(--ink);
+  transition: background-color 0.12s;
+}
+.iconbtn:hover,
+.iconbtn[aria-expanded='true'] {
+  background: var(--surface-3);
+}
+
+.popover {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + var(--s-2));
+  right: 0;
+  display: grid;
+  gap: var(--s-5);
+  width: min(380px, calc(100vw - 2 * var(--gutter)));
+  padding: var(--s-5);
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-pop);
+}
+.popover h3 {
+  margin-bottom: var(--s-2);
+  font: 600 var(--fs-sm) var(--font-text);
+  letter-spacing: 0;
+  color: var(--ink-2);
+}
+.popover .segmented {
+  display: flex;
+}
+.popover .segmented label {
+  flex: 1;
+}
+.popover .segmented span {
+  text-align: center;
+}
+.pop-hint {
+  margin-top: var(--s-2);
+  font-size: var(--fs-xs);
+  color: var(--ink-2);
+}
+.swatches {
+  display: flex;
+  gap: var(--s-3);
+}
+.swatch {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  font-size: var(--fs-xs);
+  font-weight: 560;
+  color: var(--ink-2);
+}
+.swatch input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.swatch-board {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--r-sm);
+  background: conic-gradient(var(--d) 0 25%, var(--l) 0 50%, var(--d) 0 75%, var(--l) 0);
+  box-shadow: 0 0 0 1px var(--line-strong);
+}
+.swatch input:checked ~ .swatch-board {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 4px var(--ink);
+}
+.swatch input:checked ~ .swatch-name {
+  color: var(--ink);
+}
+.swatch input:focus-visible ~ .swatch-board {
+  outline: 2px solid var(--focus);
+  outline-offset: 4px;
+}
+
+.update {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-3);
+  margin: 0;
+  padding: var(--s-2) var(--gutter);
+  background: var(--signal);
+  color: var(--on-signal);
+  font-size: var(--fs-sm);
+  font-weight: 560;
+}
+.update .ghost {
+  border-color: rgb(27 21 0 / 0.4);
+  color: var(--on-signal);
+}
+.update .ghost:hover {
+  background: rgb(27 21 0 / 0.1);
+}
+
+/* the page itself */
+.page {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: var(--s-3) var(--gutter) var(--s-8);
+}
+
+@media (max-width: 640px) {
+  .appbar {
+    gap: var(--s-3);
+  }
+  .mainnav a {
+    padding: 7px 10px;
+  }
+  .appbar-end {
+    position: static;
+  }
+  .popover {
+    top: 64px;
+    right: var(--gutter);
+    left: var(--gutter);
+    width: auto;
+  }
+}
