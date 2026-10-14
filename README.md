@@ -70,7 +70,8 @@ For mistakes, blunders, misses, great and brilliant moves the review also says _
 engine's own lines show it: a piece left hanging, a fork, pin, skewer, discovered attack, trapped
 piece or overloaded defender, a missed or allowed mate, a recapture, or the material a line wins. The
 squares involved are ringed on the board and the best line is shown in full. When no tactic can be
-confirmed from the engine's lines, the review says only what the move cost.
+confirmed from the engine's lines, the review says only what the move cost. For what the numbers mean and how far to trust them, see
+[Reading a review](docs/reading-a-review.md).
 
 Click any move of the best line to step through it, or move a piece on the board to explore your
 own ideas: the engine evaluates each position live. Exploring never changes the stored review.
