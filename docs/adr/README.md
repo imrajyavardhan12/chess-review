@@ -15,6 +15,7 @@ reproducibility, Python as the oracle) are in [ARCHITECTURE.md](../ARCHITECTURE.
 | [0007](0007-offline-and-low-end-devices.md) | Offline use, low-end devices and accessibility                      |
 | [0008](0008-visual-design-system.md)        | Visual design system: the trace as identity, tokens, one shell      |
 | [0009](0009-scorebook-redesign.md)          | The Scorebook redesign: rules not boxes, mono numbers, two themes   |
+| [0010](0010-train-puzzles.md)               | Train: puzzles from your own mistakes, checked once, kept on device |
 
 Each ADR arrives with the pull request that implements it, so a link here resolves once that pull
 request is merged.
