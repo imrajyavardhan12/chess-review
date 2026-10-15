@@ -12,13 +12,15 @@ a paid API; anything that would is out of scope.
   recaptures that are the only good move are often labelled Great.
 - **Explanations for more motifs:** deflection, decoy, interference, zwischenzug, and endgame
   technique (opposition, the square of the pawn).
+- **Train, further.** Puzzles shipped ([ADR 0010](adr/0010-train-puzzles.md)). Next: tell "allowed" from
+  "missed" in the tactic focus (needs the perspective stored on each puzzle), and re-check older puzzles
+  when the check gets stricter.
 
 ## Later
 
 - **Share a review without a server.** Encode a review in the URL fragment (compressed), so a link
   carries the whole review and nothing is uploaded.
 - **Opening repertoire view.** Where your games leave known theory, and how you score from there.
-- **Puzzles from your own mistakes.** Every missed tactic is a position with a known answer.
 - **A multi-threaded engine where the host allows cross-origin isolation**, as an option alongside
   the worker pool.
 

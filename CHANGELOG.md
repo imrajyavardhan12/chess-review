@@ -8,6 +8,13 @@ versions are the root `package.json` version. A change to the review rules also 
 
 Proposed in open pull requests; each entry moves here when it is merged.
 
+### Added
+
+- Practise a tactic from Insights: each tactic in "What your errors had in common" links to Train, which then
+  asks only the puzzles of that tactic for that player, and says when there are none.
+- Train shows how far today's set is ("3 of 8 today"): puzzles answered since midnight against what is still
+  to ask, up to a soft goal of 10. The design is recorded in [ADR 0010](docs/adr/0010-train-puzzles.md).
+
 ### Changed
 
 - A new look, "Scorebook" ([ADR 0009](docs/adr/0009-scorebook-redesign.md)): hairline rules instead of cards,
