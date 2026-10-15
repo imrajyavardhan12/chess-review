@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { dedupeByPosition, puzzleCandidates, type MoveReview, type Review } from '../src'
+import {
+  dedupeByPosition,
+  puzzleCandidates,
+  verifyPuzzle,
+  type AnalyseRequest,
+  type Engine,
+  type MoveReview,
+  type Review,
+} from '../src'
 
 const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 const BLACK_TO_MOVE = 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1'
@@ -78,5 +86,60 @@ describe('dedupeByPosition', () => {
     const a = { fen: START, id: 1 }
     const b = { fen: START.replace(/ 0 1$/, ' 4 9'), id: 2 }
     expect(dedupeByPosition([a, b])).toEqual([a])
+  })
+})
+
+describe('verifyPuzzle', () => {
+  const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+  const candidate = () => puzzleCandidates(review([move({})], [START_FEN]), 'white')[0]!
+  const limits = { depth: 10, nodes: 1000 }
+
+  /** Engine whose best move scores `best` and whose best other move scores `other`, in centipawns. */
+  function engine(bestMove: string, best: number, other: number): Engine {
+    return {
+      async analyse(req) {
+        const alt = req.searchMoves !== undefined
+        return {
+          eval: { cp: alt ? other : best, mate: null },
+          best: alt ? req.searchMoves![0]! : bestMove,
+          pv: alt ? [] : [bestMove, 'e7e5'],
+          depth: req.depth,
+          nodes: req.nodes,
+        }
+      },
+    }
+  }
+
+  it('accepts a move that clearly beats every other', async () => {
+    const p = await verifyPuzzle(candidate(), engine('e2e4', 150, -200), limits)
+    expect(p).not.toBeNull()
+    expect(p!.gap).toBeGreaterThan(20)
+    expect(p!.line).toEqual(['e2e4', 'e7e5'])
+  })
+
+  it('rejects a position with a second good answer', async () => {
+    expect(await verifyPuzzle(candidate(), engine('e2e4', 150, 120), limits)).toBeNull()
+  })
+
+  it('rejects a position where the deeper search prefers another move', async () => {
+    expect(await verifyPuzzle(candidate(), engine('d2d4', 150, -200), limits)).toBeNull()
+  })
+
+  it('rejects a position where even the best move leaves the player worse', async () => {
+    expect(await verifyPuzzle(candidate(), engine('e2e4', -300, -900), limits)).toBeNull()
+  })
+
+  it('rejects a position with a single legal move', async () => {
+    const forced = '7k/8/8/8/8/8/5q2/7K w - - 0 1'
+    const c = { ...candidate(), fen: forced, solution: 'h1g1' }
+    const calls: AnalyseRequest[] = []
+    const e: Engine = {
+      async analyse(req) {
+        calls.push(req)
+        return { eval: { cp: 0, mate: null }, best: 'h1g1', pv: [], depth: 1, nodes: 1 }
+      },
+    }
+    expect(await verifyPuzzle(c, e, limits)).toBeNull()
+    expect(calls).toHaveLength(0)
   })
 })

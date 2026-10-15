@@ -1,5 +1,7 @@
-import { positionKey, turnOf } from './chess-util'
+import { legalUci, positionKey, turnOf } from './chess-util'
+import type { AnalyseRequest, Engine } from './engine'
 import { isKeyMoment } from './labels'
+import { winPercent } from './winchance'
 import { PHASES, type Color, type Label, type Phase, type Review, type Side } from './types'
 
 /**
@@ -73,4 +75,43 @@ export function dedupeByPosition<T extends { fen: string }>(items: readonly T[])
     seen.add(key)
     return true
   })
+}
+
+/** The best move has to beat every other move by this much win chance, or the puzzle has two answers. */
+export const PUZZLE_MIN_GAP = 20
+/** ...and has to leave the player at least this well off: a puzzle is not "lose slowly". */
+export const PUZZLE_MIN_BEST_WIN = 35
+
+export interface Puzzle extends PuzzleCandidate {
+  /** Win chance (%) after the best move, and its lead over the best other move, at puzzle depth. */
+  bestWin: number
+  gap: number
+}
+
+export type PuzzleLimits = Pick<AnalyseRequest, 'depth' | 'nodes'>
+
+const moverWin = (cp: number, color: Color) => winPercent(color === 'w' ? cp : -cp)
+
+/**
+ * Searches the position again, deeper than the review did, and keeps the candidate only when the
+ * same move is still best and nothing else comes close. Returns null otherwise.
+ */
+export async function verifyPuzzle(
+  c: PuzzleCandidate,
+  engine: Engine,
+  limits: PuzzleLimits,
+  signal?: AbortSignal,
+): Promise<Puzzle | null> {
+  const others = legalUci(c.fen)
+    .filter((m) => m !== c.solution)
+    .sort()
+  if (others.length === 0) return null
+  const best = await engine.analyse({ fen: c.fen, ...limits }, signal)
+  if (best.best !== c.solution) return null
+  const bestWin = moverWin(best.eval.cp, c.color)
+  if (bestWin < PUZZLE_MIN_BEST_WIN) return null
+  const alt = await engine.analyse({ fen: c.fen, ...limits, searchMoves: others }, signal)
+  const gap = bestWin - moverWin(alt.eval.cp, c.color)
+  if (gap < PUZZLE_MIN_GAP) return null
+  return { ...c, line: best.pv.length > 0 ? best.pv : c.line, bestWin, gap }
 }
