@@ -54,6 +54,24 @@ typecheck.
 - **Explanations are deterministic.** No LLM or remote API, ever: everything a review says must
   follow from the engine's output and be computed on the device.
 
+## Testing Train
+
+Train has three layers, and a test belongs in the lowest one that can show the behaviour.
+
+- **`packages/core`** holds the rules: which mistakes are candidates (`puzzleCandidates`), when a deeper search
+  confirms one (`verifyPuzzle`, with a fake `Engine`), the schedule (`answer`, `queue`, `pickNext`), the day's count
+  (`today`) and the tactic focus (`withTactic`). Time is always a parameter (`now`, `dayStart`), so these tests need
+  no clock and no time zone; keep it that way.
+- **`apps/web/src/services/puzzles.ts`** is tested in `apps/web/test/puzzles.test.ts` with `memoryStore()` and a fake
+  engine, and small `limits`. Put a review in the store with `reviewGame`, then call `sync` or `list`. To test code
+  that reads a review back (the side-of-tactic backfill), build one whose fake engine sees the tactic.
+- **`apps/web/e2e/train.spec.ts`** drives the page. It reviews a pasted PGN so a player exists, then writes a puzzle
+  straight into the `puzzles` store of IndexedDB, so a test does not depend on the engine finding one.
+
+A change to what a stored puzzle holds follows the same rule as other stored data: make a new field optional and
+fill it in lazily when puzzles are listed, with a test for records written before it. Raise the IndexedDB version
+only for a new store or index, and add an upgrade test from the previous version (`apps/web/test/storage.test.ts`).
+
 ## Things to avoid
 
 - Telemetry, analytics, trackers, or any paid or third-party API.
