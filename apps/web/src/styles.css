@@ -1,4 +1,5 @@
 /* The stylesheet is split by concern; Vite bundles these into one file. */
+@import './styles/fonts.css';
 @import './styles/tokens.css';
 @import './styles/base.css';
 @import './styles/shell.css';
