@@ -4,16 +4,8 @@ import { AppHeader } from './AppHeader'
 import { useAsync } from './hooks'
 import { factsFor, tacticName } from './insight-facts'
 import { ERRORS, META } from './labels'
+import { rememberedPlayer } from './prefs'
 import { getReviewService } from './services'
-
-const REMEMBERED = 'chessreview.user'
-const remembered = () => {
-  try {
-    return localStorage.getItem(REMEMBERED) ?? ''
-  } catch {
-    return ''
-  }
-}
 
 const PHASE_NAMES: Record<Phase, string> = {
   opening: 'Opening',
@@ -37,7 +29,9 @@ export function InsightsPage() {
   const players = useMemo(() => playersIn(reviews.map((s) => s.review)), [reviews])
   const [chosen, setChosen] = useState<string | null>(null)
   const fallback =
-    players.find((p) => p.name.toLowerCase() === remembered().toLowerCase())?.name ?? players[0]?.name ?? null
+    players.find((p) => p.name.toLowerCase() === rememberedPlayer().toLowerCase())?.name ??
+    players[0]?.name ??
+    null
   const player = chosen ?? fallback
 
   const [progress, setProgress] = useState<{ key: string; done: number; total: number } | null>(null)

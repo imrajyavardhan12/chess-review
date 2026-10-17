@@ -79,6 +79,12 @@ own ideas: the engine evaluates each position live. Exploring never changes the 
 accuracy over time, errors per 100 moves by phase, the tactics behind your mistakes, and your results
 by opening and time control. It is computed in your browser from your stored reviews.
 
+**Train** turns your own mistakes into puzzles. After a game is reviewed, each mistake that cost 20 or more
+points of win chance is searched again, deeper; it becomes a puzzle only if one move was clearly the best
+and nothing else came close. You find the move by dragging a piece or typing it (`Nxd5`). Puzzles you
+answer come back later, after a day, three days, a week, until you solve them. Everything stays in your
+browser, so progress does not follow you to another device.
+
 Sites that host the full Stockfish network can offer an **accurate engine** as a one-time 99 MB
 download (Settings → Engine), which matches desktop Stockfish exactly; see `docs/DEPLOY.md`.
 

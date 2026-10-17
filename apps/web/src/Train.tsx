@@ -1,0 +1,430 @@
+import {
+  pickNext,
+  playersIn,
+  queue,
+  summarize,
+  replay,
+  type Phase,
+  type PuzzleRecord,
+} from '@chessreview/core'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Chessboard } from 'react-chessboard'
+import { AppHeader } from './AppHeader'
+import { lineMoves, targets } from './explore'
+import { useAsync } from './hooks'
+import { NAMED_PIECES, isLight, reducedMotion } from './pieces'
+import { BOARDS, rememberedPlayer, usePrefs } from './prefs'
+import { moveFromText } from './puzzle-input'
+import { getPuzzleService, getReviewService, type SyncProgress } from './services'
+
+const PHASE_NAMES: Record<Phase, string> = {
+  opening: 'Opening',
+  middlegame: 'Middlegame',
+  endgame: 'Endgame',
+}
+const COLOR_NAMES = { w: 'White', b: 'Black' }
+const ARROW = 'rgba(76,127,214,0.85)'
+
+/** Puzzles made from the player's own mistakes, asked until they stick. Nothing leaves the device. */
+export function TrainPage() {
+  const stored = useAsync('all', async () => (await getReviewService()).allReviews())
+  const players = useMemo(() => playersIn((stored.value ?? []).map((s) => s.review)), [stored.value])
+  const [chosen, setChosen] = useState<string | null>(null)
+  const player =
+    chosen ??
+    players.find((p) => p.name.toLowerCase() === rememberedPlayer().toLowerCase())?.name ??
+    players[0]?.name ??
+    null
+
+  useEffect(() => {
+    document.title = 'Train · chessreview'
+  }, [])
+
+  return (
+    <>
+      <AppHeader active="train" />
+      <main className="page train">
+        <div className="insights-head">
+          <h1>Train</h1>
+          {players.length > 0 && (
+            <label className="player">
+              Player
+              <select value={player ?? ''} onChange={(e) => setChosen(e.target.value)}>
+                {players.map((p) => (
+                  <option key={p.name} value={p.name}>
+                    {p.name} ({p.games} game{p.games === 1 ? '' : 's'})
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+        </div>
+        {stored.loading ? (
+          <p className="muted">Reading your reviews…</p>
+        ) : player === null ? (
+          <div className="empty">
+            <p>Puzzles come from your own mistakes, so there is nothing to practise yet.</p>
+            <p>
+              <a href="#/">Review some of your games</a> first.
+            </p>
+          </div>
+        ) : (
+          <Session key={player} player={player} />
+        )}
+      </main>
+    </>
+  )
+}
+
+/** One player's puzzles: finds new ones in the background while the ready ones can be played. */
+function Session({ player }: { player: string }) {
+  const [records, setRecords] = useState<PuzzleRecord[] | null>(null)
+  const [progress, setProgress] = useState<SyncProgress | null>(null)
+  const [failed, setFailed] = useState(false)
+  // Undefined until a puzzle is ready; null once the player has been through everything that is due.
+  const [chosenId, setChosenId] = useState<string | null | undefined>(undefined)
+  const [now] = useState(() => Date.now())
+  const [asked, setAsked] = useState<ReadonlySet<string>>(new Set())
+
+  useEffect(() => {
+    let stale = false
+    const controller = new AbortController()
+    void (async () => {
+      try {
+        const service = await getPuzzleService()
+        if (!stale) setRecords(await service.list(player))
+        await service.sync(player, (p) => !stale && setProgress(p), controller.signal)
+        if (!stale) setRecords(await service.list(player))
+      } catch (e) {
+        console.warn('Could not prepare the puzzles', e)
+        if (!stale) setFailed(true)
+      } finally {
+        if (!stale) setProgress(null)
+      }
+    })()
+    return () => {
+      stale = true
+      controller.abort()
+    }
+  }, [player])
+
+  const startId = records ? (pickNext(records, now)?.id ?? null) : null
+  // Lock the first puzzle as soon as there is one, so puzzles found later do not replace it mid-answer.
+  if (chosenId === undefined && startId !== null) setChosenId(startId)
+  const currentId = chosenId ?? null
+  const current = records?.find((r) => r.id === currentId) ?? null
+
+  const answered = async (record: PuzzleRecord, correct: boolean) => {
+    const next = await (await getPuzzleService()).answer(record, correct)
+    setRecords((rs) => rs?.map((r) => (r.id === next.id ? next : r)) ?? rs)
+  }
+  const next = () => {
+    if (!records || !current) return
+    const skip = new Set(asked).add(current.id)
+    setAsked(skip)
+    setChosenId(pickNext(records, Date.now(), skip)?.id ?? null)
+  }
+
+  const stats = records ? summarize(records, now) : null
+  const q = records ? queue(records, now) : null
+  const searching = progress !== null && progress.done < progress.total
+
+  return (
+    <>
+      {searching && (
+        <p className="muted" role="status">
+          Looking for puzzles in your games… {progress.done} of {progress.total} positions checked.
+        </p>
+      )}
+      {failed && (
+        <p className="muted">Something went wrong while preparing the puzzles. Try reloading the page.</p>
+      )}
+      {records === null ? (
+        <p className="muted">Reading your puzzles…</p>
+      ) : current ? (
+        <PuzzleCard key={current.id} record={current} onAnswered={answered} onNext={next} />
+      ) : stats && stats.total === 0 ? (
+        searching ? null : (
+          <div className="empty">
+            <p>No clear puzzles in your games yet.</p>
+            <p className="muted">
+              A mistake becomes a puzzle when one move was clearly the best. Review more of your games and
+              check again.
+            </p>
+          </div>
+        )
+      ) : (
+        <div className="empty">
+          <p>You have answered everything that is due.</p>
+          <p className="muted">
+            {q && q.waiting.length > 0
+              ? `${q.waiting.length} puzzle${q.waiting.length === 1 ? '' : 's'} will come back later, when it is time to check that they stuck.`
+              : 'Review more games to find new puzzles.'}
+          </p>
+        </div>
+      )}
+      {stats && stats.total > 0 && <Progress stats={stats} />}
+    </>
+  )
+}
+
+function Progress({ stats }: { stats: ReturnType<typeof summarize> }) {
+  return (
+    <section className="train-progress" aria-label="Your progress">
+      <div className="tiles train-tiles">
+        <div className="tile">
+          <span className="tile-label">Puzzles</span>
+          <span className="tile-num">{stats.total}</span>
+        </div>
+        <div className="tile">
+          <span className="tile-label">New</span>
+          <span className="tile-num">{stats.fresh}</span>
+        </div>
+        <div className="tile">
+          <span className="tile-label">Due again</span>
+          <span className="tile-num">{stats.due}</span>
+        </div>
+        <div className="tile">
+          <span className="tile-label">Solved first try</span>
+          <span className="tile-num">
+            {stats.attempts > 0 ? `${Math.round((stats.solved / stats.attempts) * 100)}%` : '–'}
+          </span>
+        </div>
+      </div>
+      <table className="train-phases">
+        <caption>By phase of the game</caption>
+        <thead>
+          <tr>
+            <th scope="col">Phase</th>
+            <th scope="col">Puzzles</th>
+            <th scope="col">Solved</th>
+          </tr>
+        </thead>
+        <tbody>
+          {(Object.keys(PHASE_NAMES) as Phase[]).map((p) => {
+            const s = stats.byPhase[p]
+            return (
+              <tr key={p}>
+                <th scope="row">{PHASE_NAMES[p]}</th>
+                <td>{s.total}</td>
+                <td>{s.attempts > 0 ? `${Math.round((s.solved / s.attempts) * 100)}%` : '–'}</td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </section>
+  )
+}
+
+type Status = 'asking' | 'wrong' | 'solved' | 'shown'
+
+/** One puzzle. Keyed by its id, so everything here starts over for the next one. */
+function PuzzleCard({
+  record,
+  onAnswered,
+  onNext,
+}: {
+  record: PuzzleRecord
+  onAnswered: (record: PuzzleRecord, correct: boolean) => Promise<void>
+  onNext: () => void
+}) {
+  const puzzle = record.puzzle!
+  const sq = BOARDS[usePrefs().board]
+  const [status, setStatus] = useState<Status>('asking')
+  const [wrongMove, setWrongMove] = useState<string | null>(null)
+  const [picked, setPicked] = useState<string | null>(null)
+  const [text, setText] = useState('')
+  const [unclear, setUnclear] = useState(false)
+  // Only the first answer counts towards the schedule; trying again is practice.
+  const recorded = useRef(false)
+
+  const done = status === 'solved' || status === 'shown'
+  const after = useMemo(() => replay(puzzle.fen, [puzzle.solution]).at(-1)?.after ?? puzzle.fen, [puzzle])
+  const fen = done ? after : puzzle.fen
+  const color = COLOR_NAMES[puzzle.color]
+  const dots = !done && picked ? targets(puzzle.fen, picked) : []
+  const line = useMemo(() => lineMoves(puzzle.fen, puzzle.line), [puzzle])
+
+  const submit = (uci: string) => {
+    if (done) return
+    setPicked(null)
+    setUnclear(false)
+    const correct = uci === puzzle.solution
+    if (!recorded.current) {
+      recorded.current = true
+      void onAnswered(record, correct)
+    }
+    if (correct) {
+      setStatus('solved')
+      setWrongMove(null)
+    } else {
+      setStatus('wrong')
+      setWrongMove(uci)
+    }
+  }
+  const tryMove = (from: string, to: string): boolean => {
+    const uci = [from + to, from + to + 'q'].find((m) => moveFromText(puzzle.fen, m) === m)
+    if (!uci) return false
+    submit(uci)
+    return uci === puzzle.solution
+  }
+  const reveal = () => {
+    if (!recorded.current) {
+      recorded.current = true
+      void onAnswered(record, false)
+    }
+    setStatus('shown')
+  }
+
+  const arrows = done
+    ? [{ startSquare: puzzle.solution.slice(0, 2), endSquare: puzzle.solution.slice(2, 4), color: ARROW }]
+    : []
+  const lastSquares = done ? [puzzle.solution.slice(0, 2), puzzle.solution.slice(2, 4)] : []
+  const when = record.date ? ` on ${record.date}` : ''
+
+  return (
+    <div className="stage train-stage">
+      <section className="boardcol" aria-label="Puzzle board">
+        <div className="board" role="group" aria-label={`Board, ${color} to move`}>
+          <div>
+            <Chessboard
+              options={{
+                position: fen,
+                boardOrientation: puzzle.color === 'w' ? 'white' : 'black',
+                pieces: NAMED_PIECES,
+                allowDragging: !done,
+                onPieceDrop: ({ sourceSquare, targetSquare }) =>
+                  targetSquare !== null && tryMove(sourceSquare, targetSquare),
+                onSquareClick: ({ piece, square }) => {
+                  if (done) return
+                  if (picked && dots.includes(square) && tryMove(picked, square)) return
+                  const mine = piece && piece.pieceType[0] === puzzle.color
+                  setPicked(mine && square !== picked ? square : null)
+                },
+                allowDrawingArrows: false,
+                animationDurationInMs: reducedMotion() ? 0 : 160,
+                lightSquareStyle: { backgroundColor: sq.light },
+                darkSquareStyle: { backgroundColor: sq.dark },
+                arrows,
+                squareRenderer: ({ square, children }) => {
+                  const hl = lastSquares.includes(square) || square === picked
+                  return (
+                    <div
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        position: 'relative',
+                        backgroundColor: hl ? (isLight(square) ? sq.hlLight : sq.hlDark) : undefined,
+                      }}
+                    >
+                      {children}
+                      {dots.includes(square) && <span className="dot-target" aria-hidden="true" />}
+                    </div>
+                  )
+                },
+              }}
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="train-panel" aria-label="Puzzle">
+        <p className="train-kicker">
+          {PHASE_NAMES[puzzle.phase]} · from your game against {record.opponent}
+          {when}
+        </p>
+        <h2>
+          {done
+            ? status === 'solved'
+              ? 'Correct'
+              : 'The best move'
+            : `${color} to move. Find the best move.`}
+        </h2>
+
+        <div role="status" className="train-feedback">
+          {status === 'asking' && <p className="muted">Drag a piece, or type your move below.</p>}
+          {status === 'wrong' && (
+            <p>
+              {wrongMove === puzzle.playedUci
+                ? 'That is the move you played in the game, and it was the mistake.'
+                : 'That is not the best move.'}{' '}
+              Try again, or show the answer.
+            </p>
+          )}
+          {done && (
+            <p>
+              <strong>{puzzle.solutionSan}</strong> was the move. In the game you played{' '}
+              <strong>{puzzle.playedSan}</strong> and gave up {puzzle.loss.toFixed(0)} points of win chance.
+            </p>
+          )}
+          {unclear && (
+            <p className="train-error">That is not a legal move here. Write it like Nxd5 or e2e4.</p>
+          )}
+        </div>
+
+        {!done && (
+          <form
+            className="train-input"
+            onSubmit={(e) => {
+              e.preventDefault()
+              const uci = moveFromText(puzzle.fen, text)
+              if (!uci) return setUnclear(true)
+              setText('')
+              submit(uci)
+            }}
+          >
+            <label>
+              Your move
+              <input
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                autoComplete="off"
+                autoCapitalize="off"
+                spellCheck={false}
+                placeholder="Nxd5"
+              />
+            </label>
+            <button type="submit" className="secondary">
+              Check
+            </button>
+          </form>
+        )}
+
+        {done && (
+          <>
+            <p className="train-line">
+              <span className="muted">Best line: </span>
+              {line.map((m) => m.text).join(' ')}
+            </p>
+            <div className="train-actions">
+              <button className="primary" onClick={onNext} autoFocus>
+                Next puzzle
+              </button>
+              <a
+                className="secondary"
+                href={`#/review/${record.gameId}?u=${encodeURIComponent(record.player)}`}
+              >
+                Open the game
+              </a>
+            </div>
+          </>
+        )}
+        {!done && status === 'wrong' && (
+          <div className="train-actions">
+            <button className="secondary" onClick={reveal}>
+              Show the answer
+            </button>
+          </div>
+        )}
+        {status === 'asking' && (
+          <div className="train-actions">
+            <button className="ghost" onClick={reveal}>
+              Show the answer
+            </button>
+          </div>
+        )}
+      </section>
+    </div>
+  )
+}

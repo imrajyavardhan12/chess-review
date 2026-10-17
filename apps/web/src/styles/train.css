@@ -1,0 +1,100 @@
+/* ---------- train: puzzles from your own mistakes ---------- */
+.train-stage {
+  margin-top: var(--s-4);
+}
+.train-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  align-content: start;
+  padding: var(--s-6);
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  box-shadow:
+    0 0 0 1px var(--line),
+    var(--shadow-sm);
+}
+.train-panel h2 {
+  font-size: var(--fs-h2);
+}
+.train-kicker {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: var(--fs-sm);
+  font-weight: 560;
+}
+.train-feedback p {
+  margin: 0 0 var(--s-2);
+}
+.train-error {
+  color: var(--t-blunder);
+}
+.train-input {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--s-3);
+}
+.train-input label {
+  display: grid;
+  gap: var(--s-1);
+  flex: 1;
+  color: var(--ink-2);
+  font-size: var(--fs-sm);
+  font-weight: 560;
+}
+.train-input input {
+  height: 40px;
+  color: var(--ink);
+}
+.train-line {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.train-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+}
+.train-actions a {
+  text-decoration: none;
+  color: var(--ink);
+}
+.train-progress {
+  display: grid;
+  gap: var(--s-4);
+  margin-top: var(--s-6);
+}
+.train-tiles {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.train-phases {
+  width: 100%;
+  max-width: 480px;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+}
+.train-phases caption {
+  padding-bottom: var(--s-2);
+  color: var(--ink-2);
+  font-weight: 560;
+  text-align: left;
+}
+.train-phases th,
+.train-phases td {
+  padding: var(--s-2) var(--s-3);
+  border-top: 1px solid var(--line);
+  text-align: left;
+}
+.train-phases thead th {
+  border-top: 0;
+  color: var(--ink-2);
+  font-weight: 560;
+}
+@media (max-width: 720px) {
+  .train-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .train-panel {
+    padding: var(--s-5);
+  }
+}
