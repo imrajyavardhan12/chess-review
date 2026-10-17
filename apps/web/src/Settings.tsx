@@ -72,6 +72,30 @@ export function Settings() {
 
       {open && (
         <div id={panel} className="popover" role="dialog" aria-label="Settings">
+          <div className="popover-head">
+            <h2>Settings</h2>
+            <button
+              className="icon"
+              aria-label="Close"
+              onClick={() => {
+                setOpen(false)
+                button.current?.focus()
+              }}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                aria-hidden="true"
+              >
+                <path d="M5 5l14 14M19 5L5 19" />
+              </svg>
+            </button>
+          </div>
           <section>
             <h3>Theme</h3>
             <Segmented<Theme>
