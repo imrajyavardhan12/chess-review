@@ -3,10 +3,13 @@ import { LiveAnalysis } from './analysis'
 import { ENGINE_ID, createEngineHost, fullEngine } from './engine'
 import type { EngineHost } from './engine-host'
 import { EngineNotInstalled, FULL_ENGINE_ID } from './full-engine'
+import { PuzzleService } from './puzzles'
 import { ReviewService } from './reviews'
-import { openStore } from './storage'
+import { openStore, type ReviewStore } from './storage'
 
+let store: Promise<ReviewStore> | undefined
 let service: Promise<ReviewService> | undefined
+let puzzles: Promise<PuzzleService> | undefined
 let live: LiveAnalysis | undefined
 const hosts = new Map<string, EngineHost>()
 
@@ -25,13 +28,20 @@ async function engineHost(id: string): Promise<EngineHost> {
 
 /** The app-wide review service, created on first use. */
 export function getReviewService(): Promise<ReviewService> {
-  service ??= openStore().then((store) => {
+  service ??= (store ??= openStore()).then((store) => {
     const s = new ReviewService({ store, engine: engineHost, loadBook, engineId: ENGINE_ID })
     // Reviews left unfinished last time (a batch, a closed tab) carry on in the background.
     void s.resumePending()
     return s
   })
   return service
+}
+
+/** The app-wide puzzle service. It shares the review store and the shipped engine. */
+export function getPuzzleService(): Promise<PuzzleService> {
+  return (puzzles ??= (store ??= openStore()).then(
+    (s) => new PuzzleService({ store: s, engine: (work) => hostFor(ENGINE_ID).use(work) }),
+  ))
 }
 
 /** Live evaluation for positions the user explores, on the shipped engine. */
@@ -46,3 +56,4 @@ export { engineIdFor, fullEngine } from './engine'
 export { EngineDownloadError, type Progress } from './full-engine'
 export { LichessError, fetchLichessGames } from './lichess'
 export type { StoredReview, Summary } from './storage'
+export type { PuzzleService, SyncProgress } from './puzzles'

@@ -1,5 +1,11 @@
 import { openDB, type DBSchema } from 'idb'
-import { ANALYSIS_VERSION, type PresetName, type Review, type Sides } from '@chessreview/core'
+import {
+  ANALYSIS_VERSION,
+  type PresetName,
+  type PuzzleRecord,
+  type Review,
+  type Sides,
+} from '@chessreview/core'
 
 export interface Summary {
   accuracy: Sides<number>
@@ -38,6 +44,9 @@ export interface ReviewStore {
   deleteRequest(id: string): Promise<void>
   /** Removes reviews written by an older version of the analysis rules. */
   pruneStale(): Promise<void>
+  /** Puzzles made from the player's mistakes. Each holds its own copy of the position, so it outlives its review. */
+  allPuzzles(): Promise<PuzzleRecord[]>
+  putPuzzles(records: readonly PuzzleRecord[]): Promise<void>
 }
 
 export function summarize(review: Review): Summary {
@@ -51,6 +60,7 @@ export function summarize(review: Review): Summary {
 export function memoryStore(): ReviewStore {
   const reviews = new Map<string, StoredReview>()
   const requests = new Map<string, StoredRequest>()
+  const puzzles = new Map<string, PuzzleRecord>()
   return {
     getReview: async (id) => reviews.get(id),
     putReview: async (r) => void reviews.set(r.id, r),
@@ -64,20 +74,26 @@ export function memoryStore(): ReviewStore {
     pruneStale: async () => {
       for (const [id, r] of reviews) if (r.review.schemaVersion !== ANALYSIS_VERSION) reviews.delete(id)
     },
+    allPuzzles: async () => [...puzzles.values()],
+    putPuzzles: async (rs) => void rs.forEach((r) => puzzles.set(r.id, r)),
   }
 }
 
 interface Schema extends DBSchema {
   reviews: { key: string; value: StoredReview }
   requests: { key: string; value: StoredRequest }
+  puzzles: { key: string; value: PuzzleRecord }
 }
 
 /** IndexedDB-backed store. */
 export async function indexedDbStore(name = 'chessreview'): Promise<ReviewStore> {
-  const db = await openDB<Schema>(name, 1, {
-    upgrade(d) {
-      d.createObjectStore('reviews', { keyPath: 'id' })
-      d.createObjectStore('requests', { keyPath: 'id' })
+  const db = await openDB<Schema>(name, 2, {
+    upgrade(d, oldVersion) {
+      if (oldVersion < 1) {
+        d.createObjectStore('reviews', { keyPath: 'id' })
+        d.createObjectStore('requests', { keyPath: 'id' })
+      }
+      if (oldVersion < 2) d.createObjectStore('puzzles', { keyPath: 'id' })
     },
   })
   return {
@@ -102,6 +118,12 @@ export async function indexedDbStore(name = 'chessreview'): Promise<ReviewStore>
       for (let c = await tx.store.openCursor(); c; c = await c.continue()) {
         if (c.value.review.schemaVersion !== ANALYSIS_VERSION) await c.delete()
       }
+      await tx.done
+    },
+    allPuzzles: () => db.getAll('puzzles'),
+    putPuzzles: async (rs) => {
+      const tx = db.transaction('puzzles', 'readwrite')
+      for (const r of rs) void tx.store.put(r)
       await tx.done
     },
   }
