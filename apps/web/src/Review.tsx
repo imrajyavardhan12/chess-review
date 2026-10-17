@@ -14,13 +14,14 @@ import {
   type Side,
 } from '@chessreview/core'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Chessboard, defaultPieces, type PieceRenderObject } from 'react-chessboard'
+import { Chessboard } from 'react-chessboard'
 import { EvalGraph } from './EvalGraph'
 import { explore, fenOf, lineMoves, play, stepTo, targets, type Exploration } from './explore'
 import { cancelReview, downloadReview, useLiveEval, useReviewState } from './hooks'
 import { TimeChart } from './TimeChart'
 import { ERRORS, META, ORDER, evalText, isKeyMoment, isNotable } from './labels'
 import { BOARDS, usePrefs } from './prefs'
+import { NAMED_PIECES, isLight, reducedMotion } from './pieces'
 import type { LiveEval } from './services'
 import { AppHeader } from './AppHeader'
 import { overlayFor } from './tactics'
@@ -79,36 +80,6 @@ export function ReviewPage({ id, me }: { id: string; me: string | null }) {
 
 // Where the explored line goes next.
 const LINE_ARROW = 'rgba(76,127,214,0.8)'
-
-const PIECE_NAMES: Record<string, string> = {
-  K: 'king',
-  Q: 'queen',
-  R: 'rook',
-  B: 'bishop',
-  N: 'knight',
-  P: 'pawn',
-}
-
-/** The default pieces, each named ("White knight, f3") so a screen reader can tell what it would drag. */
-const NAMED_PIECES: PieceRenderObject = Object.fromEntries(
-  Object.entries(defaultPieces).map(([code, draw]) => [
-    code,
-    (props) => (
-      <div
-        role="img"
-        aria-label={`${code[0] === 'w' ? 'White' : 'Black'} ${PIECE_NAMES[code[1]!]}${props?.square ? `, ${props.square}` : ''}`}
-        style={{ width: '100%', height: '100%' }}
-      >
-        {draw(props)}
-      </div>
-    ),
-  ]),
-)
-
-/** Pieces slide between moves unless the user asked the system for less motion. */
-const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches
-
-const isLight = (sq: string) => (sq.charCodeAt(0) - 97 + Number(sq[1]) - 1) % 2 === 1
 
 function ReviewView({ id, review, me }: { id: string; review: Review; me: string | null }) {
   const mySide: Side | null = !me

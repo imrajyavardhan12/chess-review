@@ -19,3 +19,5 @@ export * from './insights'
 export * from './clock'
 
 export * from './exchange'
+export * from './puzzles'
+export * from './train'

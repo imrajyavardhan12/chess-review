@@ -81,3 +81,14 @@ export function usePrefs(): Prefs {
     () => state,
   )
 }
+
+const PLAYER_KEY = 'chessreview.user'
+
+/** The username last used on the home page, to preselect whose games to look at. */
+export function rememberedPlayer(): string {
+  try {
+    return localStorage.getItem(PLAYER_KEY) ?? ''
+  } catch {
+    return ''
+  }
+}

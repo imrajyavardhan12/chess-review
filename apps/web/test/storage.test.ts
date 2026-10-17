@@ -1,6 +1,7 @@
 import 'fake-indexeddb/auto'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { ANALYSIS_VERSION, type Review } from '@chessreview/core'
+import { openDB } from 'idb'
+import { ANALYSIS_VERSION, freshProgress, type PuzzleRecord, type Review } from '@chessreview/core'
 import {
   indexedDbStore,
   memoryStore,
@@ -22,6 +23,18 @@ const stored = (id: string, r = review([50, 55, 60])): StoredReview => ({
   review: r,
   summary: summarize(r),
   createdAt: 1,
+})
+
+const puzzle = (id: string, attempts = 0): PuzzleRecord => ({
+  id,
+  player: 'me',
+  gameId: 'g',
+  opponent: 'you',
+  date: null,
+  tactic: null,
+  checkedWith: { depth: 18, nodes: 1 },
+  puzzle: null,
+  progress: { ...freshProgress(), attempts },
 })
 
 describe('summarize', () => {
@@ -82,5 +95,36 @@ describe.each([
     await store.pruneStale()
     expect(await store.getReview('old')).toBeUndefined()
     expect(await store.getReview('new')).toBeDefined()
+  })
+
+  it('stores puzzles, replaces one written again, and keeps them when old reviews are pruned', async () => {
+    expect(await store.allPuzzles()).toEqual([])
+    await store.putPuzzles([puzzle('a'), puzzle('b')])
+    await store.putPuzzles([puzzle('a', 3)])
+    await store.putReview(stored('old', review([50], { schemaVersion: ANALYSIS_VERSION - 1 })))
+    await store.pruneStale()
+    const all = await store.allPuzzles()
+    expect(all.map((p) => [p.id, p.progress.attempts]).sort()).toEqual([
+      ['a', 3],
+      ['b', 0],
+    ])
+  })
+})
+
+describe('upgrading from the first storage version', () => {
+  it('keeps the reviews already saved and adds the puzzle store', async () => {
+    const name = `upgrade-${Math.random()}`
+    const old = await openDB(name, 1, {
+      upgrade(d) {
+        d.createObjectStore('reviews', { keyPath: 'id' })
+        d.createObjectStore('requests', { keyPath: 'id' })
+      },
+    })
+    await old.put('reviews', stored('kept'))
+    old.close()
+    const store = await indexedDbStore(name)
+    expect((await store.getReview('kept'))?.id).toBe('kept')
+    await store.putPuzzles([puzzle('p')])
+    expect(await store.allPuzzles()).toHaveLength(1)
   })
 })

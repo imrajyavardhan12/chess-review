@@ -5,11 +5,13 @@ import { ReviewPage } from './Review'
 
 // Insights is a page of its own, loaded only when opened.
 const InsightsPage = lazy(() => import('./Insights').then((m) => ({ default: m.InsightsPage })))
+const TrainPage = lazy(() => import('./Train').then((m) => ({ default: m.TrainPage })))
 
 // Routes live in the hash so a reload keeps you on the same review:
 //   #/                      game list
 //   #/review/<id>?u=<name>  one review (u = whose games you were browsing)
 //   #/insights              statistics across every stored review
+//   #/train                 puzzles made from your own mistakes
 function parse(hash: string) {
   const m = hash.match(/^#\/review\/([a-f0-9]+)(?:\?u=(.*))?$/)
   return m && m[1] ? { id: m[1], me: m[2] ? decodeURIComponent(m[2]) : null } : null
@@ -38,6 +40,10 @@ export function App() {
       {hash === '#/insights' ? (
         <Suspense fallback={null}>
           <InsightsPage />
+        </Suspense>
+      ) : hash === '#/train' ? (
+        <Suspense fallback={null}>
+          <TrainPage />
         </Suspense>
       ) : route ? (
         <ReviewPage id={route.id} me={route.me} />

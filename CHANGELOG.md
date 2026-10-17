@@ -35,6 +35,11 @@ Proposed in open pull requests; each entry moves here when it is merged.
 - Step through the engine's best line, and explore any position with a live engine.
 - An optional full-strength Stockfish 19 engine, downloaded on request (99 MB, verified by size and
   SHA-256) where a deployment hosts it.
+- Train: puzzles made from your own mistakes. A mistake that cost 20 or more points of win chance becomes a
+  puzzle when a deeper search confirms that one move was clearly the best and no other move came close. You
+  answer on the board or by typing the move, and answered puzzles come back on a schedule (a day, three
+  days, a week and so on) until they stick. Puzzles and progress stay in this browser, with their own copy
+  of the position, so they outlive the game they came from.
 - Insights across every game reviewed on the device: accuracy over time, by colour, opening and
   time control, and the tactics most often missed.
 - Clock analysis: time spent per move, time trouble, and the mistakes made in it.
