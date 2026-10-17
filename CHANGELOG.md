@@ -10,6 +10,12 @@ Proposed in open pull requests; each entry moves here when it is merged.
 
 ### Changed
 
+- A new look, "Scorebook" ([ADR 0009](docs/adr/0009-scorebook-redesign.md)): hairline rules instead of cards,
+  monospace numbers, heavier headlines, a full-width trace on the home page and under every review, and a
+  near-black green dark theme. The game list gets filters (all, reviewed, not reviewed, wins, losses) and a
+  yellow "Review all" action, Train shows where in your game each puzzle came from, and the settings panel
+  has a header and a close button. A new board colour, Sage, is the default; Slate, Green and Brown remain.
+- The stylesheet budget moves from 8 to 9 KB gzipped (the redesign is 8.2 KB).
 - A redesigned interface ([ADR 0008](docs/adr/0008-visual-design-system.md)): a home page led by a real
   win-chance trace, a shared header, one settings panel (theme, analysis depth, engine, board colours) in place
   of three selects, a game list grouped by day with result pills and accuracy bars, a review panel where the

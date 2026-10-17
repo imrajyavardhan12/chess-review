@@ -12,7 +12,7 @@ const KB = 1024
 const BUDGETS = [
   // The code every visit downloads before anything renders.
   { name: 'entry script', files: entryScripts, gzip: true, max: 145 * KB },
-  { name: 'stylesheets', files: (f) => f.endsWith('.css'), gzip: true, max: 8 * KB },
+  { name: 'stylesheets', files: (f) => f.endsWith('.css'), gzip: true, max: 9 * KB },
   // Code loaded on demand, each chunk on its own (the opening book is the big one).
   { name: 'largest lazy chunk', files: lazyScripts, gzip: true, max: 130 * KB, each: true },
   {

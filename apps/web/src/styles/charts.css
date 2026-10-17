@@ -21,23 +21,22 @@
 .achart-axis,
 .tchart-axis {
   fill: var(--ink-2);
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
+  font: 400 12px var(--font-mono);
 }
 .achart-area {
   fill: var(--surface-3);
-  opacity: 0.7;
+  opacity: 0.4;
 }
 .achart-line,
 .tchart-line {
   fill: none;
   stroke: var(--ink);
-  stroke-width: 2;
+  stroke-width: 2.5;
   stroke-linejoin: round;
 }
 .achart-dot {
-  fill: var(--ink);
-  stroke: var(--surface);
+  fill: var(--bg);
+  stroke: var(--ink);
   stroke-width: 2;
 }
 .achart-cursor,

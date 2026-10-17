@@ -40,6 +40,8 @@ const remembered = () => read(STORE)
 const rememberedSource = (): Source => (read(SOURCE) === 'lichess' ? 'lichess' : 'chesscom')
 const SITE: Record<Source, string> = { chesscom: 'chess.com', lichess: 'Lichess' }
 
+type Filter = 'all' | 'reviewed' | 'new' | 'won' | 'lost'
+
 interface Row {
   game: RemoteGame
   id: string
@@ -65,15 +67,16 @@ function outcome(g: RemoteGame, user: string) {
 
 // Win chance over the game from the player's point of view, drawn small.
 function Spark({ data }: { data: number[] }) {
-  const w = 64
-  const h = 22
-  const pts = data
-    .map((v, i) => `${((i / (data.length - 1)) * w).toFixed(1)},${(h - (v / 100) * h).toFixed(1)}`)
-    .join(' ')
+  const w = 120
+  const h = 36
+  const pts = data.map(
+    (v, i) => `${((i / (data.length - 1)) * w).toFixed(1)},${(h - (v / 100) * h).toFixed(1)}`,
+  )
   return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} aria-hidden="true">
+    <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" aria-hidden="true">
+      <path d={`M${pts.join('L')}L${w},${h}L0,${h}Z`} className="spark-area" />
       <line x1="0" x2={w} y1={h / 2} y2={h / 2} className="spark-mid" />
-      <polyline points={pts} className="spark-line" />
+      <polyline points={pts.join(' ')} className="spark-line" />
     </svg>
   )
 }
@@ -225,7 +228,7 @@ function SearchForm({
               : 'Your chess.com username, e.g. hikaru'
           }
         />
-        <button className="primary" disabled={busy || !name.trim()}>
+        <button className="cta" disabled={busy || !name.trim()}>
           {busy ? 'Loading…' : 'Load games'}
         </button>
       </div>
@@ -236,8 +239,9 @@ function SearchForm({
 function Hero(props: Parameters<typeof SearchForm>[0]) {
   return (
     <section className="hero">
-      <div className="hero-copy">
-        <h1>See where your games turned.</h1>
+      <p className="kicker">Game review · runs on your device</p>
+      <h1>See where your games turned.</h1>
+      <div className="hero-row">
         <p className="lede">
           Chessreview finds the moments that decided your games, names the tactic behind each mistake, and
           shows what you should have played. The engine runs on your device, so nothing is uploaded.
@@ -263,6 +267,7 @@ export function Home() {
   const [openError, setOpenError] = useState('')
   const [pgn, setPgn] = useState('')
   const [showAll, setShowAll] = useState(false)
+  const [filter, setFilter] = useState<Filter>('all')
 
   // Re-runs when the source, user, month, preset or engine changes (the preset and engine decide which
   // games count as reviewed), and when a review finishes, so finished games show as reviewed.
@@ -321,10 +326,26 @@ export function Home() {
     }
   }
 
-  const view = (rows ?? []).map((r) => ({ ...r, o: outcome(r.game, loaded) }))
-  const fresh = view.filter((r) => !r.summary && !queued.has(r.id)).map((r) => r.game.pgn)
-  const tally = (tone: string) => view.filter((r) => r.o.tone === tone).length
-  const hasSide = view.some((r) => r.o.side)
+  const everything = (rows ?? []).map((r) => ({ ...r, o: outcome(r.game, loaded) }))
+  const fresh = everything.filter((r) => !r.summary && !queued.has(r.id)).map((r) => r.game.pgn)
+  const tally = (tone: string) => everything.filter((r) => r.o.tone === tone).length
+  const hasSide = everything.some((r) => r.o.side)
+  const reviewed = everything.filter((r) => r.summary).length
+  const counts: Record<Filter, number> = {
+    all: everything.length,
+    reviewed,
+    new: everything.length - reviewed,
+    won: tally('won'),
+    lost: tally('lost'),
+  }
+  const view = everything.filter(
+    (r) =>
+      filter === 'all' ||
+      (filter === 'reviewed' && r.summary) ||
+      (filter === 'new' && !r.summary) ||
+      (filter === 'won' && r.o.tone === 'won') ||
+      (filter === 'lost' && r.o.tone === 'lost'),
+  )
   const shown = view.slice(0, showAll ? undefined : PAGE)
   const days: Array<{ key: string; label: string; rows: typeof shown }> = []
   for (const r of shown) {
@@ -341,10 +362,18 @@ export function Home() {
       <AppHeader active="games" />
       <main className="page home">
         {query ? (
-          <>
-            <h1 className="sr-only">Your games</h1>
+          <div className="games-top">
+            <div>
+              <h1>Games</h1>
+              {rows && (
+                <p className="games-meta">
+                  {loaded} on {SITE[query.source]} · {everything.length} game
+                  {everything.length === 1 ? '' : 's'} · {reviewed} reviewed
+                </p>
+              )}
+            </div>
             <SearchForm {...form} compact />
-          </>
+          </div>
         ) : (
           <Hero {...form} compact={false} />
         )}
@@ -367,32 +396,35 @@ export function Home() {
 
         {rows && (
           <section className="games" aria-label="Games">
-            <div className="games-head">
-              <div>
-                <h2>{loaded}</h2>
-                {hasSide && (
-                  <p className="record">
-                    <span className="stat won">
-                      <b>{tally('won')}</b> won
-                    </span>
-                    <span className="stat lost">
-                      <b>{tally('lost')}</b> lost
-                    </span>
-                    <span className="stat">
-                      <b>{tally('draw')}</b> drawn
-                    </span>
-                    <span className="muted">
-                      {query?.source === 'lichess' ? 'in these games' : 'this month'}
-                    </span>
-                  </p>
-                )}
+            <div className="games-bar">
+              <div role="group" aria-label="Filter games" className="filters">
+                {(
+                  [
+                    ['all', 'All'],
+                    ['reviewed', 'Reviewed'],
+                    ['new', 'Not reviewed'],
+                    ...(hasSide
+                      ? ([
+                          ['won', 'Wins'],
+                          ['lost', 'Losses'],
+                        ] as const)
+                      : []),
+                  ] as const
+                ).map(([value, label]) => (
+                  <button
+                    key={value}
+                    className="fchip"
+                    aria-pressed={filter === value}
+                    onClick={() => {
+                      setFilter(value)
+                      setShowAll(false)
+                    }}
+                  >
+                    {label} <span className="fchip-n">{counts[value]}</span>
+                  </button>
+                ))}
               </div>
               <div className="games-tools">
-                {fresh.length > 0 && (
-                  <button className="primary reviewall" disabled={busy} onClick={() => void reviewAll(fresh)}>
-                    Review all {fresh.length} new game{fresh.length === 1 ? '' : 's'}
-                  </button>
-                )}
                 {query?.source !== 'lichess' && (
                   <select
                     aria-label="Month"
@@ -407,11 +439,20 @@ export function Home() {
                     ))}
                   </select>
                 )}
+                {fresh.length > 0 && (
+                  <button className="cta reviewall" disabled={busy} onClick={() => void reviewAll(fresh)}>
+                    Review all {fresh.length} new game{fresh.length === 1 ? '' : 's'}
+                  </button>
+                )}
               </div>
             </div>
 
             {view.length === 0 && (
-              <p className="muted empty-note">No games this month. Try an earlier one.</p>
+              <p className="muted empty-note">
+                {everything.length === 0
+                  ? 'No games this month. Try an earlier one.'
+                  : 'No games match this filter.'}
+              </p>
             )}
 
             {days.map((day) => (
@@ -444,9 +485,12 @@ export function Home() {
                               role="img"
                               aria-label={o.side ? `You played ${o.side}` : 'Neither player is you'}
                             />
-                            <span className="g-opp">
-                              {o.side ? opp : `${g.white} vs ${g.black}`}
-                              {o.side && oppRating ? <em>{oppRating}</em> : null}
+                            <span className="g-who">
+                              <span className="g-opp">
+                                {o.side ? opp : `${g.white} vs ${g.black}`}
+                                {o.side && oppRating ? <em>{oppRating}</em> : null}
+                              </span>
+                              <span className="g-meta">{timeControl(g.timeControl)}</span>
                             </span>
                           </span>
                           <span className="g-acc" title="Your accuracy">
@@ -458,7 +502,6 @@ export function Home() {
                             )}
                           </span>
                           <span className="g-spark">{spark && <Spark data={spark} />}</span>
-                          <span className="g-time">{timeControl(g.timeControl)}</span>
                           <span className={`g-action${summary ? ' done' : ''}`}>
                             {summary ? 'Open' : actionFor(queued.get(id))}
                           </span>

@@ -20,8 +20,8 @@ export function SampleTrace() {
   return (
     <figure className="sample">
       <figcaption>
-        <span className="pill">Sample</span>
-        <span>{SAMPLE.title}</span>
+        <span>Sample · {SAMPLE.title}</span>
+        <span>Win chance after every move</span>
       </figcaption>
       <div
         className="sample-plot"

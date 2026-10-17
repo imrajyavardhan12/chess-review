@@ -6,45 +6,45 @@
   color-scheme: light dark;
 
   /* surfaces */
-  --bg: light-dark(#edf0f3, #0a1218);
-  --surface: light-dark(#ffffff, #111c25);
-  --surface-2: light-dark(#f4f6f8, #172430);
-  --surface-3: light-dark(#e6ebef, #1f2f3c);
-  --line: light-dark(#d9dfe5, #1f2d39);
-  --line-strong: light-dark(#aeb9c4, #3a4b59);
+  --bg: light-dark(#f2f3ee, #0a0f0d);
+  --surface: light-dark(#ffffff, #0f1713);
+  --surface-2: light-dark(#f8f9f5, #131d18);
+  --surface-3: light-dark(#e5e8df, #1a2620);
+  --line: light-dark(#cfd3c9, #26332c);
+  --line-strong: light-dark(#111612, #e9f0eb);
 
   /* text */
-  --ink: light-dark(#0e1a24, #e9eff3);
-  --ink-2: light-dark(#475766, #a3b3c0);
-  --on-ink: light-dark(#ffffff, #0a1218);
+  --ink: light-dark(#111612, #e9f0eb);
+  --ink-2: light-dark(#4d564d, #a7b5ac);
+  --on-ink: light-dark(#f2f3ee, #0a0f0d);
 
   /* brand: the signal yellow marks "where you are" (board last move, graph cursor, selected move) */
-  --signal: #f2c230;
-  --signal-soft: light-dark(#fbefc4, #3a3012);
-  --on-signal: #1b1500;
+  --signal: #f5c518;
+  --signal-soft: light-dark(#f8ecb0, #3a3012);
+  --on-signal: #111612;
   --focus: light-dark(#1f5fd1, #8db6ff);
 
   /* feedback */
-  --danger: light-dark(#a02b26, #f2a09b);
+  --danger: light-dark(#b3362f, #f08a85);
   --danger-bg: light-dark(#fbecea, #2b1816);
-  --won: light-dark(#1b6b47, #6bcb9b);
-  --lost: light-dark(#a02b26, #f2a09b);
+  --won: light-dark(#1f7a4d, #5fc391);
+  --lost: light-dark(#b3362f, #f08a85);
   --won-bg: light-dark(#e1f2e9, #123324);
   --lost-bg: light-dark(#fbe6e4, #35191a);
 
   /* the trace strip is dark in both themes: it is the one place the page gets contrast on purpose */
-  --trace-bg: light-dark(#15222c, #060b10);
-  --trace-fill: light-dark(#f5f8fa, #e6edf2);
-  --trace-line: light-dark(#8ca0af, #6c8091);
-  --evalbar-dark: #2b3a47;
-  --evalbar-white: #f4f7f9;
+  --trace-bg: light-dark(#111612, #060a08);
+  --trace-fill: light-dark(#f2f3ee, #e9f0eb);
+  --trace-line: #9aa59b;
+  --evalbar-dark: #2b362f;
+  --evalbar-white: #f4f7f2;
 
   /* move-quality colours, as text on a surface */
   --t-best: light-dark(#1b6b47, #5fc391);
   --t-excellent: light-dark(#2b7650, #7cc49a);
   --t-good: light-dark(#5a6b37, #b5c78e);
   --t-inaccuracy: light-dark(#7d5d08, #e8c45a);
-  --t-mistake: light-dark(#a24b16, #f0a066);
+  --t-mistake: light-dark(#a8480f, #f0a066);
   --t-blunder: light-dark(#a02b26, #f08a85);
   --t-brilliant: light-dark(#0b7268, #4fd1c5);
   --t-great: light-dark(#2a5aae, #86aef0);
@@ -52,14 +52,15 @@
   --t-miss: light-dark(#a0305a, #f08fb0);
 
   /* type */
-  --font-display: 'Bricolage Grotesque Variable', 'Geist Variable', system-ui, sans-serif;
-  --font-text: 'Geist Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --fs-display: clamp(2.5rem, 1.4rem + 3.6vw, 4rem);
-  --fs-h1: clamp(1.5rem, 1.2rem + 1vw, 1.875rem);
+  --font-display: 'Schibsted Grotesk Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-text: 'Schibsted Grotesk Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --fs-display: clamp(2.75rem, 1.2rem + 5.2vw, 6.5rem);
+  --fs-h1: clamp(2.25rem, 1.6rem + 2.2vw, 3.5rem);
   --fs-h2: 1.25rem;
   --fs-h3: 1rem;
-  --fs-body: 0.9375rem;
-  --fs-sm: 0.8125rem;
+  --fs-body: 1rem;
+  --fs-sm: 0.875rem;
   --fs-xs: 0.75rem;
 
   /* space (4px base), radii, elevation */
@@ -71,18 +72,18 @@
   --s-6: 32px;
   --s-7: 48px;
   --s-8: 72px;
-  --r-sm: 6px;
-  --r-md: 10px;
-  --r-lg: 14px;
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 6px;
   --r-pill: 999px;
-  --shadow-sm: 0 1px 2px rgb(10 24 36 / 0.07);
-  --shadow-pop: 0 20px 44px -14px rgb(10 24 36 / 0.38), 0 0 0 1px rgb(10 24 36 / 0.06);
+  --shadow-sm: none;
+  --shadow-pop: 0 24px 48px -16px rgb(10 15 12 / 0.4);
 
   /* layout */
-  --page: 1240px;
-  --gutter: clamp(16px, 4vw, 32px);
+  --page: 1440px;
+  --gutter: clamp(16px, 5vw, 72px);
 
-  --dot-border: light-dark(#0e1a24, #a3b3c0);
+  --dot-border: light-dark(#111612, #a7b5ac);
 }
 :root[data-theme='light'] {
   color-scheme: light;

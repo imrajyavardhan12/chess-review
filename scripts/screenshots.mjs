@@ -64,7 +64,7 @@ const browser = await chromium.launch({ args: ['--no-proxy-server'] })
 const page = await (await browser.newContext({ viewport: { width: 1280, height: 860 } })).newPage()
 await page.addInitScript((p) => localStorage.setItem('chessreview.prefs', JSON.stringify(p)), {
   theme: 'light',
-  board: 'slate',
+  board: 'sage',
   preset: 'quick',
 })
 await page.route('https://api.chess.com/**', (route) => {

@@ -2,12 +2,13 @@ import { useSyncExternalStore } from 'react'
 import { PRESETS, type PresetName } from '@chessreview/core'
 
 export type Theme = 'auto' | 'light' | 'dark'
-export type BoardTheme = 'slate' | 'green' | 'brown'
+export type BoardTheme = 'sage' | 'slate' | 'green' | 'brown'
 
 export const BOARDS: Record<
   BoardTheme,
   { name: string; light: string; dark: string; hlLight: string; hlDark: string }
 > = {
+  sage: { name: 'Sage', light: '#E4E7DA', dark: '#7C8F73', hlLight: '#F1E27C', hlDark: '#C9B74C' },
   slate: { name: 'Slate', light: '#DCE4E8', dark: '#6F8A9C', hlLight: '#EBDD9B', hlDark: '#C7B25A' },
   green: { name: 'Green', light: '#EEEED2', dark: '#769656', hlLight: '#F5F682', hlDark: '#BACA2B' },
   brown: { name: 'Brown', light: '#F0D9B5', dark: '#B58863', hlLight: '#F7EC74', hlDark: '#DAC34B' },
@@ -34,7 +35,7 @@ function pick<T extends string>(value: unknown, allowed: readonly T[], fallback:
 }
 
 function load(): Prefs {
-  const fallback: Prefs = { theme: 'auto', board: 'slate', preset: 'standard', engine: 'standard' }
+  const fallback: Prefs = { theme: 'auto', board: 'sage', preset: 'standard', engine: 'standard' }
   try {
     const raw: unknown = JSON.parse(localStorage.getItem(KEY) ?? '{}')
     const o = typeof raw === 'object' && raw !== null ? (raw as Record<string, unknown>) : {}

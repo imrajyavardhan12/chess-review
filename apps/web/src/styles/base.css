@@ -20,8 +20,9 @@ h2,
 h3 {
   margin: 0;
   font-family: var(--font-display);
-  letter-spacing: -0.02em;
-  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
 }
 p {
   margin: 0;
@@ -82,12 +83,12 @@ button:disabled {
   align-items: center;
   justify-content: center;
   gap: var(--s-2);
-  height: 40px;
-  padding: 0 var(--s-4);
+  height: 44px;
+  padding: 0 var(--s-5);
   border: 1px solid transparent;
   border-radius: var(--r-sm);
   font-size: var(--fs-body);
-  font-weight: 560;
+  font-weight: 700;
   line-height: 1;
   white-space: nowrap;
   transition:
@@ -103,25 +104,51 @@ button:disabled {
 }
 .primary {
   background: var(--ink);
+  border-color: var(--ink);
   color: var(--on-ink);
+}
+/* the one yellow action on a screen: load, check, review everything */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  height: 44px;
+  padding: 0 var(--s-5);
+  border: 0;
+  border-radius: var(--r-sm);
+  background: var(--signal);
+  color: var(--on-signal);
+  font-size: var(--fs-body);
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+.cta:not(:disabled):hover {
+  background: color-mix(in srgb, var(--signal) 88%, var(--ink));
+}
+.cta:disabled {
+  background: var(--surface-3);
+  color: var(--ink-2);
+  opacity: 1;
 }
 .primary:not(:disabled):hover {
   background: color-mix(in srgb, var(--ink) 86%, var(--bg));
 }
 .secondary {
-  background: var(--surface);
+  background: transparent;
   border-color: var(--line-strong);
 }
 .secondary:not(:disabled):hover {
-  background: var(--surface-2);
-  border-color: var(--ink-2);
+  background: var(--surface-3);
 }
 .ghost {
-  height: 32px;
-  padding: 0 var(--s-3);
+  height: 36px;
+  padding: 0 var(--s-4);
   background: transparent;
   border-color: var(--line);
   font-size: var(--fs-sm);
+  font-weight: 600;
 }
 .ghost:not(:disabled):hover {
   background: var(--surface-3);
@@ -129,10 +156,10 @@ button:disabled {
 .icon {
   display: inline-grid;
   place-items: center;
-  width: 40px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   padding: 0;
-  background: var(--surface);
+  background: transparent;
   border: 1px solid var(--line);
   border-radius: var(--r-sm);
   transition: background-color 0.12s;
@@ -157,8 +184,8 @@ select,
 textarea {
   font: inherit;
   color: inherit;
-  height: 40px;
-  padding: 0 var(--s-3);
+  height: 44px;
+  padding: 0 var(--s-4);
   background: var(--surface);
   border: 1px solid var(--line-strong);
   border-radius: var(--r-sm);
@@ -179,8 +206,8 @@ select {
     linear-gradient(45deg, transparent 50%, currentColor 50%),
     linear-gradient(135deg, currentColor 50%, transparent 50%);
   background-position:
-    calc(100% - 17px) 17px,
-    calc(100% - 12px) 17px;
+    calc(100% - 19px) 19px,
+    calc(100% - 14px) 19px;
   background-size: 5px 5px;
   background-repeat: no-repeat;
   cursor: pointer;
@@ -204,10 +231,12 @@ input[type='file'] {
 /* segmented control: native radios underneath, so keyboard and screen readers work unchanged */
 .segmented {
   display: inline-flex;
-  padding: 3px;
-  gap: 2px;
-  background: var(--surface-3);
-  border-radius: var(--r-md);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+}
+.segmented label + label {
+  border-left: 1px solid var(--line);
 }
 .segmented label {
   position: relative;
@@ -223,28 +252,28 @@ input[type='file'] {
   cursor: pointer;
 }
 .segmented span {
-  display: block;
-  padding: 7px 14px;
-  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  height: 42px;
+  padding: 0 var(--s-4);
   font-size: var(--fs-sm);
-  font-weight: 560;
-  color: var(--ink-2);
+  font-weight: 600;
+  color: var(--ink);
   white-space: nowrap;
   transition:
     background-color 0.12s,
     color 0.12s;
 }
 .segmented input:checked + span {
-  background: var(--surface);
-  color: var(--ink);
-  box-shadow: var(--shadow-sm);
+  background: var(--line-strong);
+  color: var(--bg);
 }
 .segmented input:not(:checked):hover + span {
-  color: var(--ink);
+  background: var(--surface-3);
 }
 .segmented input:focus-visible + span {
   outline: 2px solid var(--focus);
-  outline-offset: 1px;
+  outline-offset: -3px;
 }
 .segmented.block {
   display: flex;
@@ -260,13 +289,12 @@ input[type='file'] {
 .pill {
   display: inline-flex;
   align-items: center;
-  height: 22px;
+  height: 24px;
   padding: 0 var(--s-2);
-  border-radius: var(--r-pill);
+  border-radius: 3px;
   background: var(--surface-3);
   color: var(--ink-2);
-  font-size: var(--fs-xs);
-  font-weight: 600;
+  font: 600 var(--fs-xs) var(--font-mono);
   white-space: nowrap;
 }
 .pill.won {
@@ -283,7 +311,7 @@ input[type='file'] {
   padding: var(--s-3) var(--s-4);
   color: var(--danger);
   background: var(--danger-bg);
-  border-left: 3px solid var(--danger);
+  border: 1px solid var(--danger);
   border-radius: var(--r-sm);
 }
 
@@ -308,7 +336,7 @@ input[type='file'] {
   background: #fff;
 }
 .dot.black {
-  background: #16222b;
+  background: #111612;
 }
 .dot.none {
   border-color: var(--line-strong);
