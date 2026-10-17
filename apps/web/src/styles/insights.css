@@ -5,10 +5,11 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: var(--s-4);
-  margin: var(--s-4) 0 var(--s-2);
+  margin: var(--s-6) 0 var(--s-2);
 }
 .insights-head h1 {
   font-size: var(--fs-h1);
+  line-height: 1;
 }
 .player {
   display: flex;
@@ -16,43 +17,42 @@
   gap: var(--s-3);
   color: var(--ink-2);
   font-size: var(--fs-sm);
-  font-weight: 560;
+  font-weight: 600;
 }
 .player select {
   min-width: 220px;
   color: var(--ink);
 }
 .insights .lead {
-  margin: 0 0 var(--s-5);
+  margin: 0 0 var(--s-6);
   color: var(--ink-2);
-  font-size: 1rem;
+  font-size: 1.125rem;
 }
 
 .tiles {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--s-4);
-  margin-bottom: var(--s-4);
+  margin-bottom: var(--s-7);
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line);
 }
 .tile {
   display: grid;
   gap: var(--s-1);
-  padding: var(--s-5);
-  background: var(--surface);
-  border-radius: var(--r-lg);
-  box-shadow:
-    0 0 0 1px var(--line),
-    var(--shadow-sm);
+  padding: var(--s-6) var(--s-6) var(--s-6) 0;
+}
+.tile + .tile {
+  padding-left: var(--s-6);
+  border-left: 1px solid var(--line);
 }
 .tile-label {
   color: var(--ink-2);
   font-size: var(--fs-sm);
-  font-weight: 560;
+  font-weight: 600;
 }
 .tile-num {
-  font: 700 clamp(2rem, 1.4rem + 1.6vw, 2.75rem) / 1.05 var(--font-display);
-  letter-spacing: -0.03em;
-  font-variant-numeric: tabular-nums;
+  font: 600 clamp(3rem, 1.6rem + 4vw, 5rem) / 1 var(--font-mono);
+  letter-spacing: -0.05em;
 }
 .tile-num small {
   margin-left: 2px;
@@ -78,17 +78,14 @@
 }
 
 .card {
-  margin-bottom: var(--s-4);
-  padding: var(--s-5);
-  background: var(--surface);
-  border-radius: var(--r-lg);
-  box-shadow:
-    0 0 0 1px var(--line),
-    var(--shadow-sm);
+  margin-bottom: var(--s-7);
 }
 .card h2 {
-  margin-bottom: var(--s-1);
-  font-size: var(--fs-h2);
+  margin-bottom: var(--s-3);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line-strong);
+  font-size: 1.5rem;
+  letter-spacing: -0.03em;
 }
 .card > .muted {
   font-size: var(--fs-sm);
@@ -105,13 +102,13 @@
 .pair {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--s-4);
+  gap: var(--s-8);
 }
 .pair .card {
   margin-bottom: 0;
 }
 .pair + .pair {
-  margin-top: var(--s-4);
+  margin-top: var(--s-7);
 }
 
 /* the tables inside cards */
@@ -161,15 +158,14 @@
   font-weight: 560;
 }
 .phasebar-head b {
-  font: 700 1.125rem var(--font-display);
-  font-variant-numeric: tabular-nums;
+  font: 600 1.5rem var(--font-mono);
 }
 .stack {
   display: flex;
   gap: 2px;
-  height: 10px;
+  height: 12px;
   overflow: hidden;
-  border-radius: 5px;
+  border-radius: 6px;
 }
 .stack i {
   flex-basis: 0;
@@ -199,11 +195,12 @@
   margin-top: var(--s-5);
   padding: var(--s-6);
   background: var(--surface);
-  border-radius: var(--r-lg);
-  box-shadow: 0 0 0 1px var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
 }
 .empty p:first-child {
-  font: 700 var(--fs-h2) var(--font-display);
+  font: 800 var(--fs-h2) var(--font-display);
+  letter-spacing: -0.02em;
 }
 .empty p + p {
   margin-top: var(--s-2);
@@ -217,6 +214,14 @@
 @media (max-width: 860px) {
   .tiles {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .tile,
+  .tile + .tile {
+    padding: var(--s-5) 0;
+    border-left: 0;
+  }
+  .tile + .tile {
+    border-top: 1px solid var(--line);
   }
   .pair {
     grid-template-columns: minmax(0, 1fr);
