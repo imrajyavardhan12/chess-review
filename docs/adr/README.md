@@ -14,6 +14,7 @@ reproducibility, Python as the oracle) are in [ARCHITECTURE.md](../ARCHITECTURE.
 | [0006](0006-import-export.md)               | Lichess as a source, batch reviews, and review files                |
 | [0007](0007-offline-and-low-end-devices.md) | Offline use, low-end devices and accessibility                      |
 | [0008](0008-visual-design-system.md)        | Visual design system: the trace as identity, tokens, one shell      |
+| [0009](0009-scorebook-redesign.md)          | The Scorebook redesign: rules not boxes, mono numbers, two themes   |
 
 Each ADR arrives with the pull request that implements it, so a link here resolves once that pull
 request is merged.

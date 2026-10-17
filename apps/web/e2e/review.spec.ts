@@ -231,3 +231,48 @@ test('pressing Load again fetches the latest games for the same username', async
   await expect(page.locator('.gamerow')).toHaveCount(2)
   expect(requests).toBeGreaterThan(before)
 })
+
+test('filters the game list by result and by whether it is reviewed', async ({ page }) => {
+  const game = (result: string, endTime: number) => ({
+    url: `https://www.chess.com/game/live/${endTime}`,
+    pgn: `[White "Morphy"]\n[Black "Duke"]\n[Result "${result}"]\n\n1. e4 e5 ${result}`,
+    rules: 'chess',
+    time_class: 'rapid',
+    time_control: '600',
+    end_time: endTime,
+    white: { username: 'Morphy', rating: 2500, result: result === '1-0' ? 'win' : 'resigned' },
+    black: { username: 'Duke', rating: 1200, result: result === '1-0' ? 'resigned' : 'win' },
+  })
+  const games = [game('1-0', 1_790_000_500), game('0-1', 1_790_000_000)]
+  await page.route('https://api.chess.com/**', (route) =>
+    route.request().url().endsWith('/games/archives')
+      ? json(route, { archives: ['https://api.chess.com/pub/player/morphy/games/2026/09'] })
+      : json(route, { games }),
+  )
+
+  await page.goto('/')
+  await page.getByLabel('chess.com username').fill('morphy')
+  await page.getByRole('button', { name: 'Load games' }).click()
+  await expect(page.locator('.gamerow')).toHaveCount(2)
+  await expect(page.getByText('morphy on chess.com · 2 games · 0 reviewed')).toBeVisible()
+
+  const filter = (name: RegExp) =>
+    page.getByRole('group', { name: 'Filter games' }).getByRole('button', { name })
+  await filter(/^Wins/).click()
+  await expect(page.locator('.gamerow')).toHaveCount(1)
+  await expect(page.locator('.gamerow')).toContainText('Won')
+  await expect(filter(/^Wins/)).toHaveAttribute('aria-pressed', 'true')
+
+  await filter(/^Losses/).click()
+  await expect(page.locator('.gamerow')).toHaveCount(1)
+  await expect(page.locator('.gamerow')).toContainText('Lost')
+
+  await filter(/^Reviewed/).click()
+  await expect(page.locator('.gamerow')).toHaveCount(0)
+  await expect(page.getByText('No games match this filter.')).toBeVisible()
+
+  await filter(/^Not reviewed/).click()
+  await expect(page.locator('.gamerow')).toHaveCount(2)
+  await filter(/^All/).click()
+  await expect(page.locator('.gamerow')).toHaveCount(2)
+})
