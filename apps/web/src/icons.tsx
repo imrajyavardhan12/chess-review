@@ -1,19 +1,18 @@
 /** Small inline icons. They inherit colour from the text around them. */
 
-export function BrandMark({ size = 28 }: { size?: number }) {
-  // A rounded ink square holding a win-chance trace that ends on the signal dot.
+export function BrandMark({ size = 22 }: { size?: number }) {
+  // A win-chance trace that dips at one move: the yellow dot is where the game turned.
   return (
-    <svg width={size} height={size} viewBox="0 0 28 28" aria-hidden="true">
-      <rect width="28" height="28" rx="8" fill="var(--ink)" />
-      <path
-        d="M5 19 L9.5 15.5 L13 17 L18 9.5 L22 12"
+    <svg width={Math.round((size * 30) / 22)} height={size} viewBox="0 0 30 22" aria-hidden="true">
+      <polyline
+        points="1,6 8,7 13,5 18,17 23,11 29,12"
         fill="none"
-        stroke="var(--bg)"
+        stroke="var(--ink)"
         strokeWidth="2.2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx="22" cy="12" r="2.6" fill="var(--signal)" />
+      <circle cx="18" cy="17" r="3.4" fill="var(--signal)" stroke="var(--ink)" strokeWidth="1.6" />
     </svg>
   )
 }

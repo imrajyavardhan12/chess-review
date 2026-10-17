@@ -2,18 +2,19 @@
 .appbar {
   display: flex;
   align-items: center;
-  gap: var(--s-5);
+  gap: var(--s-6);
   max-width: var(--page);
   margin: 0 auto;
-  padding: var(--s-3) var(--gutter);
+  padding: 22px var(--gutter) 18px;
+  border-bottom: 1px solid var(--line);
 }
 .brand {
   display: inline-flex;
   align-items: center;
   gap: 10px;
   color: var(--ink);
-  font: 700 1.125rem var(--font-display);
-  letter-spacing: -0.02em;
+  font: 700 1.25rem var(--font-display);
+  letter-spacing: -0.03em;
   text-decoration: none;
 }
 .brand svg {
@@ -21,22 +22,22 @@
 }
 .mainnav {
   display: flex;
-  gap: 2px;
+  gap: 28px;
 }
 .mainnav a {
-  padding: 7px 14px;
-  border-radius: var(--r-pill);
+  padding: 6px 0;
+  border-bottom: 2px solid transparent;
   color: var(--ink-2);
   font-size: var(--fs-sm);
-  font-weight: 560;
+  font-weight: 500;
   text-decoration: none;
-  transition:
-    background-color 0.12s,
-    color 0.12s;
+  transition: color 0.12s;
 }
-.mainnav a:hover,
+.mainnav a:hover {
+  color: var(--ink);
+}
 .mainnav a[aria-current='page'] {
-  background: var(--surface-3);
+  border-bottom-color: var(--line-strong);
   color: var(--ink);
 }
 .appbar-end {
@@ -46,11 +47,11 @@
 .iconbtn {
   display: inline-grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   background: transparent;
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: var(--r-sm);
   color: var(--ink);
   transition: background-color 0.12s;
@@ -165,9 +166,14 @@
 @media (max-width: 640px) {
   .appbar {
     gap: var(--s-3);
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  .mainnav {
+    gap: 18px;
   }
   .mainnav a {
-    padding: 7px 10px;
+    padding: 10px 0;
   }
   .appbar-end {
     position: static;
