@@ -1,30 +1,63 @@
 /* ---------- train: puzzles from your own mistakes ---------- */
 .train-stage {
-  margin-top: var(--s-4);
+  margin-top: var(--s-5);
 }
 .train-panel {
   display: flex;
   flex-direction: column;
-  gap: var(--s-4);
+  gap: var(--s-5);
   align-content: start;
-  padding: var(--s-6);
-  background: var(--surface);
-  border-radius: var(--r-lg);
-  box-shadow:
-    0 0 0 1px var(--line),
-    var(--shadow-sm);
+  padding-top: 4px;
 }
 .train-panel h2 {
-  font-size: var(--fs-h2);
+  font-size: clamp(2rem, 1.4rem + 1.8vw, 3.25rem);
+  letter-spacing: -0.04em;
+  line-height: 1.02;
 }
 .train-kicker {
   margin: 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line-strong);
   color: var(--ink-2);
-  font-size: var(--fs-sm);
-  font-weight: 560;
+  font: 600 12px var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.puzzle-trace-plot {
+  position: relative;
+  height: 120px;
+  overflow: hidden;
+  background: var(--trace-bg);
+  border-radius: var(--r-sm);
+}
+.puzzle-trace-plot svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.puzzle-trace-cursor {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 2px solid var(--signal);
+}
+.puzzle-trace-tag {
+  position: absolute;
+  top: 10px;
+  margin-left: 8px;
+  padding: 3px 9px;
+  background: var(--signal);
+  color: var(--on-signal);
+  border-radius: 3px;
+  font: 600 12px var(--font-mono);
+  white-space: nowrap;
 }
 .train-feedback p {
   margin: 0 0 var(--s-2);
+  font-size: 1.0625rem;
 }
 .train-error {
   color: var(--t-blunder);
@@ -36,19 +69,32 @@
 }
 .train-input label {
   display: grid;
-  gap: var(--s-1);
+  gap: 6px;
   flex: 1;
   color: var(--ink-2);
   font-size: var(--fs-sm);
-  font-weight: 560;
+  font-weight: 600;
 }
 .train-input input {
-  height: 40px;
+  height: 56px;
+  padding: 0 var(--s-4);
   color: var(--ink);
+  font: 400 1.25rem var(--font-mono);
+}
+.train-input .secondary {
+  height: 56px;
+  min-width: 96px;
+  background: var(--signal);
+  border-color: var(--signal);
+  color: var(--on-signal);
+  font-weight: 800;
+}
+.train-input .secondary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--signal) 88%, var(--ink));
 }
 .train-line {
   margin: 0;
-  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
 }
 .train-actions {
   display: flex;
@@ -61,40 +107,51 @@
 }
 .train-progress {
   display: grid;
-  gap: var(--s-4);
-  margin-top: var(--s-6);
+  gap: var(--s-5);
+  margin-top: var(--s-7);
 }
 .train-tiles {
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 0;
+}
+.train-tiles .tile-num {
+  font-size: clamp(2.5rem, 1.6rem + 2.4vw, 3.5rem);
 }
 .train-phases {
   width: 100%;
-  max-width: 480px;
+  max-width: 760px;
   border-collapse: collapse;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-body);
 }
 .train-phases caption {
   padding-bottom: var(--s-2);
-  color: var(--ink-2);
-  font-weight: 560;
+  font: 800 1.25rem var(--font-display);
+  letter-spacing: -0.02em;
   text-align: left;
 }
 .train-phases th,
 .train-phases td {
-  padding: var(--s-2) var(--s-3);
+  padding: var(--s-3) 0;
   border-top: 1px solid var(--line);
   text-align: left;
+}
+.train-phases td {
+  font-family: var(--font-mono);
+  font-weight: 600;
 }
 .train-phases thead th {
   border-top: 0;
   color: var(--ink-2);
-  font-weight: 560;
+  font-size: var(--fs-sm);
+  font-weight: 600;
 }
-@media (max-width: 720px) {
+@media (max-width: 860px) {
   .train-tiles {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .train-panel {
-    padding: var(--s-5);
+  .train-tiles .tile,
+  .train-tiles .tile + .tile {
+    padding: var(--s-5) var(--s-4) var(--s-5) 0;
+    border-left: 0;
   }
 }

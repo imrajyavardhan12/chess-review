@@ -219,6 +219,48 @@ function Progress({ stats }: { stats: ReturnType<typeof summarize> }) {
 
 type Status = 'asking' | 'wrong' | 'solved' | 'shown'
 
+const TW = 700
+const TH = 220
+
+/** Where in the player's game the puzzle sits: the game's win chance, with the moment of the mistake marked. */
+function PuzzleTrace({ gameId, moveIndex, held }: { gameId: string; moveIndex: number; held: number }) {
+  const stored = useAsync(`puzzle-trace|${gameId}`, async () => (await getReviewService()).stored(gameId))
+  const series = stored.value?.review.winSeries
+  if (!series || series.length < 2) return null
+  const last = series.length - 1
+  const x = (i: number) => (i / last) * TW
+  const y = (v: number) => TH - (v / 100) * TH
+  const line = series.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('')
+  const at = Math.min(moveIndex, last)
+  const move = Math.floor(moveIndex / 2) + 1
+  return (
+    <div className="puzzle-trace">
+      <div
+        className="puzzle-trace-plot"
+        role="img"
+        aria-label={`Win chance across your game. The puzzle is at move ${move}, where you held ${Math.round(held)}%.`}
+      >
+        <svg viewBox={`0 0 ${TW} ${TH}`} preserveAspectRatio="none" aria-hidden="true">
+          <path d={`${line}L${TW},${TH}L0,${TH}Z`} className="trace-white" />
+          <line
+            x1="0"
+            x2={TW}
+            y1={TH / 2}
+            y2={TH / 2}
+            className="trace-mid"
+            vectorEffect="non-scaling-stroke"
+          />
+          <path d={line} className="trace-line" vectorEffect="non-scaling-stroke" />
+        </svg>
+        <span className="puzzle-trace-cursor" style={{ left: `${(x(at) / TW) * 100}%` }} />
+        <span className="puzzle-trace-tag" style={{ left: `${(x(at) / TW) * 100}%` }}>
+          Move {move} · you held {Math.round(held)}%
+        </span>
+      </div>
+    </div>
+  )
+}
+
 /** One puzzle. Keyed by its id, so everything here starts over for the next one. */
 function PuzzleCard({
   record,
@@ -341,6 +383,8 @@ function PuzzleCard({
               : 'The best move'
             : `${color} to move. Find the best move.`}
         </h2>
+
+        <PuzzleTrace gameId={record.gameId} moveIndex={puzzle.moveIndex} held={puzzle.winBefore} />
 
         <div role="status" className="train-feedback">
           {status === 'asking' && <p className="muted">Drag a piece, or type your move below.</p>}
