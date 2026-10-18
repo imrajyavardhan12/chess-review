@@ -1,32 +1,32 @@
 # chessreview
 
-Chess game review that runs entirely in the browser: Stockfish WASM in Web Workers, no backend, no accounts.
-How to contribute (where code goes, the rule-change procedure, what to avoid): @CONTRIBUTING.md
-Read `docs/ARCHITECTURE.md` before changing the engine pool, the review pipeline or storage. Its decisions were
-measured; don't undo them without new measurements.
+Chess game review that runs entirely in the browser (Stockfish WASM in Web Workers, no backend). pnpm workspace:
+`packages/core` (pure review logic), `packages/engine` (Stockfish), `apps/web` (UI), `reference/python` (the oracle).
 
-## Checks
+## Commands
 
-| Command                                                        | What it covers                                                                                    | When                                                                             |
-| -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `pnpm check`                                                   | case clashes, types, lint, format, unit and integration tests with real Stockfish in Node (~30 s) | after every change                                                               |
-| `pnpm e2e`                                                     | production build, then Playwright against that build and its CSP                                  | anything in `apps/web`, the engine worker, `apps/web/public/_headers` or routing |
-| `pnpm budget`                                                  | download-size budget (run after `pnpm build`)                                                     | new dependency, asset, font or lazy chunk                                        |
-| `pnpm tactics-eval`, `pnpm label-audit`, `pnpm explain-corpus` | precision of detectors, labels and explanations on a corpus                                       | changing a detector, label or explanation; put the numbers in the PR             |
+- `pnpm check`: case clashes, types, lint, format, unit and integration tests with real Stockfish (~30 s)
+- `pnpm e2e`: production build, then Playwright against that build and its CSP
+- `pnpm build && pnpm budget`: download-size budget
+- `pnpm tactics-eval`, `pnpm label-audit`, `pnpm explain-corpus`: precision of detectors, labels and explanations
+- `pnpm build && pnpm screenshots`: regenerate `docs/screenshots/` from real engine reviews
 
-## Proving a change works
+## Verify before you say done
 
-- Quote the command and its summary line (`Tests 358 passed`), not "tests pass".
-- Bug fix: write the test that fails because of the bug first, then fix it.
-- Review rules: `packages/core` must reproduce the Python golden fixtures in `packages/core/test/fixtures/` exactly.
-  Regenerate fixtures with Stockfish 19 through the procedure in CONTRIBUTING.md; never edit one by hand.
-- UI: build, serve and look at it in Playwright at desktop width and 390 px, light and dark. When README-visible
-  screens change, `pnpm build && pnpm screenshots` regenerates `docs/screenshots/` from real engine reviews.
-- A flaky test is a bug. Find the cause; never retry, loosen an assertion or skip.
+- Every change: run `pnpm check` and quote its summary line (`Tests 358 passed`).
+- Changed `apps/web`, the engine worker, `apps/web/public/_headers` or routing: also run `pnpm e2e`.
+- UI: open it in Playwright at desktop width and 390 px, in light and dark, and look at the screenshots.
+- Bug fix: first write the test that fails because of the bug.
+- Detector, label or explanation change: run the matching corpus script and report its numbers.
+- Never retry, skip or loosen a test to get green. A flaky test is a bug: find its cause.
 
-## Gotchas
+## Rules
 
-- `packages/core` has `types: []`: a DOM or Node API there fails the typecheck. That's intended.
-- `react-hooks` rules are strict: derive state, load data with `useAsync`, never `setState` in an effect.
-- Some sandboxes stall the first localhost request; Playwright runs with `--no-proxy-server` for that reason.
-- `main` takes pull requests only. Use the PR template (Summary, Evidence, Decisions, Not done).
+- `packages/core` stays pure: its tsconfig has `types: []`, so no DOM or Node APIs.
+- `packages/core` must reproduce the Python golden fixtures (`packages/core/test/fixtures/`) exactly. To change a
+  review rule (label thresholds, accuracy, `ANALYSIS_VERSION`), follow "Changing a rule" in CONTRIBUTING.md.
+  Never edit a fixture by hand.
+- No LLM calls, telemetry or third-party APIs. Widen the CSP only for one named origin, with an e2e test for it.
+- `react-hooks` lint is strict: derive state, load data with `useAsync`, never `setState` in an effect.
+- UI design rules (palette, type, one radius, no gradients or card grids): "Things to avoid" in CONTRIBUTING.md.
+- `main` takes PRs only. Use the template: Summary, Evidence, Decisions, Not done.
