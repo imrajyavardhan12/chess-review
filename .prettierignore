@@ -6,3 +6,4 @@ apps/web/public
 packages/core/src/data
 packages/core/test/fixtures
 pnpm-lock.yaml
+CLAUDE.local.md
