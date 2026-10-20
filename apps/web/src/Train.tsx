@@ -7,6 +7,7 @@ import {
   withTactic,
   replay,
   type Phase,
+  type PuzzlePerspective,
   type PuzzleRecord,
 } from '@chessreview/core'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -14,7 +15,7 @@ import { Chessboard } from 'react-chessboard'
 import { AppHeader } from './AppHeader'
 import { lineMoves, targets } from './explore'
 import { useAsync } from './hooks'
-import { tacticTopic } from './insight-facts'
+import { tacticName, tacticTopic } from './insight-facts'
 import { NAMED_PIECES, isLight, reducedMotion } from './pieces'
 import { BOARDS, rememberedPlayer, usePrefs } from './prefs'
 import { moveFromText } from './puzzle-input'
@@ -33,7 +34,15 @@ const DAILY_GOAL = 10
 const startOfDay = (t: number) => new Date(t).setHours(0, 0, 0, 0)
 
 /** Puzzles made from the player's own mistakes, asked until they stick. Nothing leaves the device. */
-export function TrainPage({ tactic, player: asked }: { tactic: string | null; player: string | null }) {
+export function TrainPage({
+  tactic,
+  perspective,
+  player: asked,
+}: {
+  tactic: string | null
+  perspective: PuzzlePerspective | null
+  player: string | null
+}) {
   const stored = useAsync('all', async () => (await getReviewService()).allReviews())
   const players = useMemo(() => playersIn((stored.value ?? []).map((s) => s.review)), [stored.value])
   const [chosen, setChosen] = useState<string | null>(null)
@@ -73,7 +82,12 @@ export function TrainPage({ tactic, player: asked }: { tactic: string | null; pl
             </p>
           </div>
         ) : (
-          <Session key={`${player}|${tactic ?? ''}`} player={player} tactic={tactic} />
+          <Session
+            key={`${player}|${tactic ?? ''}|${perspective ?? ''}`}
+            player={player}
+            tactic={tactic}
+            perspective={perspective}
+          />
         )}
       </main>
     </>
@@ -81,7 +95,15 @@ export function TrainPage({ tactic, player: asked }: { tactic: string | null; pl
 }
 
 /** One player's puzzles: finds new ones in the background while the ready ones can be played. */
-function Session({ player, tactic }: { player: string; tactic: string | null }) {
+function Session({
+  player,
+  tactic,
+  perspective,
+}: {
+  player: string
+  tactic: string | null
+  perspective: PuzzlePerspective | null
+}) {
   const [records, setRecords] = useState<PuzzleRecord[] | null>(null)
   const [progress, setProgress] = useState<SyncProgress | null>(null)
   const [failed, setFailed] = useState(false)
@@ -113,7 +135,13 @@ function Session({ player, tactic }: { player: string; tactic: string | null }) 
     }
   }, [player])
 
-  const focused = records ? withTactic(records, tactic) : null
+  const focusName = tactic === null ? '' : perspective ? tacticName(tactic, perspective) : tacticTopic(tactic)
+  const focused = records ? withTactic(records, tactic, perspective) : null
+  // Puzzles of this tactic that a focus on one side leaves out only because their side is not known.
+  const unsided =
+    perspective && records
+      ? withTactic(records, tactic).filter((r) => r.puzzle !== null && !r.perspective).length
+      : 0
   const startId = focused ? (pickNext(focused, now)?.id ?? null) : null
   // Lock the first puzzle as soon as there is one, so puzzles found later do not replace it mid-answer.
   if (chosenId === undefined && startId !== null) setChosenId(startId)
@@ -129,7 +157,7 @@ function Session({ player, tactic }: { player: string; tactic: string | null }) 
     if (!records || !current) return
     const skip = new Set(asked).add(current.id)
     setAsked(skip)
-    setChosenId(pickNext(withTactic(records, tactic), Date.now(), skip)?.id ?? null)
+    setChosenId(pickNext(withTactic(records, tactic, perspective), Date.now(), skip)?.id ?? null)
   }
 
   const stats = records ? summarize(records, now) : null
@@ -151,7 +179,7 @@ function Session({ player, tactic }: { player: string; tactic: string | null }) 
       {tactic !== null && (
         <p className="train-focus">
           <span>
-            Practising <strong>{tacticTopic(tactic)}</strong>
+            Focus: <strong>{focusName}</strong>
             {focused && ` · ${count} puzzle${count === 1 ? '' : 's'}`}
           </span>
           <a href="#/train">Show all puzzles</a>
@@ -165,10 +193,22 @@ function Session({ player, tactic }: { player: string; tactic: string | null }) 
       ) : tactic !== null && focused && focused.every((r) => r.puzzle === null) ? (
         searching ? null : (
           <div className="empty">
-            <p>No puzzles for {tacticTopic(tactic).toLowerCase()} yet.</p>
+            <p>No puzzles for “{focusName}” yet.</p>
             <p className="muted">
               Not every mistake becomes a puzzle. <a href="#/train">Show all puzzles</a>.
             </p>
+            {unsided > 0 && (
+              <p className="muted">
+                {unsided} puzzle{unsided === 1 ? '' : 's'} of {tacticTopic(tactic ?? '').toLowerCase()} could
+                not be sorted into allowed or missed.{' '}
+                <a
+                  href={`#/train?tactic=${encodeURIComponent(tactic ?? '')}&u=${encodeURIComponent(player)}`}
+                >
+                  Practise them all
+                </a>
+                .
+              </p>
+            )}
           </div>
         )
       ) : stats && stats.total === 0 ? (

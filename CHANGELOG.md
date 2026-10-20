@@ -11,7 +11,9 @@ Proposed in open pull requests; each entry moves here when it is merged.
 ### Added
 
 - Practise a tactic from Insights: each tactic in "What your errors had in common" links to Train, which then
-  asks only the puzzles of that tactic for that player, and says when there are none.
+  asks only the puzzles of that tactic, on the side you were on (allowed or missed), for that player, and says
+  when there are none. Puzzles made earlier get their side from their game's review the next time Train opens;
+  one whose game is no longer stored stays out of the side-specific focus until it is reviewed again.
 - Train shows how far today's set is ("3 of 8 today"): puzzles answered since midnight against what is still
   to ask, up to a soft goal of 10. The design is recorded in [ADR 0010](docs/adr/0010-train-puzzles.md).
 
