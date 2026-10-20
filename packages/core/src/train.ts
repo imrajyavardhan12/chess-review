@@ -112,3 +112,25 @@ export function summarize(records: readonly PuzzleRecord[], now: number): Summar
     byPhase,
   }
 }
+
+/** The puzzles whose mistake had this tactic. `null` means no focus: everything. */
+export function withTactic(records: readonly PuzzleRecord[], tactic: string | null): readonly PuzzleRecord[] {
+  return tactic === null ? records : records.filter((r) => r.tactic === tactic)
+}
+
+export interface Today {
+  /** Puzzles answered since the day began. */
+  done: number
+  /** Done plus what is still to ask, up to the goal; never below `done`. */
+  target: number
+}
+
+/**
+ * How far along today's set is. The goal is soft: past it the player can carry on, and `target` just
+ * follows `done`. `dayStart` is the start of the player's local day (ms), passed in so this needs no clock or zone.
+ */
+export function today(records: readonly PuzzleRecord[], now: number, dayStart: number, goal: number): Today {
+  const done = records.filter((r) => r.puzzle !== null && (r.progress.lastAt ?? 0) >= dayStart).length
+  const q = queue(records, now)
+  return { done, target: Math.max(done, Math.min(goal, done + q.due.length + q.fresh.length)) }
+}

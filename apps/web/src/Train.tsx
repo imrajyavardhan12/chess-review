@@ -3,6 +3,8 @@ import {
   playersIn,
   queue,
   summarize,
+  today,
+  withTactic,
   replay,
   type Phase,
   type PuzzleRecord,
@@ -12,6 +14,7 @@ import { Chessboard } from 'react-chessboard'
 import { AppHeader } from './AppHeader'
 import { lineMoves, targets } from './explore'
 import { useAsync } from './hooks'
+import { tacticTopic } from './insight-facts'
 import { NAMED_PIECES, isLight, reducedMotion } from './pieces'
 import { BOARDS, rememberedPlayer, usePrefs } from './prefs'
 import { moveFromText } from './puzzle-input'
@@ -24,17 +27,18 @@ const PHASE_NAMES: Record<Phase, string> = {
 }
 const COLOR_NAMES = { w: 'White', b: 'Black' }
 const ARROW = 'rgba(76,127,214,0.85)'
+/** How many puzzles make up a day's set. Soft: the player can carry on past it. */
+const DAILY_GOAL = 10
+
+const startOfDay = (t: number) => new Date(t).setHours(0, 0, 0, 0)
 
 /** Puzzles made from the player's own mistakes, asked until they stick. Nothing leaves the device. */
-export function TrainPage() {
+export function TrainPage({ tactic, player: asked }: { tactic: string | null; player: string | null }) {
   const stored = useAsync('all', async () => (await getReviewService()).allReviews())
   const players = useMemo(() => playersIn((stored.value ?? []).map((s) => s.review)), [stored.value])
   const [chosen, setChosen] = useState<string | null>(null)
-  const player =
-    chosen ??
-    players.find((p) => p.name.toLowerCase() === rememberedPlayer().toLowerCase())?.name ??
-    players[0]?.name ??
-    null
+  const named = (name: string | null) => players.find((p) => p.name.toLowerCase() === name?.toLowerCase())
+  const player = chosen ?? named(asked)?.name ?? named(rememberedPlayer())?.name ?? players[0]?.name ?? null
 
   useEffect(() => {
     document.title = 'Train · chessreview'
@@ -69,7 +73,7 @@ export function TrainPage() {
             </p>
           </div>
         ) : (
-          <Session key={player} player={player} />
+          <Session key={`${player}|${tactic ?? ''}`} player={player} tactic={tactic} />
         )}
       </main>
     </>
@@ -77,13 +81,14 @@ export function TrainPage() {
 }
 
 /** One player's puzzles: finds new ones in the background while the ready ones can be played. */
-function Session({ player }: { player: string }) {
+function Session({ player, tactic }: { player: string; tactic: string | null }) {
   const [records, setRecords] = useState<PuzzleRecord[] | null>(null)
   const [progress, setProgress] = useState<SyncProgress | null>(null)
   const [failed, setFailed] = useState(false)
   // Undefined until a puzzle is ready; null once the player has been through everything that is due.
   const [chosenId, setChosenId] = useState<string | null | undefined>(undefined)
-  const [now] = useState(() => Date.now())
+  // Moved on with each answer, so the day's count and what is due follow the clock.
+  const [now, setNow] = useState(() => Date.now())
   const [asked, setAsked] = useState<ReadonlySet<string>>(new Set())
 
   useEffect(() => {
@@ -108,7 +113,8 @@ function Session({ player }: { player: string }) {
     }
   }, [player])
 
-  const startId = records ? (pickNext(records, now)?.id ?? null) : null
+  const focused = records ? withTactic(records, tactic) : null
+  const startId = focused ? (pickNext(focused, now)?.id ?? null) : null
   // Lock the first puzzle as soon as there is one, so puzzles found later do not replace it mid-answer.
   if (chosenId === undefined && startId !== null) setChosenId(startId)
   const currentId = chosenId ?? null
@@ -116,17 +122,20 @@ function Session({ player }: { player: string }) {
 
   const answered = async (record: PuzzleRecord, correct: boolean) => {
     const next = await (await getPuzzleService()).answer(record, correct)
+    setNow(Date.now())
     setRecords((rs) => rs?.map((r) => (r.id === next.id ? next : r)) ?? rs)
   }
   const next = () => {
     if (!records || !current) return
     const skip = new Set(asked).add(current.id)
     setAsked(skip)
-    setChosenId(pickNext(records, Date.now(), skip)?.id ?? null)
+    setChosenId(pickNext(withTactic(records, tactic), Date.now(), skip)?.id ?? null)
   }
 
   const stats = records ? summarize(records, now) : null
-  const q = records ? queue(records, now) : null
+  const q = focused ? queue(focused, now) : null
+  const count = focused?.filter((r) => r.puzzle !== null).length ?? 0
+  const day = records ? today(records, now, startOfDay(now), DAILY_GOAL) : null
   const searching = progress !== null && progress.done < progress.total
 
   return (
@@ -139,10 +148,29 @@ function Session({ player }: { player: string }) {
       {failed && (
         <p className="muted">Something went wrong while preparing the puzzles. Try reloading the page.</p>
       )}
+      {tactic !== null && (
+        <p className="train-focus">
+          <span>
+            Practising <strong>{tacticTopic(tactic)}</strong>
+            {focused && ` · ${count} puzzle${count === 1 ? '' : 's'}`}
+          </span>
+          <a href="#/train">Show all puzzles</a>
+        </p>
+      )}
+      {day && day.target > 0 && <DayStrip done={day.done} target={day.target} />}
       {records === null ? (
         <p className="muted">Reading your puzzles…</p>
       ) : current ? (
         <PuzzleCard key={current.id} record={current} onAnswered={answered} onNext={next} />
+      ) : tactic !== null && focused && focused.every((r) => r.puzzle === null) ? (
+        searching ? null : (
+          <div className="empty">
+            <p>No puzzles for {tacticTopic(tactic).toLowerCase()} yet.</p>
+            <p className="muted">
+              Not every mistake becomes a puzzle. <a href="#/train">Show all puzzles</a>.
+            </p>
+          </div>
+        )
       ) : stats && stats.total === 0 ? (
         searching ? null : (
           <div className="empty">
@@ -165,6 +193,21 @@ function Session({ player }: { player: string }) {
       )}
       {stats && stats.total > 0 && <Progress stats={stats} />}
     </>
+  )
+}
+
+/** Today's set: how many of its puzzles have been answered. */
+function DayStrip({ done, target }: { done: number; target: number }) {
+  return (
+    <div className="train-day">
+      <p>
+        <strong>{done}</strong> of {target} today
+        {done >= target && done > 0 ? ' · done for today' : ''}
+      </p>
+      <span className="train-day-bar" aria-hidden="true">
+        <span style={{ width: `${(done / target) * 100}%` }} />
+      </span>
+    </div>
   )
 }
 

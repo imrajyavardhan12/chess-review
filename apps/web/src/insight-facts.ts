@@ -68,5 +68,31 @@ export function tacticName(kind: string, perspective: 'allowed' | 'missed' | 'pl
     recapture: 'Missed a recapture',
   }
   const table = perspective === 'missed' ? missed : allowed
-  return table[kind] ?? `${perspective === 'missed' ? 'Missed' : 'Allowed'}: ${kind}`
+  return Object.hasOwn(table, kind)
+    ? table[kind]!
+    : `${perspective === 'missed' ? 'Missed' : 'Allowed'}: ${kind}`
+}
+
+/** A tactic on its own, as a heading for the puzzles that practise it. */
+export function tacticTopic(kind: string): string {
+  const topics: Record<string, string> = {
+    hanging: 'Hanging pieces',
+    fork: 'Forks',
+    pin: 'Pins',
+    skewer: 'Skewers',
+    discoveredAttack: 'Discovered attacks',
+    trappedPiece: 'Trapped pieces',
+    overloadedDefender: 'Overloaded defenders',
+    mate: 'Forced mates',
+    backRankMate: 'Back-rank mates',
+    material: 'Lost material',
+    recapture: 'Recaptures',
+  }
+  if (Object.hasOwn(topics, kind)) return topics[kind]!
+  // A kind with no entry yet still reads as words, not an identifier.
+  const words = kind
+    .replace(/([A-Z])/g, ' $1')
+    .toLowerCase()
+    .trim()
+  return words.charAt(0).toUpperCase() + words.slice(1)
 }

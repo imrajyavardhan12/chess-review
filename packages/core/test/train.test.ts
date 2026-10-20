@@ -7,6 +7,8 @@ import {
   pickNext,
   queue,
   summarize,
+  today,
+  withTactic,
   type Puzzle,
   type PuzzleRecord,
 } from '../src'
@@ -96,5 +98,43 @@ describe('summarize', () => {
     expect(s).toMatchObject({ total: 2, fresh: 1, due: 0, attempts: 3, solved: 2 })
     expect(s.byPhase.endgame).toEqual({ total: 1, attempts: 3, solved: 2 })
     expect(s.byPhase.middlegame).toEqual({ total: 1, attempts: 0, solved: 0 })
+  })
+})
+
+describe('withTactic', () => {
+  it('keeps only the puzzles whose mistake had that tactic, and everything for null', () => {
+    const rs = [record('a', { tactic: 'fork' }), record('b', { tactic: 'pin' }), record('c')]
+    expect(withTactic(rs, 'fork').map((r) => r.id)).toEqual(['a'])
+    expect(withTactic(rs, 'skewer')).toEqual([])
+    expect(withTactic(rs, null)).toBe(rs)
+  })
+})
+
+describe('today', () => {
+  const START = NOW - 3 * 60 * 60 * 1000
+  const asked = (id: string, lastAt: number) =>
+    record(id, { progress: { box: 1, due: NOW + DAY, attempts: 1, solved: 1, lastAt } })
+
+  it('counts what was answered since the day began, and what is still to do up to the goal', () => {
+    const rs = [asked('a', START + 1), asked('b', START - 1), record('c'), record('d'), record('e', {}, null)]
+    expect(today(rs, NOW, START, 10)).toEqual({ done: 1, target: 3 })
+  })
+
+  it('stops the target at the goal, and counts a puzzle once however often it was answered', () => {
+    const fresh = Array.from({ length: 20 }, (_, i) => record(`n${i}`))
+    expect(today([asked('a', START + 5), ...fresh], NOW, START, 8)).toEqual({ done: 1, target: 8 })
+    expect(today([asked('a', START + 5)], NOW, START, 8)).toEqual({ done: 1, target: 1 })
+  })
+
+  it('never shows a target below what is done, even past the goal', () => {
+    const rs = Array.from({ length: 5 }, (_, i) => asked(`a${i}`, START + i))
+    expect(today(rs, NOW, START, 3)).toEqual({ done: 5, target: 5 })
+  })
+
+  it('counts a puzzle answered wrongly and waiting for its retry as done, not as still to do', () => {
+    const wrong = record('w', {
+      progress: { box: 0, due: NOW + RETRY_MS, attempts: 1, solved: 0, lastAt: NOW },
+    })
+    expect(today([wrong, record('n')], NOW, START, 10)).toEqual({ done: 1, target: 2 })
   })
 })

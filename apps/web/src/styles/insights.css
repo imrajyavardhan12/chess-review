@@ -242,3 +242,15 @@
     min-width: 0;
   }
 }
+
+.insights .rtable .practise {
+  width: 1%;
+  padding-left: var(--s-4);
+  white-space: nowrap;
+  font-size: var(--fs-sm);
+}
+@media (max-width: 480px) {
+  .insights .tally .barcell {
+    display: none;
+  }
+}
