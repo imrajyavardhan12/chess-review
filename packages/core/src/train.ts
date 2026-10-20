@@ -1,4 +1,5 @@
 import type { Puzzle, PuzzleLimits } from './puzzles'
+import type { Perspective } from './tactics/explain'
 import type { Phase } from './types'
 
 /**
@@ -23,6 +24,9 @@ export interface Progress {
 
 export const freshProgress = (): Progress => ({ box: 0, due: 0, attempts: 0, solved: 0, lastAt: null })
 
+/** Which side of a tactic the mistake was on. A tactic the player played is not a mistake, so it has no puzzle. */
+export type PuzzlePerspective = Exclude<Perspective, 'played'>
+
 /** One checked mistake. `puzzle` is null when the check found no single clear answer; it is kept so the check is not repeated. */
 export interface PuzzleRecord {
   id: string
@@ -32,6 +36,11 @@ export interface PuzzleRecord {
   date: string | null
   /** The tactic behind the mistake, when the review could name one. */
   tactic: string | null
+  /**
+   * Whether the player allowed that tactic or missed it. Absent on puzzles made before this was kept; null
+   * when it could not be worked out, e.g. the game's review is gone.
+   */
+  perspective?: PuzzlePerspective | null
   /** What the position was checked with. A stricter check later can re-run the older ones. */
   checkedWith: PuzzleLimits
   puzzle: Puzzle | null
@@ -113,9 +122,27 @@ export function summarize(records: readonly PuzzleRecord[], now: number): Summar
   }
 }
 
-/** The puzzles whose mistake had this tactic. `null` means no focus: everything. */
-export function withTactic(records: readonly PuzzleRecord[], tactic: string | null): readonly PuzzleRecord[] {
-  return tactic === null ? records : records.filter((r) => r.tactic === tactic)
+/** The tactic of a mistake, from its explanation: what to store on its puzzle. */
+export function puzzleTactic(e: { kind: string; perspective: Perspective } | null): {
+  tactic: string | null
+  perspective: PuzzlePerspective | null
+} {
+  return e && e.perspective !== 'played'
+    ? { tactic: e.kind, perspective: e.perspective }
+    : { tactic: null, perspective: null }
+}
+
+/**
+ * The puzzles whose mistake had this tactic, and, when `perspective` is given, was on that side of it.
+ * `null` for the tactic means no focus: everything.
+ */
+export function withTactic(
+  records: readonly PuzzleRecord[],
+  tactic: string | null,
+  perspective: PuzzlePerspective | null = null,
+): readonly PuzzleRecord[] {
+  if (tactic === null) return records
+  return records.filter((r) => r.tactic === tactic && (perspective === null || r.perspective === perspective))
 }
 
 export interface Today {

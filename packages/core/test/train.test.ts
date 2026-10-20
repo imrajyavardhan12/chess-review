@@ -5,6 +5,7 @@ import {
   answer,
   freshProgress,
   pickNext,
+  puzzleTactic,
   queue,
   summarize,
   today,
@@ -107,6 +108,46 @@ describe('withTactic', () => {
     expect(withTactic(rs, 'fork').map((r) => r.id)).toEqual(['a'])
     expect(withTactic(rs, 'skewer')).toEqual([])
     expect(withTactic(rs, null)).toBe(rs)
+  })
+})
+
+describe('withTactic and perspective', () => {
+  const rs = [
+    record('a', { tactic: 'fork', perspective: 'allowed' }),
+    record('b', { tactic: 'fork', perspective: 'missed' }),
+    record('c', { tactic: 'fork' }), // made before the side was kept
+    record('d', { tactic: 'fork', perspective: null }), // the side could not be worked out
+  ]
+
+  it('tells allowing a tactic from missing it', () => {
+    expect(withTactic(rs, 'fork', 'allowed').map((r) => r.id)).toEqual(['a'])
+    expect(withTactic(rs, 'fork', 'missed').map((r) => r.id)).toEqual(['b'])
+  })
+
+  it('without a side, keeps every puzzle of the tactic, including those with no side recorded', () => {
+    expect(withTactic(rs, 'fork').map((r) => r.id)).toEqual(['a', 'b', 'c', 'd'])
+  })
+
+  it('a side without a tactic is no focus at all', () => {
+    expect(withTactic(rs, null, 'missed')).toBe(rs)
+  })
+})
+
+describe('puzzleTactic', () => {
+  it('keeps the kind and side of a tactic the player allowed or missed', () => {
+    expect(puzzleTactic({ kind: 'fork', perspective: 'allowed' })).toEqual({
+      tactic: 'fork',
+      perspective: 'allowed',
+    })
+    expect(puzzleTactic({ kind: 'pin', perspective: 'missed' })).toEqual({
+      tactic: 'pin',
+      perspective: 'missed',
+    })
+  })
+
+  it('has none for a tactic the player played, or when there was nothing to explain', () => {
+    expect(puzzleTactic({ kind: 'fork', perspective: 'played' })).toEqual({ tactic: null, perspective: null })
+    expect(puzzleTactic(null)).toEqual({ tactic: null, perspective: null })
   })
 })
 

@@ -52,5 +52,5 @@ test('links a recurring tactic to the puzzles that practise it', async ({ page }
   await page.goto('/#/insights')
   await page.getByLabel('Player').selectOption('Anderssen')
   const link = page.getByRole('link', { name: /^Practise/ }).first()
-  await expect(link).toHaveAttribute('href', /^#\/train\?tactic=\w+&u=Anderssen$/)
+  await expect(link).toHaveAttribute('href', /^#\/train\?tactic=\w+&p=(allowed|missed)&u=Anderssen$/)
 })
