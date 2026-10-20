@@ -30,7 +30,7 @@ several fine moves teaches nothing.
   so the page works without a pointer.
 - **A day's set and a focus.** Train counts the puzzles answered since local midnight against what is still
   to ask, up to a soft goal of 10. Insights links each tactic to `#/train?tactic=<kind>&u=<player>`, which
-  narrows the puzzles to that tactic. The day start is passed into `today()`, so core needs no clock or zone.
+  narrows the puzzles to that tactic and to the side of it (`p=allowed` or `p=missed`) that the row was about. The day start is passed into `today()`, so core needs no clock or zone.
 
 ## Alternatives considered
 
@@ -39,9 +39,10 @@ several fine moves teaches nothing.
 - **Trusting the review's best move.** The review runs at the chosen analysis depth, which is shallower;
   checking again at depth 18 removes puzzles whose "best" move was an artefact of a quick search.
 - **A spaced-repetition algorithm with per-puzzle ease.** More adaptive, harder to explain and to test.
-  Fixed boxes can be read off the table above.
-- **Storing the tactic's perspective** (allowed or missed) to tell the two apart in the focus. Existing
-  puzzles would lack it, so the focus filters by kind only.
+  The fixed boxes can be read straight off the schedule above.
+- **Storing the tactic's perspective** (allowed or missed). Rejected at first, because puzzles already made
+  would lack it, so the focus filtered by kind only. Added afterwards: each puzzle stores its side, and
+  earlier ones get it from their game's review (see Consequences).
 
 ## Consequences
 
@@ -49,6 +50,10 @@ several fine moves teaches nothing.
   note in the README says so.
 - Yield depends on the games. On 40 chess.com games of one player, 23 clear puzzles came out; a player with
   few mistakes will have few puzzles, and the page says so rather than lowering the bar.
+- Each puzzle stores the side of its tactic (allowed or missed). Puzzles made before that was kept get it from
+  their game's review when the list is read; if the review is gone the side stays unset and is tried again,
+  and if the review no longer shows that tactic it is recorded as unknown. Such puzzles are left out of a
+  side-specific focus, but not of the unfocused list or of a focus on the tactic alone.
 - A stricter check later can re-run older puzzles: each record keeps what it was checked with.
 
 ## Evidence

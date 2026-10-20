@@ -12,6 +12,7 @@ const PUZZLE = {
   opponent: 'Saint Brie',
   date: '2026-10-01',
   tactic: 'pin' as string | null,
+  perspective: undefined as 'allowed' | 'missed' | null | undefined,
   checkedWith: { depth: 18, nodes: 3_000_000 },
   puzzle: {
     moveIndex: 6,
@@ -151,7 +152,7 @@ test('practises one tactic when a link asks for it, and says when it has none', 
   await withPuzzle(page, [other])
 
   await page.goto('/#/train?tactic=fork')
-  await expect(page.getByText('Practising Forks · 1 puzzle')).toBeVisible()
+  await expect(page.getByText('Focus: Forks · 1 puzzle')).toBeVisible()
   await expect(page.getByText('0 of 2 today')).toBeVisible() // the day's set is not narrowed by the focus
   await expect(page.getByRole('heading', { name: 'White to move. Find the best move.' })).toBeVisible()
   await page.getByRole('button', { name: 'Show the answer' }).first().click()
@@ -160,9 +161,9 @@ test('practises one tactic when a link asks for it, and says when it has none', 
 
   // Another tactic has no puzzles yet, and the way back to all of them is on the page.
   await page.goto('/#/train?tactic=skewer')
-  await expect(page.getByText('No puzzles for skewers yet.')).toBeVisible()
+  await expect(page.getByText('No puzzles for “Skewers” yet.')).toBeVisible()
   await page.getByRole('link', { name: 'Show all puzzles' }).first().click()
-  await expect(page.getByText('Practising')).toHaveCount(0)
+  await expect(page.getByText('Focus:')).toHaveCount(0)
   await expect(page.getByRole('heading', { name: 'White to move. Find the best move.' })).toBeVisible()
 })
 
@@ -182,14 +183,51 @@ test('a tactic in the link that is not a real one shows an empty focus, not a br
   for (const odd of ['constructor', '__proto__', 'someNewTactic']) {
     await page.goto(`/#/train?tactic=${odd}`)
     await expect(page.getByRole('link', { name: 'Show all puzzles' }).first()).toBeVisible()
-    await expect(page.getByText('Practising')).toBeVisible()
+    await expect(page.getByText('Focus:')).toBeVisible()
   }
   await page.goto('/#/train?tactic=')
-  await expect(page.getByText('Practising')).toHaveCount(0)
+  await expect(page.getByText('Focus:')).toHaveCount(0)
 })
 
 test('opens for the player named in the link', async ({ page }) => {
   await withPuzzle(page)
   await page.goto('/#/train?tactic=pin&u=Morphy')
   await expect(page.getByLabel('Player')).toHaveValue('Morphy')
+})
+
+test('practises the side of a tactic the link asks for', async ({ page }) => {
+  const allowed = { ...PUZZLE, id: 'morphy|allowed', tactic: 'fork', perspective: 'allowed' as const }
+  const missed = { ...PUZZLE, id: 'morphy|missed', tactic: 'fork', perspective: 'missed' as const }
+  await withPuzzle(page, [allowed, missed])
+
+  await page.goto('/#/train?tactic=fork&p=missed')
+  await expect(page.getByText('Focus: Missed a fork · 1 puzzle')).toBeVisible()
+  await page.goto('/#/train?tactic=fork&p=allowed')
+  await expect(page.getByText('Focus: Allowed a fork · 1 puzzle')).toBeVisible()
+  await page.goto('/#/train?tactic=fork')
+  await expect(page.getByText('Focus: Forks · 2 puzzles')).toBeVisible()
+
+  // Neither of these has the side recorded as "missed", so the focus is empty, not wrong.
+  await page.goto('/#/train?tactic=pin&p=missed')
+  await expect(page.getByText('No puzzles for “Missed a pin” yet.')).toBeVisible()
+  // A side that is not one is ignored.
+  await page.goto('/#/train?tactic=fork&p=nonsense')
+  await expect(page.getByText('Focus: Forks · 2 puzzles')).toBeVisible()
+})
+
+test('a side with no tactic is ignored, and puzzles with no side are offered when a side has none', async ({
+  page,
+}) => {
+  const known = { ...PUZZLE, id: 'morphy|known', tactic: 'fork', perspective: 'missed' as const }
+  const unknown = { ...PUZZLE, id: 'morphy|unknown', tactic: 'fork', perspective: null }
+  await withPuzzle(page, [known, unknown])
+
+  await page.goto('/#/train?p=missed')
+  await expect(page.getByText('Focus:')).toHaveCount(0)
+
+  await page.goto('/#/train?tactic=fork&p=allowed&u=Morphy')
+  await expect(page.getByText('No puzzles for “Allowed a fork” yet.')).toBeVisible()
+  await expect(page.getByText('1 puzzle of forks could not be sorted into allowed or missed')).toBeVisible()
+  await page.getByRole('link', { name: 'Practise them all' }).click()
+  await expect(page.getByText('Focus: Forks · 2 puzzles')).toBeVisible()
 })

@@ -12,8 +12,7 @@ a paid API; anything that would is out of scope.
   recaptures that are the only good move are often labelled Great.
 - **Explanations for more motifs:** deflection, decoy, interference, zwischenzug, and endgame
   technique (opposition, the square of the pawn).
-- **Train, further.** Puzzles shipped ([ADR 0010](adr/0010-train-puzzles.md)). Next: tell "allowed" from
-  "missed" in the tactic focus (needs the perspective stored on each puzzle), and re-check older puzzles
+- **Train, further.** Puzzles shipped ([ADR 0010](adr/0010-train-puzzles.md)). Next: re-check older puzzles
   when the check gets stricter.
 
 ## Later

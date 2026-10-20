@@ -1,3 +1,4 @@
+import type { PuzzlePerspective } from '@chessreview/core'
 import { Suspense, lazy, useEffect, useState } from 'react'
 import { Home } from './Home'
 import { applyUpdate, useUpdateReady } from './offline'
@@ -11,16 +12,25 @@ const TrainPage = lazy(() => import('./Train').then((m) => ({ default: m.TrainPa
 //   #/                      game list
 //   #/review/<id>?u=<name>  one review (u = whose games you were browsing)
 //   #/insights              statistics across every stored review
-//   #/train[?tactic=<kind>&u=<name>]  puzzles made from your own mistakes (tactic = practise only that one)
+//   #/train[?tactic=<kind>&p=<side>&u=<name>]  puzzles made from your own mistakes (tactic = practise only that one)
 function parse(hash: string) {
   const m = hash.match(/^#\/review\/([a-f0-9]+)(?:\?u=(.*))?$/)
   return m && m[1] ? { id: m[1], me: m[2] ? decodeURIComponent(m[2]) : null } : null
 }
 
-/** What a `#/train?tactic=<kind>&u=<name>` link asks for: one tactic (null for all puzzles) and whose. */
-function trainFocus(hash: string): { tactic: string | null; player: string | null } {
+/** What a `#/train?tactic=<kind>&p=<side>&u=<name>` link asks for: one tactic (null for all puzzles), which side of it, and whose. */
+function trainFocus(hash: string): {
+  tactic: string | null
+  perspective: PuzzlePerspective | null
+  player: string | null
+} {
   const q = new URLSearchParams(hash.split('?')[1] ?? '')
-  return { tactic: q.get('tactic') || null, player: q.get('u') || null }
+  const side = q.get('p')
+  return {
+    tactic: q.get('tactic') || null,
+    perspective: q.get('tactic') && (side === 'allowed' || side === 'missed') ? side : null,
+    player: q.get('u') || null,
+  }
 }
 
 export function App() {

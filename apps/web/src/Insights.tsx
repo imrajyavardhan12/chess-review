@@ -2,7 +2,7 @@ import { insights, playersIn, type Insights as Stats, type Phase, type Tally } f
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AppHeader } from './AppHeader'
 import { useAsync } from './hooks'
-import { factsFor, tacticName, tacticTopic } from './insight-facts'
+import { factsFor, tacticName } from './insight-facts'
 import { ERRORS, META } from './labels'
 import { rememberedPlayer } from './prefs'
 import { getReviewService } from './services'
@@ -270,9 +270,9 @@ function Report({ stats, player }: { stats: Stats; player: string | null }) {
                       <td className="practise">
                         {t.perspective !== 'played' && (
                           <a
-                            href={`#/train?tactic=${encodeURIComponent(t.kind)}${player ? `&u=${encodeURIComponent(player)}` : ''}`}
+                            href={`#/train?tactic=${encodeURIComponent(t.kind)}&p=${t.perspective}${player ? `&u=${encodeURIComponent(player)}` : ''}`}
                           >
-                            Practise<span className="sr-only"> {tacticTopic(t.kind).toLowerCase()}</span>
+                            Practise<span className="sr-only"> {tacticName(t.kind, t.perspective)}</span>
                           </a>
                         )}
                       </td>
