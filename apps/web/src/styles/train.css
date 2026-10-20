@@ -71,11 +71,14 @@
   display: grid;
   gap: 6px;
   flex: 1;
+  min-width: 0;
   color: var(--ink-2);
   font-size: var(--fs-sm);
   font-weight: 600;
 }
 .train-input input {
+  width: 100%;
+  min-width: 0;
   height: 56px;
   padding: 0 var(--s-4);
   color: var(--ink);
@@ -154,4 +157,42 @@
     padding: var(--s-5) var(--s-4) var(--s-5) 0;
     border-left: 0;
   }
+}
+
+/* today's set */
+.train-day {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  margin-top: var(--s-4);
+}
+.train-day p {
+  margin: 0;
+  font: 500 var(--fs-sm) var(--font-mono);
+  white-space: nowrap;
+}
+.train-day-bar {
+  flex: 1;
+  height: 6px;
+  max-width: 320px;
+  border-radius: 3px;
+  background: var(--surface-3);
+}
+.train-day-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--ink);
+}
+
+/* practising one tactic, reached from Insights */
+.train-focus {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-2) var(--s-4);
+  margin: var(--s-4) 0 0;
+  padding: var(--s-2) 0;
+  border-block: 1px solid var(--line);
 }

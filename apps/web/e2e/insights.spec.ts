@@ -42,3 +42,15 @@ test('sums up a player’s reviewed games, from this device only', async ({ page
   await expect(page.getByRole('table').last()).toContainText('0 / 0 / 1')
   expect(problems).toEqual([])
 })
+
+test('links a recurring tactic to the puzzles that practise it', async ({ page }) => {
+  await page.goto('/')
+  await page.getByText('Paste a PGN instead').click()
+  await page.getByLabel('PGN').fill(MATE)
+  await page.getByRole('button', { name: 'Review PGN' }).click()
+  await expect(page.locator('.review')).toBeVisible()
+  await page.goto('/#/insights')
+  await page.getByLabel('Player').selectOption('Anderssen')
+  const link = page.getByRole('link', { name: /^Practise/ }).first()
+  await expect(link).toHaveAttribute('href', /^#\/train\?tactic=\w+&u=Anderssen$/)
+})

@@ -2,7 +2,7 @@ import { insights, playersIn, type Insights as Stats, type Phase, type Tally } f
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AppHeader } from './AppHeader'
 import { useAsync } from './hooks'
-import { factsFor, tacticName } from './insight-facts'
+import { factsFor, tacticName, tacticTopic } from './insight-facts'
 import { ERRORS, META } from './labels'
 import { rememberedPlayer } from './prefs'
 import { getReviewService } from './services'
@@ -87,7 +87,7 @@ export function InsightsPage() {
             {progress?.key === key ? ` (${progress.done} of ${progress.total})` : ''}…
           </p>
         ) : (
-          <Report stats={stats} />
+          <Report stats={stats} player={player} />
         )}
       </main>
     </>
@@ -96,7 +96,7 @@ export function InsightsPage() {
 
 const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0)
 
-function Report({ stats }: { stats: Stats }) {
+function Report({ stats, player }: { stats: Stats; player: string | null }) {
   const best = stats.openings.filter((o) => o.games >= 2)
   const phases = Object.keys(PHASE_NAMES) as Phase[]
   const record = {
@@ -267,6 +267,15 @@ function Report({ stats }: { stats: Stats }) {
                     <tr key={`${t.kind}/${t.perspective}`}>
                       <th scope="row">{tacticName(t.kind, t.perspective)}</th>
                       <td>{t.count}</td>
+                      <td className="practise">
+                        {t.perspective !== 'played' && (
+                          <a
+                            href={`#/train?tactic=${encodeURIComponent(t.kind)}${player ? `&u=${encodeURIComponent(player)}` : ''}`}
+                          >
+                            Practise<span className="sr-only"> {tacticTopic(t.kind).toLowerCase()}</span>
+                          </a>
+                        )}
+                      </td>
                       <td className="barcell" aria-hidden="true">
                         <span style={{ width: `${(t.count / stats.tactics[0]!.count) * 100}%` }} />
                       </td>

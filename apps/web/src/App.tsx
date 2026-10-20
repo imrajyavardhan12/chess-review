@@ -11,10 +11,16 @@ const TrainPage = lazy(() => import('./Train').then((m) => ({ default: m.TrainPa
 //   #/                      game list
 //   #/review/<id>?u=<name>  one review (u = whose games you were browsing)
 //   #/insights              statistics across every stored review
-//   #/train                 puzzles made from your own mistakes
+//   #/train[?tactic=<kind>&u=<name>]  puzzles made from your own mistakes (tactic = practise only that one)
 function parse(hash: string) {
   const m = hash.match(/^#\/review\/([a-f0-9]+)(?:\?u=(.*))?$/)
   return m && m[1] ? { id: m[1], me: m[2] ? decodeURIComponent(m[2]) : null } : null
+}
+
+/** What a `#/train?tactic=<kind>&u=<name>` link asks for: one tactic (null for all puzzles) and whose. */
+function trainFocus(hash: string): { tactic: string | null; player: string | null } {
+  const q = new URLSearchParams(hash.split('?')[1] ?? '')
+  return { tactic: q.get('tactic') || null, player: q.get('u') || null }
 }
 
 export function App() {
@@ -41,9 +47,9 @@ export function App() {
         <Suspense fallback={null}>
           <InsightsPage />
         </Suspense>
-      ) : hash === '#/train' ? (
+      ) : hash === '#/train' || hash.startsWith('#/train?') ? (
         <Suspense fallback={null}>
-          <TrainPage />
+          <TrainPage {...trainFocus(hash)} />
         </Suspense>
       ) : route ? (
         <ReviewPage id={route.id} me={route.me} />
